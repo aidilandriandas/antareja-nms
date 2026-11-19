@@ -4,7 +4,7 @@ ANTAREJA NMS adalah karya turunan dari [LibreNMS](https://github.com/librenms/li
 (GPLv3). Dokumen ini memenuhi kewajiban GPLv3 untuk mencatat perubahan, dan menjadi
 panduan saat menggabungkan update dari upstream.
 
-- **Basis upstream:** LibreNMS `26.10.2` (commit `17387db`), branch `upstream-sync`
+- **Basis upstream:** LibreNMS `26.10.2` (commit upstream `17387db`), disimpan di branch `upstream-sync`
 - **Prinsip:** semua fitur baru berada di `packages/antareja/`. File inti hanya disentuh
   bila tidak ada hook, dan setiap perubahan dicatat di bawah ini.
 
@@ -32,13 +32,19 @@ panduan saat menggabungkan update dari upstream.
 
 ## Prosedur sinkron upstream
 
+Branch `upstream-sync` berisi **snapshot murni** kode LibreNMS (dimulai dari commit
+"Import LibreNMS 26.10.2"); riwayatnya tidak terhubung langsung dengan repo LibreNMS.
+Setiap versi baru diimpor sebagai satu commit snapshot, lalu digabung ke `main`:
+
 ```bash
-git fetch upstream --tags
-git checkout upstream-sync && git reset --hard <tag-rilis-baru>
-git checkout main && git merge upstream-sync
-# Selesaikan konflik pada file di tabel "Perubahan file inti" di atas
-npm ci && npm run build            # bangun ulang html/build
-# Ubah LIBRENMS_VERSION di docker/.env.example & docker/Dockerfile ke tag baru
+TAG=26.11.0   # ganti dengan rilis bertag terbaru
+git fetch --depth 1 upstream tag $TAG
+git checkout upstream-sync
+git rm -rq . && git checkout $TAG -- .          # ganti isi dengan kode upstream $TAG
+git commit -m "Import LibreNMS $TAG"
+git checkout main && git merge upstream-sync    # selesaikan konflik pada file di tabel di atas
+npm ci && npm run build                         # bangun ulang html/build
+# Ubah LIBRENMS_VERSION di docker/.env.example & docker/Dockerfile ke $TAG
 ./antareja.sh update
 ```
 
