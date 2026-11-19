@@ -13,7 +13,7 @@
 
 @section('page')
     @if($unassigned > 0)
-        <div class="alert alert-warning">
+        <div class="ant-alert ant-alert--warn">
             <i class="fa fa-exclamation-triangle"></i>
             {{ $unassigned }} perangkat belum punya site.
             <a href="{{ route('antareja.inventory.index', ['site' => 'none']) }}">Lihat perangkat &rarr;</a>
@@ -48,14 +48,14 @@
                     <td>{{ $site->areas_count }}</td>
                     <td><a href="{{ route('antareja.inventory.index', ['site' => $site->id]) }}">{{ $site->devices_count }}</a></td>
                     <td>
-                        <span class="tw:text-emerald-600 tw:dark:text-emerald-400">{{ (int) ($st->up ?? 0) }}</span> /
-                        <span class="{{ ($st->down ?? 0) > 0 ? 'tw:text-red-600 tw:dark:text-red-400 tw:font-semibold' : '' }}">{{ (int) ($st->down ?? 0) }}</span>
+                        <span class="ant-text-ok">{{ (int) ($st->up ?? 0) }}</span> /
+                        <span class="{{ ($st->down ?? 0) > 0 ? 'ant-text-crit tw:font-semibold' : '' }}">{{ (int) ($st->down ?? 0) }}</span>
                     </td>
                     <td>{{ $site->picLabel() ?? '—' }}</td>
                     <td>{!! $site->is_active ? '<span class="label label-success">Aktif</span>' : '<span class="label label-default">Nonaktif</span>' !!}</td>
                 </tr>
             @empty
-                <tr><td colspan="8" class="tw:text-center tw:py-6 tw:text-gray-500">
+                <tr><td colspan="8" class="tw:text-center tw:py-6 ant-muted">
                     Belum ada site. @can('ant-site.update')<a href="{{ route('antareja.sites.create') }}">Tambah site pertama</a>.@endcan
                 </td></tr>
             @endforelse

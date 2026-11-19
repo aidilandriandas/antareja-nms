@@ -4,39 +4,32 @@
 
 @php
     $statusStyle = [
-        'native' => ['label' => 'Tersedia', 'class' => 'tw:bg-emerald-100 tw:text-emerald-800 tw:dark:bg-emerald-900 tw:dark:text-emerald-100'],
-        'partial' => ['label' => 'Sebagian', 'class' => 'tw:bg-amber-100 tw:text-amber-800 tw:dark:bg-amber-900 tw:dark:text-amber-100'],
-        'planned' => ['label' => 'Direncanakan', 'class' => 'tw:bg-gray-200 tw:text-gray-700 tw:dark:bg-dark-gray-200 tw:dark:text-gray-200'],
+        'native' => ['label' => 'Tersedia', 'class' => 'ant-badge ant-badge--ok'],
+        'partial' => ['label' => 'Sebagian', 'class' => 'ant-badge ant-badge--warn'],
+        'planned' => ['label' => 'Direncanakan', 'class' => 'ant-badge ant-badge--unknown'],
     ];
 @endphp
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid antareja-page">
     <div class="tw:flex tw:flex-wrap tw:items-end tw:justify-between tw:gap-4 tw:mt-2 tw:mb-6">
         <div>
             <h1 class="tw:text-3xl tw:font-bold tw:m-0">ANTAREJA NMS</h1>
-            <p class="tw:text-base tw:text-gray-500 tw:dark:text-gray-400 tw:m-0 tw:mt-1">
+            <p class="tw:text-base ant-muted tw:m-0 tw:mt-1">
                 Mining ICT Infrastructure Management &amp; Unified Network Monitoring Platform
             </p>
         </div>
-        <div class="tw:text-sm tw:text-gray-500 tw:dark:text-gray-400">
+        <div class="tw:text-sm ant-muted">
             Versi {{ $version }} · Fase 2 (IPAM &amp; Kualitas Jaringan)
         </div>
     </div>
 
     @if($stats)
-    <div class="tw:grid tw:grid-cols-2 tw:lg:grid-cols-4 tw:gap-4 tw:mb-6">
-        @foreach([
-            ['Total perangkat', $stats['total'], 'tw:text-gray-900 tw:dark:text-white', url('devices')],
-            ['Online', $stats['up'], 'tw:text-emerald-600 tw:dark:text-emerald-400', url('devices/state=up')],
-            ['Offline', $stats['down'], 'tw:text-red-600 tw:dark:text-red-400', url('devices/state=down')],
-            ['Disabled / ignored', $stats['disabled'], 'tw:text-gray-500 tw:dark:text-gray-400', url('devices/disabled=1')],
-        ] as [$label, $value, $color, $link])
-            <a href="{{ $link }}" class="tw:block tw:no-underline tw:hover:no-underline tw:rounded-lg tw:border tw:border-gray-200 tw:dark:border-dark-gray-200 tw:bg-white tw:dark:bg-dark-gray-300 tw:p-4">
-                <div class="tw:text-sm tw:text-gray-500 tw:dark:text-gray-400">{{ $label }}</div>
-                <div class="tw:text-3xl tw:font-semibold {{ $color }}">{{ number_format($value) }}</div>
-            </a>
-        @endforeach
+    <div class="tw:grid tw:grid-cols-2 tw:lg:grid-cols-4 tw:gap-3 tw:mb-6">
+        <x-antareja::stat label="Total perangkat" :value="number_format($stats['total'], 0, ',', '.')" :href="url('devices')" />
+        <x-antareja::stat label="Online" :value="number_format($stats['up'], 0, ',', '.')" tone="ok" :href="url('devices/state=up')" />
+        <x-antareja::stat label="Offline" :value="number_format($stats['down'], 0, ',', '.')" :tone="$stats['down'] > 0 ? 'crit' : 'neutral'" :href="url('devices/state=down')" />
+        <x-antareja::stat label="Disabled / ignored" :value="number_format($stats['disabled'], 0, ',', '.')" :href="url('devices/disabled=1')" />
     </div>
     @endif
 
@@ -48,8 +41,8 @@
                 @foreach($qualityProblems as $qt)
                     <tr>
                         <td><a href="{{ route('antareja.quality.show', $qt) }}">{{ $qt->name }}</a></td>
-                        <td class="tw:text-xs tw:text-gray-500">{{ $qt->group_name }} {{ $qt->site?->code }}</td>
-                        <td><span class="label {{ $qt->statusMeta()['class'] }}">{{ $qt->statusMeta()['label'] }}</span></td>
+                        <td class="tw:text-xs ant-muted">{{ $qt->group_name }} {{ $qt->site?->code }}</td>
+                        <td><x-antareja::status :status="$qt->statusMeta()['tone']">{{ $qt->statusMeta()['label'] }}</x-antareja::status></td>
                         <td class="tw:text-xs">{{ $qt->last_checked_at?->diffForHumans() }}</td>
                     </tr>
                 @endforeach
@@ -58,12 +51,12 @@
     @endif
 
     @if($issues !== null)
-    @php($sevClass = ['danger' => 'tw:text-red-600 tw:dark:text-red-400', 'warning' => 'tw:text-amber-600 tw:dark:text-amber-400', 'info' => 'tw:text-sky-700 tw:dark:text-sky-400'])
+    @php($sevClass = ['danger' => 'ant-text-crit', 'warning' => 'ant-text-warn', 'info' => 'ant-text-info'])
     <div class="tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3 tw:mb-3">
         <h2 class="tw:text-xl tw:font-semibold tw:m-0">Kualitas Data Inventaris</h2>
         <span class="tw:flex tw:flex-wrap tw:gap-4 tw:text-sm">
             @if(($issues['ip_conflicts'] ?? 0) > 0)
-                <a href="{{ route('antareja.ipam.conflicts') }}" class="tw:text-red-600 tw:dark:text-red-400"><i class="fa fa-exclamation-triangle"></i> {{ $issues['ip_conflicts'] }} konflik IP &rarr;</a>
+                <a href="{{ route('antareja.ipam.conflicts') }}" class="ant-text-crit"><i class="fa fa-exclamation-triangle"></i> {{ $issues['ip_conflicts'] }} konflik IP &rarr;</a>
             @endif
             @if($issues['suggested_links'] > 0)
                 <a href="{{ route('antareja.mapping.index', ['status' => 'suggested']) }}">{{ $issues['suggested_links'] }} saran mapping menunggu verifikasi &rarr;</a>
@@ -74,10 +67,10 @@
         @foreach(\Antareja\Services\DataQuality::ISSUES as $key => $issue)
             @php($n = $issues[$key] ?? 0)
             <a href="{{ route('antareja.inventory.index', ['issue' => $key]) }}"
-               class="tw:flex tw:items-center tw:gap-3 tw:no-underline tw:hover:no-underline tw:rounded-lg tw:border tw:border-gray-200 tw:dark:border-dark-gray-200 tw:bg-white tw:dark:bg-dark-gray-300 tw:px-3 tw:py-2">
-                <i class="fa fa-{{ $issue['icon'] }} fa-fw fa-lg {{ $n > 0 ? $sevClass[$issue['severity']] : 'tw:text-gray-400' }}" aria-hidden="true"></i>
-                <span class="tw:grow tw:text-sm tw:text-gray-700 tw:dark:text-gray-200">{{ $issue['label'] }}</span>
-                <span class="tw:text-lg tw:font-semibold tw:tabular-nums {{ $n > 0 ? $sevClass[$issue['severity']] : 'tw:text-gray-400' }}">{{ $n }}</span>
+               class="tw:flex tw:items-center tw:gap-3 tw:no-underline tw:hover:no-underline tw:rounded-lg tw:border ant-card tw:px-3 tw:py-2">
+                <i class="fa fa-{{ $issue['icon'] }} fa-fw fa-lg {{ $n > 0 ? $sevClass[$issue['severity']] : 'ant-muted' }}" aria-hidden="true"></i>
+                <span class="tw:grow tw:text-sm ">{{ $issue['label'] }}</span>
+                <span class="tw:text-lg tw:font-semibold tw:tabular-nums {{ $n > 0 ? $sevClass[$issue['severity']] : 'ant-muted' }}">{{ $n }}</span>
             </a>
         @endforeach
     </div>
@@ -95,16 +88,16 @@
     <div class="tw:grid tw:grid-cols-1 tw:md:grid-cols-2 tw:xl:grid-cols-3 tw:gap-4 tw:mb-8">
         @foreach($modules as $module)
             @php($style = $statusStyle[$module['status']])
-            <div class="tw:flex tw:flex-col tw:rounded-lg tw:border tw:border-gray-200 tw:dark:border-dark-gray-200 tw:bg-white tw:dark:bg-dark-gray-300 tw:p-4">
+            <div class="tw:flex tw:flex-col tw:rounded-lg tw:border ant-card tw:p-4">
                 <div class="tw:flex tw:items-start tw:justify-between tw:gap-2">
                     <div class="tw:flex tw:items-center tw:gap-2">
-                        <i class="fa fa-{{ $module['icon'] }} fa-fw fa-lg tw:text-gray-500 tw:dark:text-gray-400" aria-hidden="true"></i>
+                        <i class="fa fa-{{ $module['icon'] }} fa-fw fa-lg ant-muted" aria-hidden="true"></i>
                         <span class="tw:text-base tw:font-semibold">{{ $loop->iteration }}. {{ $module['label'] }}</span>
                     </div>
                     <span class="tw:shrink-0 tw:rounded-full tw:px-2.5 tw:py-0.5 tw:text-xs tw:font-medium {{ $style['class'] }}">{{ $style['label'] }}</span>
                 </div>
-                <p class="tw:text-sm tw:text-gray-600 tw:dark:text-gray-300 tw:mt-2 tw:mb-3 tw:grow">{{ $module['description'] }}</p>
-                <div class="tw:flex tw:items-center tw:justify-between tw:text-xs tw:text-gray-500 tw:dark:text-gray-400">
+                <p class="tw:text-sm ant-muted tw:mt-2 tw:mb-3 tw:grow">{{ $module['description'] }}</p>
+                <div class="tw:flex tw:items-center tw:justify-between tw:text-xs ant-muted">
                     <span>{{ $module['phase'] === 0 ? 'Sudah dari inti' : 'Target: Fase ' . $module['phase'] }}</span>
                     @if($module['url'])
                         <a href="{{ $module['url'] }}" class="tw:font-medium">Buka &rarr;</a>

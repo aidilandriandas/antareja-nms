@@ -62,12 +62,12 @@ class Catalog
 
     /** Status yang ditampilkan (gabungan status verifikasi + kelengkapan data). */
     public const VERIFICATION_DISPLAY = [
-        'discovered' => ['label' => 'Discovered', 'class' => 'label-info'],
-        'pending_verification' => ['label' => 'Pending Verification', 'class' => 'label-warning'],
-        'verified' => ['label' => 'Verified', 'class' => 'label-success'],
-        'incomplete_mapping' => ['label' => 'Incomplete Mapping', 'class' => 'label-primary'],
-        'rejected' => ['label' => 'Rejected', 'class' => 'label-danger'],
-        'retired' => ['label' => 'Retired', 'class' => 'label-default'],
+        'discovered' => ['label' => 'Discovered', 'class' => 'label-info', 'tone' => 'info'],
+        'pending_verification' => ['label' => 'Pending Verification', 'class' => 'label-warning', 'tone' => 'warn'],
+        'verified' => ['label' => 'Verified', 'class' => 'label-success', 'tone' => 'ok'],
+        'incomplete_mapping' => ['label' => 'Incomplete Mapping', 'class' => 'label-primary', 'tone' => 'warn'],
+        'rejected' => ['label' => 'Rejected', 'class' => 'label-danger', 'tone' => 'crit'],
+        'retired' => ['label' => 'Retired', 'class' => 'label-default', 'tone' => 'unknown'],
     ];
 
     public const LINK_TYPES = [
@@ -85,9 +85,9 @@ class Catalog
     public const PARENT_CHILD_LINK_TYPES = ['uplink', 'ap-port', 'cctv-port', 'ptmp-client', 'nvr-camera'];
 
     public const LINK_STATUS = [
-        'suggested' => ['label' => 'Saran', 'class' => 'label-info'],
-        'verified' => ['label' => 'Terverifikasi', 'class' => 'label-success'],
-        'rejected' => ['label' => 'Ditolak', 'class' => 'label-danger'],
+        'suggested' => ['label' => 'Saran', 'class' => 'label-info', 'tone' => 'info'],
+        'verified' => ['label' => 'Terverifikasi', 'class' => 'label-success', 'tone' => 'ok'],
+        'rejected' => ['label' => 'Ditolak', 'class' => 'label-danger', 'tone' => 'crit'],
     ];
 
     public const LINK_SOURCES = [

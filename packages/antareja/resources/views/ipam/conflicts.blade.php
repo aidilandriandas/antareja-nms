@@ -25,7 +25,7 @@
                         <td class="tw:text-xs">{{ $ip->last_seen_at?->diffForHumans() ?? '—' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="tw:text-center tw:py-4 tw:text-gray-500">Tidak ada konflik IP.</td></tr>
+                    <tr><td colspan="6" class="tw:text-center tw:py-4 ant-muted">Tidak ada konflik IP.</td></tr>
                 @endforelse
                 </tbody>
             </table>
@@ -47,7 +47,7 @@
                         <td class="tw:font-mono tw:text-xs">{{ $ip->mac_address ?? '—' }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="4" class="tw:text-center tw:py-4 tw:text-gray-500">Semua IP perangkat berada di subnet IPAM.</td></tr>
+                    <tr><td colspan="4" class="tw:text-center tw:py-4 ant-muted">Semua IP perangkat berada di subnet IPAM.</td></tr>
                 @endforelse
                 </tbody>
             </table>

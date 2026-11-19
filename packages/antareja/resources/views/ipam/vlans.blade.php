@@ -32,7 +32,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="tw:text-center tw:py-4 tw:text-gray-500">Belum ada VLAN.</td></tr>
+                        <tr><td colspan="7" class="tw:text-center tw:py-4 ant-muted">Belum ada VLAN.</td></tr>
                     @endforelse
                     </tbody>
                 </table>
@@ -40,7 +40,7 @@
         </div>
 
         <div class="panel panel-default">
-            <div class="panel-heading"><strong>VLAN yang terlihat di switch</strong> <span class="tw:text-xs tw:text-gray-500">(hasil discovery, sebagai referensi)</span></div>
+            <div class="panel-heading"><strong>VLAN yang terlihat di switch</strong> <span class="tw:text-xs ant-muted">(hasil discovery, sebagai referensi)</span></div>
             <div class="table-responsive">
                 <table class="table table-condensed tw:m-0">
                     <thead><tr><th>VLAN</th><th>Nama di switch</th><th>Jumlah switch</th><th>Di VLAN plan</th></tr></thead>
@@ -51,7 +51,7 @@
                             <td>{!! $vlans->contains('vlan_number', $d->vlan_vlan) ? '<span class="label label-success">Ya</span>' : '<span class="label label-warning">Belum</span>' !!}</td>
                         </tr>
                     @empty
-                        <tr><td colspan="4" class="tw:text-center tw:py-4 tw:text-gray-500">Belum ada VLAN terdeteksi dari switch.</td></tr>
+                        <tr><td colspan="4" class="tw:text-center tw:py-4 ant-muted">Belum ada VLAN terdeteksi dari switch.</td></tr>
                     @endforelse
                     </tbody>
                 </table>

@@ -14,7 +14,7 @@
         @foreach(['a' => ['A — upstream / parent', 'mis. switch, router, NVR, base station'], 'b' => ['B — downstream / child', 'mis. access point, kamera, radio client']] as $side => [$title, $hint])
             <div class="col-md-6">
                 <div class="panel panel-default">
-                    <div class="panel-heading"><strong>{{ $title }}</strong><br><span class="tw:text-xs tw:text-gray-500">{{ $hint }}</span></div>
+                    <div class="panel-heading"><strong>{{ $title }}</strong><br><span class="tw:text-xs ant-muted">{{ $hint }}</span></div>
                     <div class="panel-body">
                         <div class="form-group">
                             <label for="{{ $side }}_device_id">Perangkat *</label>

@@ -9,7 +9,7 @@
                 <p class="help-block tw:text-xs tw:mb-0">Syarat: kategori, site, dan PIC sudah diisi.</p>
             </form>
             <details>
-                <summary class="tw:cursor-pointer tw:text-sm tw:text-red-600">Tolak perangkat ini…</summary>
+                <summary class="tw:cursor-pointer tw:text-sm ant-text-crit">Tolak perangkat ini…</summary>
                 <form method="post" action="{{ route('antareja.discovery.reject', $device) }}" class="tw:mt-2">
                     @csrf
                     <input name="reason" class="form-control tw:mb-2" required maxlength="255" placeholder="Alasan, mis. perangkat milik vendor / bukan aset ICT">
@@ -20,7 +20,7 @@
                 </form>
             </details>
         @elseif($detail->verification_status === 'verified')
-            <p class="tw:text-sm tw:m-0"><i class="fa fa-check-circle tw:text-emerald-600"></i> Inventaris resmi sejak {{ $detail->verified_at?->format('d M Y') }}.</p>
+            <p class="tw:text-sm tw:m-0"><i class="fa fa-check-circle ant-text-ok"></i> Inventaris resmi sejak {{ $detail->verified_at?->format('d M Y') }}.</p>
             <details>
                 <summary class="tw:cursor-pointer tw:text-sm">Pensiunkan (retire) perangkat…</summary>
                 <form method="post" action="{{ route('antareja.discovery.retire', $device) }}" class="tw:mt-2">

@@ -1,7 +1,6 @@
-{{-- Kotak statistik. $label, $value, $color (opsional), $href (opsional), $hint (opsional) --}}
-@php($tag = isset($href) ? 'a' : 'div')
-<{{ $tag }} @isset($href) href="{{ $href }}" @endisset class="tw:block tw:no-underline tw:hover:no-underline tw:rounded-lg tw:border tw:border-gray-200 tw:dark:border-dark-gray-200 tw:bg-white tw:dark:bg-dark-gray-300 tw:p-3">
-    <div class="tw:text-xs tw:text-gray-500 tw:dark:text-gray-400">{{ $label }}</div>
-    <div class="tw:text-2xl tw:font-semibold tw:tabular-nums {{ $color ?? 'tw:text-gray-900 tw:dark:text-white' }}">{{ $value }}</div>
-    @isset($hint)<div class="tw:text-xs tw:text-gray-500 tw:dark:text-gray-400">{{ $hint }}</div>@endisset
-</{{ $tag }}>
+{{-- Kotak statistik → komponen StatTile design system. $label, $value, $color (opsional, nada diturunkan), $tone, $href, $hint --}}
+@php
+    $c = $color ?? '';
+    $t = $tone ?? (str_contains($c, 'emerald') ? 'ok' : (str_contains($c, 'amber') ? 'warn' : (str_contains($c, 'red') ? 'crit' : 'neutral')));
+@endphp
+<x-antareja::stat :label="$label" :value="$value" :hint="$hint ?? null" :tone="$t" :href="$href ?? null" />

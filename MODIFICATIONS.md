@@ -15,7 +15,7 @@ panduan saat menggabungkan update dari upstream.
 | `composer.json` | Tambah autoload PSR-4 `"Antareja\\": "packages/antareja/src/"` | Memuat kode paket ANTAREJA |
 | `bootstrap/providers.php` | Tambah `Antareja\AntarejaServiceProvider::class` | Mendaftarkan route, view, migration, perintah ANTAREJA |
 | `resources/views/layouts/menu.blade.php` | Sisipkan `@includeIf('antareja::partials.navbar')` di awal navbar | Menu modul ANTAREJA di navigasi utama |
-| `resources/css/app.css` | Tambah `@source` untuk `packages/antareja/resources/views` | Kelas Tailwind milik ANTAREJA ikut dikompilasi |
+| `resources/css/app.css` | Tambah `@source` untuk `packages/antareja/resources/views` dan `@import` `packages/antareja/resources/css/antareja.css` | Kelas Tailwind ANTAREJA ikut dikompilasi; token, font, dan komponen design system ANTAREJA dimuat di seluruh aplikasi |
 | `resources/definitions/permissions.yaml` | Tambah 13 grup permission `ant-*` | Permission ANTAREJA tampil di editor role |
 | `html/build/*` | Dibangun ulang (`npm run build`) | Hasil kompilasi dari perubahan `app.css` |
 
@@ -24,7 +24,8 @@ panduan saat menggabungkan update dari upstream.
 | Path | Isi |
 |---|---|
 | `packages/antareja/` | Paket Laravel ANTAREJA (service provider, modul, view, migration, perintah `antareja:roles`) |
-| `html/images/antareja/` | Logo & favicon ANTAREJA |
+| `html/images/antareja/` | Logo resmi ANTAREJA (PNG transparan turunan file asli, 64/128/256 px), favicon, apple-touch-icon |
+| `packages/antareja/resources/css/`, `resources/fonts/` | Design system: `tokens.css` (dihasilkan dari tokens.json), `antareja.css`, font Barlow Semi Condensed & IBM Plex (OFL) |
 | `docker/` | Dockerfile, `compose.yml`, konfigurasi Nginx, branding default (`docker/config/antareja.yaml`), init container `docker/init/03a-antareja.sh` (folder evidence di `/data/antareja`) |
 | `antareja.sh` | Skrip operasional (install, start, stop, restart, update, backup, restore, health) |
 | `docs/` | Dokumen analisis & arsitektur ANTAREJA |

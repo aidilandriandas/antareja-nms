@@ -95,7 +95,7 @@
         @if($site->exists)
             <form method="post" action="{{ route('antareja.sites.destroy', $site) }}" onsubmit="return confirm('Hapus site {{ $site->code }}?')">
                 @csrf @method('DELETE')
-                <button class="btn btn-link tw:text-red-600! tw:p-0!"><i class="fa fa-trash"></i> Hapus site</button>
+                <button class="btn btn-link ant-text-crit tw:p-0!"><i class="fa fa-trash"></i> Hapus site</button>
             </form>
         @endif
     </div>
@@ -107,15 +107,15 @@
             <ul class="list-group">
                 @forelse($site->areas as $area)
                     <li class="list-group-item tw:flex tw:justify-between tw:items-center">
-                        <span><strong>{{ $area->name }}</strong> @if($area->code)<span class="tw:text-gray-500">({{ $area->code }})</span>@endif
-                            @if($area->description)<br><span class="tw:text-xs tw:text-gray-500">{{ $area->description }}</span>@endif</span>
+                        <span><strong>{{ $area->name }}</strong> @if($area->code)<span class="ant-muted">({{ $area->code }})</span>@endif
+                            @if($area->description)<br><span class="tw:text-xs ant-muted">{{ $area->description }}</span>@endif</span>
                         <form method="post" action="{{ route('antareja.sites.areas.destroy', [$site, $area]) }}" onsubmit="return confirm('Hapus area {{ $area->name }}?')">
                             @csrf @method('DELETE')
                             <button class="btn btn-xs btn-default" title="Hapus"><i class="fa fa-times"></i></button>
                         </form>
                     </li>
                 @empty
-                    <li class="list-group-item tw:text-gray-500">Belum ada area.</li>
+                    <li class="list-group-item ant-muted">Belum ada area.</li>
                 @endforelse
             </ul>
             <form method="post" action="{{ route('antareja.sites.areas.store', $site) }}" class="panel-body">

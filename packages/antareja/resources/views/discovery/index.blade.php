@@ -24,8 +24,8 @@
             ['3', 'Engineer melengkapi', 'Kategori, site, area, PIC, lokasi'],
             ['4', 'Approve / Reject', 'Approve → inventaris resmi'],
         ] as [$n, $t, $d])
-            <div class="tw:rounded tw:border tw:border-gray-200 tw:dark:border-dark-gray-200 tw:p-3 tw:bg-white tw:dark:bg-dark-gray-300">
-                <div class="tw:font-semibold">{{ $n }}. {{ $t }}</div><div class="tw:text-gray-500 tw:text-xs">{{ $d }}</div>
+            <div class="tw:rounded tw:border ant-card tw:p-3">
+                <div class="tw:font-semibold">{{ $n }}. {{ $t }}</div><div class="ant-muted tw:text-xs">{{ $d }}</div>
             </div>
         @endforeach
     </div>
@@ -59,7 +59,7 @@
                         @foreach(\Antareja\Support\Catalog::DEVICE_CATEGORIES as $key => $label)<option value="{{ $key }}">{{ $label }}</option>@endforeach
                     </select>
                     <button name="action" value="assign" class="btn btn-sm btn-default">Terapkan site / kategori</button>
-                    <span class="tw:mx-2 tw:text-gray-400">|</span>
+                    <span class="tw:mx-2 ant-muted">|</span>
                     <label class="tw:font-normal tw:m-0"><input type="checkbox" name="accept_suggested" value="1" checked> pakai saran kategori bila kosong</label>
                     <button name="action" value="verify" class="btn btn-sm btn-success" onclick="return confirm('Verifikasi perangkat yang dicentang? Perangkat tanpa kategori/site/PIC akan dilewati.')"><i class="fa fa-check"></i> Verifikasi</button>
                 </div>
@@ -81,9 +81,9 @@
                     <tr>
                         @if($tab === 'pending')<td><input type="checkbox" class="bulk-device" name="devices[]" value="{{ $detail->device_id }}"></td>@endif
                         <td><a href="{{ route('antareja.inventory.show', $detail->device_id) }}"><strong>{{ $device?->displayName() }}</strong></a>
-                            <br><span class="tw:text-xs tw:text-gray-500">{{ $device?->sysName }}</span></td>
+                            <br><span class="tw:text-xs ant-muted">{{ $device?->sysName }}</span></td>
                         <td>{{ $device?->overwrite_ip ?: $device?->ip }}</td>
-                        <td>{{ $device?->os }}<br><span class="tw:text-xs tw:text-gray-500">{{ \Illuminate\Support\Str::limit($device?->hardware, 40) }}</span></td>
+                        <td>{{ $device?->os }}<br><span class="tw:text-xs ant-muted">{{ \Illuminate\Support\Str::limit($device?->hardware, 40) }}</span></td>
                         <td>{{ $detail->category ? $detail->categoryLabel() : \Antareja\Support\Catalog::label(\Antareja\Support\Catalog::DEVICE_CATEGORIES, $detail->suggested_category) }}</td>
                         <td>{{ $detail->site?->code ?? '—' }}</td>
                         <td>{{ $detail->picLabel() ?? '—' }}</td>
@@ -103,7 +103,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="10" class="tw:text-center tw:py-6 tw:text-gray-500">Tidak ada perangkat di daftar ini.</td></tr>
+                    <tr><td colspan="10" class="tw:text-center tw:py-6 ant-muted">Tidak ada perangkat di daftar ini.</td></tr>
                 @endforelse
                 </tbody>
             </table>

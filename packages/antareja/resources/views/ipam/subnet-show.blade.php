@@ -2,15 +2,8 @@
 
 @php
     $cellClass = [
-        'free' => 'tw:bg-gray-200 tw:dark:bg-dark-gray-200',
-        'network' => 'tw:bg-gray-400 tw:dark:bg-gray-600',
-        'gateway' => 'tw:bg-violet-600',
-        'dhcp-pool' => 'tw:bg-cyan-200 tw:dark:bg-cyan-900',
-        'used' => 'tw:bg-blue-600',
-        'static' => 'tw:bg-emerald-600',
-        'reserved' => 'tw:bg-amber-500',
-        'dhcp' => 'tw:bg-cyan-600',
-        'conflict' => 'tw:bg-red-600',
+        'free' => 'ant-cell--free', 'network' => 'ant-cell--network', 'gateway' => 'ant-cell--gateway', 'dhcp-pool' => 'ant-cell--pool',
+        'used' => 'ant-cell--used', 'static' => 'ant-cell--static', 'reserved' => 'ant-cell--reserved', 'dhcp' => 'ant-cell--dhcp', 'conflict' => 'ant-cell--conflict',
     ];
     $legend = ['free' => 'Kosong', 'used' => 'Used', 'static' => 'Static', 'reserved' => 'Reserved', 'dhcp' => 'DHCP', 'dhcp-pool' => 'Pool DHCP', 'gateway' => 'Gateway', 'network' => 'Network/Broadcast', 'conflict' => 'Konflik'];
 @endphp
@@ -32,12 +25,12 @@
 @section('page')
     <div class="tw:grid tw:grid-cols-2 tw:md:grid-cols-4 tw:xl:grid-cols-7 tw:gap-3 tw:mb-4">
         @include('antareja::partials.stat', ['label' => 'Usable', 'value' => $subnet->family === 4 ? number_format($stats['usable']) : 'IPv6'])
-        @include('antareja::partials.stat', ['label' => 'Used', 'value' => $stats['used'], 'color' => 'tw:text-blue-600 tw:dark:text-blue-400'])
-        @include('antareja::partials.stat', ['label' => 'Static', 'value' => $stats['static'], 'color' => 'tw:text-emerald-600 tw:dark:text-emerald-400'])
-        @include('antareja::partials.stat', ['label' => 'Reserved', 'value' => $stats['reserved'], 'color' => 'tw:text-amber-600 tw:dark:text-amber-400'])
+        @include('antareja::partials.stat', ['label' => 'Used', 'value' => $stats['used'], 'color' => 'ant-text-info'])
+        @include('antareja::partials.stat', ['label' => 'Static', 'value' => $stats['static'], 'color' => 'ant-text-ok'])
+        @include('antareja::partials.stat', ['label' => 'Reserved', 'value' => $stats['reserved'], 'color' => 'ant-text-warn'])
         @include('antareja::partials.stat', ['label' => 'Pool DHCP', 'value' => $stats['dhcp_pool'], 'hint' => $subnet->dhcpStartText() ? $subnet->dhcpStartText() . ' – ' . $subnet->dhcpEndText() : null])
-        @include('antareja::partials.stat', ['label' => 'Available', 'value' => $subnet->family === 4 ? number_format($stats['available']) : '—', 'color' => 'tw:text-emerald-600 tw:dark:text-emerald-400'])
-        @include('antareja::partials.stat', ['label' => 'Utilisasi', 'value' => $stats['utilization'] . '%', 'color' => $stats['utilization'] >= 90 ? 'tw:text-red-600' : ($stats['utilization'] >= 80 ? 'tw:text-amber-600' : null)])
+        @include('antareja::partials.stat', ['label' => 'Available', 'value' => $subnet->family === 4 ? number_format($stats['available']) : '—', 'color' => 'ant-text-ok'])
+        @include('antareja::partials.stat', ['label' => 'Utilisasi', 'value' => $stats['utilization'] . '%', 'color' => $stats['utilization'] >= 90 ? 'ant-text-crit' : ($stats['utilization'] >= 80 ? 'ant-text-warn' : null)])
     </div>
 
     <div class="row">
@@ -84,14 +77,14 @@
                                 <td><a href="{{ route('antareja.ipam.addresses.edit', $ip) }}" class="tw:font-mono">{{ $ip->address_text }}</a></td>
                                 <td><span class="label {{ $ip->statusMeta()['class'] }}">{{ $ip->statusMeta()['label'] }}</span>
                                     @if($ip->conflict)<span class="label label-danger" title="{{ $ip->conflict_detail }}">Konflik</span>@endif</td>
-                                <td>{{ $ip->hostname }} <span class="tw:text-xs tw:text-gray-500">{{ $ip->description }}</span></td>
-                                <td>@if($ip->device)<a href="{{ route('antareja.inventory.show', $ip->device_id) }}">{{ $ip->device->displayName() }}</a>@if($ip->port) <span class="tw:text-xs tw:text-gray-500">{{ $ip->port->getShortLabel() }}</span>@endif @else — @endif</td>
+                                <td>{{ $ip->hostname }} <span class="tw:text-xs ant-muted">{{ $ip->description }}</span></td>
+                                <td>@if($ip->device)<a href="{{ route('antareja.inventory.show', $ip->device_id) }}">{{ $ip->device->displayName() }}</a>@if($ip->port) <span class="tw:text-xs ant-muted">{{ $ip->port->getShortLabel() }}</span>@endif @else — @endif</td>
                                 <td class="tw:font-mono tw:text-xs">{{ $ip->mac_address ?? '—' }}</td>
                                 <td class="tw:text-xs">{{ \Antareja\Models\IpAddress::SOURCES[$ip->source] ?? $ip->source }}</td>
                                 <td class="tw:text-xs">{{ $ip->last_seen_at?->diffForHumans() ?? '—' }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="tw:text-center tw:py-4 tw:text-gray-500">Belum ada IP tercatat di subnet ini.</td></tr>
+                            <tr><td colspan="7" class="tw:text-center tw:py-4 ant-muted">Belum ada IP tercatat di subnet ini.</td></tr>
                         @endforelse
                         </tbody>
                     </table>
@@ -144,7 +137,7 @@
 
             @if($free)
             <div class="panel panel-default">
-                <div class="panel-heading"><strong>IP kosong</strong> <span class="tw:text-xs tw:text-gray-500">(20 pertama)</span></div>
+                <div class="panel-heading"><strong>IP kosong</strong> <span class="tw:text-xs ant-muted">(20 pertama)</span></div>
                 <div class="panel-body tw:flex tw:flex-wrap tw:gap-1 tw:font-mono tw:text-xs">
                     @foreach($free as $f)<span class="label label-default">{{ $f }}</span>@endforeach
                 </div>

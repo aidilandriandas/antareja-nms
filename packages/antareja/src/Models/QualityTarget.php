@@ -14,11 +14,11 @@ class QualityTarget extends Model
     use Auditable;
 
     public const STATUS = [
-        'ok' => ['label' => 'Baik', 'class' => 'label-success'],
-        'warning' => ['label' => 'Menurun', 'class' => 'label-warning'],
-        'critical' => ['label' => 'Buruk', 'class' => 'label-danger'],
-        'down' => ['label' => 'Putus', 'class' => 'label-danger'],
-        'unknown' => ['label' => 'Belum ada data', 'class' => 'label-default'],
+        'ok' => ['label' => 'Baik', 'class' => 'label-success', 'tone' => 'ok'],
+        'warning' => ['label' => 'Menurun', 'class' => 'label-warning', 'tone' => 'warn'],
+        'critical' => ['label' => 'Buruk', 'class' => 'label-danger', 'tone' => 'crit'],
+        'down' => ['label' => 'Putus', 'class' => 'label-danger', 'tone' => 'down'],
+        'unknown' => ['label' => 'Belum ada data', 'class' => 'label-default', 'tone' => 'unknown'],
     ];
 
     protected $table = 'ant_quality_targets';

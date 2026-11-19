@@ -1,0 +1,182 @@
+/*
+ * ANTAREJA NMS — penerapan design system ANTAREJA NMS ke aplikasi.
+ * 1) token & font (tokens.css)  2) tampilan bersama (font, navbar)  3) komponen ant-*  4) halaman ANTAREJA
+ * Dimuat lewat resources/css/app.css (Vite). Tidak memakai @layer agar menang dari stylesheet LibreNMS
+ * yang dimuat tanpa layer; properti yang juga diatur kelas tw:* sengaja tidak disentuh.
+ */
+@import "./tokens.css";
+
+/* ---------------------------------------------------------------- 2. tampilan bersama */
+/* html body: lebih spesifik dari "body" di html/css/styles.css LibreNMS yang dimuat sesudahnya */
+html body {
+    font-family: var(--ant-font-sans);
+}
+code, kbd, pre, samp { font-family: var(--ant-font-mono); }
+
+/* Navbar: logo + wordmark, garis identitas merah di bawah */
+.navbar.navbar-default { border-bottom: 2px solid var(--ant-brand); }
+.navbar-brand { display: inline-flex !important; align-items: center; gap: 10px; }
+.navbar-brand img { height: 32px !important; width: 32px; max-width: none !important; }
+.navbar-brand:has(img)::after {
+    content: "ANTAREJA";
+    font: 700 21px/1 var(--ant-font-display);
+    letter-spacing: .02em;
+    color: var(--ant-ink);
+}
+
+/* Fokus keyboard yang terlihat di seluruh aplikasi */
+a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--ant-focus) !important;
+    outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- 3. komponen */
+.ant-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--ant-space-1);
+    height: var(--ant-control-md); padding: 0 var(--ant-space-4); border-radius: var(--ant-radius-md);
+    font: 500 14px/20px var(--ant-font-sans); border: 1px solid transparent; cursor: pointer; white-space: nowrap; text-decoration: none; }
+.ant-btn--sm { height: var(--ant-control-sm); padding: 0 var(--ant-space-3); font-size: 13px; }
+.ant-btn--touch { height: var(--ant-control-touch); padding: 0 var(--ant-space-6); font-size: 15px; }
+
+.ant-badge { display: inline-flex; align-items: center; gap: var(--ant-space-1); height: 22px; padding: 0 var(--ant-space-2) 0 6px;
+    border-radius: var(--ant-radius-pill); font: 500 12px/16px var(--ant-font-sans); white-space: nowrap; vertical-align: middle; }
+.ant-badge svg { width: 12px; height: 12px; flex: none; }
+.ant-badge--ok { background: var(--ant-ok-tint); color: var(--ant-ok); }
+.ant-badge--warn { background: var(--ant-warn-tint); color: var(--ant-warn); }
+.ant-badge--crit { background: var(--ant-crit-tint); color: var(--ant-crit); }
+.ant-badge--down { background: var(--ant-crit-strong); color: var(--ant-on-crit); }
+.ant-badge--info { background: var(--ant-info-tint); color: var(--ant-info); }
+.ant-badge--unknown { background: var(--ant-surface-sunken); color: var(--ant-ink-muted); }
+.ant-badge--sm { height: 18px; padding: 0 6px 0 4px; font-size: 11px; }
+.ant-badge .ant-icon-cut { fill: var(--ant-surface-raised); }
+
+.ant-stat { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: var(--ant-space-3) var(--ant-space-4);
+    background: var(--ant-surface-raised); border: 1px solid var(--ant-border); border-radius: var(--ant-radius-lg);
+    color: inherit; text-decoration: none !important; }
+a.ant-stat:hover { border-color: var(--ant-border-strong); }
+.ant-stat__label { font: 600 12px/16px var(--ant-font-sans); letter-spacing: .06em; text-transform: uppercase; color: var(--ant-ink-muted); }
+.ant-stat__value { font: 700 32px/36px var(--ant-font-display); font-variant-numeric: tabular-nums; color: var(--ant-ink); }
+.ant-stat__unit { font: 600 16px/20px var(--ant-font-display); color: var(--ant-ink-muted); margin-left: 2px; }
+.ant-stat__hint { font: 400 13px/18px var(--ant-font-sans); color: var(--ant-ink-muted); overflow-wrap: anywhere; }
+.ant-stat--ok .ant-stat__value { color: var(--ant-ok); }
+.ant-stat--warn .ant-stat__value { color: var(--ant-warn); }
+.ant-stat--crit .ant-stat__value { color: var(--ant-crit); }
+
+.ant-alert { display: flex; gap: var(--ant-space-3); align-items: flex-start; padding: var(--ant-space-3) var(--ant-space-4);
+    border-radius: var(--ant-radius-md); margin-bottom: var(--ant-space-4); color: var(--ant-ink); }
+.ant-alert > svg { width: 18px; height: 18px; flex: none; margin-top: 1px; }
+.ant-alert__body { flex: 1; min-width: 0; }
+.ant-alert__body a { color: inherit; text-decoration: underline; font-weight: 500; }
+.ant-alert--info { background: var(--ant-info-tint); } .ant-alert--info > svg { color: var(--ant-info); }
+.ant-alert--ok { background: var(--ant-ok-tint); } .ant-alert--ok > svg { color: var(--ant-ok); }
+.ant-alert--warn { background: var(--ant-warn-tint); } .ant-alert--warn > svg { color: var(--ant-warn); }
+.ant-alert--crit { background: var(--ant-crit-tint); } .ant-alert--crit > svg { color: var(--ant-crit); }
+.ant-alert .ant-icon-cut { fill: var(--ant-surface-raised); }
+
+.ant-progress { display: flex; align-items: center; gap: var(--ant-space-2); min-width: 0; }
+.ant-progress__track { flex: 1; min-width: 56px; max-width: 120px; height: 8px; border-radius: var(--ant-radius-pill); background: var(--ant-surface-sunken); overflow: hidden; }
+.ant-progress__fill { height: 100%; border-radius: var(--ant-radius-pill); background: var(--ant-ok); }
+.ant-progress--warn .ant-progress__fill { background: var(--ant-warn); }
+.ant-progress--crit .ant-progress__fill { background: var(--ant-crit); }
+.ant-progress__value { font: 500 12px/16px var(--ant-font-mono); font-variant-numeric: tabular-nums; color: var(--ant-ink); min-width: 3.5em; text-align: right; }
+
+.ant-data { font-family: var(--ant-font-mono) !important; font-size: 13px; }
+
+/* ---------------------------------------------------------------- 4. halaman ANTAREJA */
+.antareja-page { color: var(--ant-ink); }
+.antareja-page h1, .antareja-page h2 { font-family: var(--ant-font-display); letter-spacing: -.005em; }
+.antareja-page h1 { font-weight: 700; }
+.antareja-page h2 { font-weight: 600; }
+.antareja-page .breadcrumb > li, .antareja-page .breadcrumb > li a { font-size: 13px; }
+.antareja-page .breadcrumb > li a { color: var(--ant-ink-muted); }
+.antareja-page .breadcrumb > .active { color: var(--ant-ink-muted); }
+.antareja-page .tw\:font-mono, .antareja-page .font-mono { font-family: var(--ant-font-mono) !important; }
+
+/* Panel → gaya Panel design system */
+.antareja-page .panel { background: var(--ant-surface-raised); border: 1px solid var(--ant-border); border-radius: var(--ant-radius-md); box-shadow: none; }
+.antareja-page .panel > .panel-heading { background: transparent; border-bottom: 1px solid var(--ant-border); color: var(--ant-ink); padding: var(--ant-space-3) var(--ant-space-4); border-radius: var(--ant-radius-md) var(--ant-radius-md) 0 0; }
+.antareja-page .panel > .panel-heading strong { font-weight: 600; font-size: 15px; }
+.antareja-page .panel > .panel-footer { background: var(--ant-surface-sunken); border-top: 1px solid var(--ant-border); }
+
+/* Tombol Bootstrap → varian Button */
+.antareja-page .btn { border-radius: var(--ant-radius-md); font-weight: 500; }
+.antareja-page .btn-primary { background: var(--ant-ink); border-color: var(--ant-ink); color: var(--ant-surface-raised); }
+.antareja-page .btn-primary:hover, .antareja-page .btn-primary:focus { background: var(--ant-ink-muted); border-color: var(--ant-ink-muted); color: var(--ant-surface-raised); }
+.antareja-page .btn-default { background: var(--ant-surface-raised); border-color: var(--ant-border-strong); color: var(--ant-ink); }
+.antareja-page .btn-default:hover, .antareja-page .btn-default:focus { background: var(--ant-surface-sunken); color: var(--ant-ink); }
+.antareja-page .btn-success { background: var(--ant-ok); border-color: var(--ant-ok); color: var(--ant-surface-raised); }
+.antareja-page .btn-danger { background: var(--ant-crit-strong); border-color: var(--ant-crit-strong); color: var(--ant-on-crit); }
+.antareja-page .btn-link { color: var(--ant-info); }
+
+/* Label Bootstrap → pil berwarna status (cadangan untuk label yang belum memakai x-antareja::status) */
+.antareja-page .label { display: inline-block; border-radius: var(--ant-radius-pill); padding: 3px 8px; font-weight: 500; font-size: 11px; line-height: 1.3; }
+.antareja-page .label-success { background: var(--ant-ok-tint); color: var(--ant-ok); }
+.antareja-page .label-warning { background: var(--ant-warn-tint); color: var(--ant-warn); }
+.antareja-page .label-danger { background: var(--ant-crit-tint); color: var(--ant-crit); }
+.antareja-page .label-info { background: var(--ant-info-tint); color: var(--ant-info); }
+.antareja-page .label-primary { background: var(--ant-info-tint); color: var(--ant-info); }
+.antareja-page .label-default { background: var(--ant-surface-sunken); color: var(--ant-ink-muted); }
+
+/* Tabel */
+.antareja-page .table > thead > tr > th { font: 600 12px/16px var(--ant-font-sans); letter-spacing: .04em; text-transform: uppercase;
+    color: var(--ant-ink-muted); background: var(--ant-surface-sunken); border-bottom: 1px solid var(--ant-border); white-space: nowrap; }
+.antareja-page .table > tbody > tr > td { border-top-color: var(--ant-border); vertical-align: middle; }
+.antareja-page .table > tbody > tr.active > td { background: var(--ant-surface-sunken); }
+
+/* Form */
+.antareja-page .form-control { border-color: var(--ant-border-strong); border-radius: var(--ant-radius-sm); box-shadow: none; }
+.antareja-page .form-control:focus { border-color: var(--ant-focus); box-shadow: none; }
+.antareja-page label { font-weight: 600; }
+
+/* Tab & badge hitungan */
+.antareja-page .nav-tabs > li.active > a { border-top: 2px solid var(--ant-brand); color: var(--ant-ink); font-weight: 600; }
+.antareja-page .badge { background: var(--ant-surface-sunken); color: var(--ant-ink); font-weight: 600; }
+.antareja-page .nav-tabs > li.active > a .badge { background: var(--ant-ink); color: var(--ant-surface-raised); }
+
+/* Halaman tanpa animasi berlebih */
+@media (prefers-reduced-motion: reduce) { .antareja-page * { transition: none !important; } }
+
+/* Utilitas warna berbasis token (menggantikan warna Tailwind mentah) */
+.ant-muted { color: var(--ant-ink-muted) !important; }
+.ant-text-ok { color: var(--ant-ok) !important; }
+.ant-text-warn { color: var(--ant-warn) !important; }
+.ant-text-crit { color: var(--ant-crit) !important; }
+.ant-text-info { color: var(--ant-info) !important; }
+.ant-card { background: var(--ant-surface-raised); border-color: var(--ant-border) !important; }
+.ant-sunken { background: var(--ant-surface-sunken); }
+
+/* Peta alamat IPAM: status alokasi (bukan kesehatan) */
+.ant-cell--free { background: var(--ant-surface-sunken); box-shadow: inset 0 0 0 1px var(--ant-border); }
+.ant-cell--network { background: var(--ant-border-strong); }
+.ant-cell--gateway { background: var(--ant-ink); }
+.ant-cell--pool { background: var(--ant-info-tint); box-shadow: inset 0 0 0 1px var(--ant-info); }
+.ant-cell--used { background: var(--ant-info); }
+.ant-cell--static { background: var(--ant-ok); }
+.ant-cell--reserved { background: var(--ant-warn); }
+.ant-cell--dhcp { background: var(--ant-info); opacity: .55; }
+.ant-cell--conflict { background: var(--ant-crit-strong); }
+
+/* Prioritas di atas tema gelap LibreNMS (html/css/tw_dark.css memakai selektor .dark ...) */
+html .navbar.navbar-default { border-bottom: 2px solid var(--ant-brand) !important; }
+html .antareja-page .btn-primary, html .antareja-page .btn-primary:hover, html .antareja-page .btn-primary:focus {
+    background: var(--ant-ink) !important; border-color: var(--ant-ink) !important; color: var(--ant-surface-raised) !important; }
+html .antareja-page .btn-primary:hover { background: var(--ant-ink-muted) !important; border-color: var(--ant-ink-muted) !important; }
+html .antareja-page .btn-default { background: var(--ant-surface-raised) !important; border-color: var(--ant-border-strong) !important; color: var(--ant-ink) !important; }
+html .antareja-page .btn-default:hover { background: var(--ant-surface-sunken) !important; }
+html .antareja-page .btn-success { background: var(--ant-ok) !important; border-color: var(--ant-ok) !important; color: var(--ant-surface-raised) !important; }
+html .antareja-page .btn-danger { background: var(--ant-crit-strong) !important; border-color: var(--ant-crit-strong) !important; color: var(--ant-on-crit) !important; }
+html .antareja-page .panel.panel-default > .panel-heading { background: transparent !important; color: var(--ant-ink) !important; border-color: var(--ant-border) !important; }
+html .antareja-page .panel.panel-default { background: var(--ant-surface-raised) !important; border-color: var(--ant-border) !important; }
+html .antareja-page .list-group-item { background: var(--ant-surface-raised); border-color: var(--ant-border); color: var(--ant-ink); }
+html .antareja-page .form-control { background: var(--ant-surface-raised); color: var(--ant-ink); }
+html .antareja-page a.ant-card { color: var(--ant-ink); }
+
+/* Halaman login & 2FA: logo berukuran tetap + wordmark */
+img.logon-logo { width: 96px !important; height: 96px !important; display: block; margin: 8px auto 0; }
+.panel-heading:has(img.logon-logo) { text-align: center; }
+.panel-heading:has(img.logon-logo)::after {
+    content: "ANTAREJA NMS"; display: block; margin-top: 12px;
+    font: 700 28px/32px var(--ant-font-display); letter-spacing: .02em; color: var(--ant-ink);
+}
+/* Tombol Masuk = varian "brand" design system (satu-satunya pemakaian merah merek pada tombol) */
+html .panel:has(img.logon-logo) .btn-primary { background: var(--ant-brand-strong) !important; border-color: var(--ant-brand-strong) !important; color: var(--ant-on-brand) !important; font-weight: 500; }
+html .panel:has(img.logon-logo) .btn-primary:hover { filter: brightness(.88); }

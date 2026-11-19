@@ -10,24 +10,25 @@
             </ol>
             <h1 class="tw:text-2xl tw:font-bold tw:m-0">@yield('heading')</h1>
             @hasSection('subheading')
-                <p class="tw:text-sm tw:text-gray-500 tw:dark:text-gray-400 tw:m-0 tw:mt-1">@yield('subheading')</p>
+                <p class="tw:text-sm ant-muted tw:m-0 tw:mt-1">@yield('subheading')</p>
             @endif
         </div>
         <div class="tw:flex tw:flex-wrap tw:gap-2">@yield('actions')</div>
     </div>
 
     @if(session('antareja_success'))
-        <div class="alert alert-success" role="alert">{{ session('antareja_success') }}</div>
+        <x-antareja::alert tone="ok">{{ session('antareja_success') }}</x-antareja::alert>
     @endif
     @if(session('antareja_error'))
-        <div class="alert alert-danger" role="alert">{{ session('antareja_error') }}</div>
+        <x-antareja::alert tone="crit">{{ session('antareja_error') }}</x-antareja::alert>
     @endif
     @if($errors->any())
-        <div class="alert alert-danger" role="alert">
+        <x-antareja::alert tone="crit">
+            @if($errors->count() === 1){{ $errors->first() }}@else
             <ul class="tw:m-0 tw:pl-5">
                 @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-            </ul>
-        </div>
+            </ul>@endif
+        </x-antareja::alert>
     @endif
 
     @yield('page')

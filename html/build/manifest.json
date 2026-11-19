@@ -19,8 +19,28 @@
     "file": "assets/glyphicons-halflings-regular-DzqM6ju8.woff2",
     "src": "html/fonts/glyphicons-halflings-regular.woff2"
   },
+  "packages/antareja/resources/fonts/BarlowSemiCondensed-Bold.woff2": {
+    "file": "assets/BarlowSemiCondensed-Bold-BpqDG8I9.woff2",
+    "src": "packages/antareja/resources/fonts/BarlowSemiCondensed-Bold.woff2"
+  },
+  "packages/antareja/resources/fonts/BarlowSemiCondensed-SemiBold.woff2": {
+    "file": "assets/BarlowSemiCondensed-SemiBold-BkLiAYu4.woff2",
+    "src": "packages/antareja/resources/fonts/BarlowSemiCondensed-SemiBold.woff2"
+  },
+  "packages/antareja/resources/fonts/IBMPlexMono-Medium.woff2": {
+    "file": "assets/IBMPlexMono-Medium-DCk7SIos.woff2",
+    "src": "packages/antareja/resources/fonts/IBMPlexMono-Medium.woff2"
+  },
+  "packages/antareja/resources/fonts/IBMPlexMono-Regular.woff2": {
+    "file": "assets/IBMPlexMono-Regular-B6RhGwqP.woff2",
+    "src": "packages/antareja/resources/fonts/IBMPlexMono-Regular.woff2"
+  },
+  "packages/antareja/resources/fonts/IBMPlexSans-Variable.woff2": {
+    "file": "assets/IBMPlexSans-Variable-IvpUvPa2.woff2",
+    "src": "packages/antareja/resources/fonts/IBMPlexSans-Variable.woff2"
+  },
   "resources/js/app.js": {
-    "file": "assets/app-BndJgH3U.js",
+    "file": "assets/app-BTbHUWB3.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -28,14 +48,19 @@
       "resources/js/configHighlight.js"
     ],
     "css": [
-      "assets/app-DF93kHB_.css"
+      "assets/app-BH_XHfas.css"
     ],
     "assets": [
       "assets/glyphicons-halflings-regular-BUJKDMgK.eot",
       "assets/glyphicons-halflings-regular-DzqM6ju8.woff2",
       "assets/glyphicons-halflings-regular-BKjkU69z.woff",
       "assets/glyphicons-halflings-regular-DrwTMapi.ttf",
-      "assets/glyphicons-halflings-regular-CSehLiBc.svg"
+      "assets/glyphicons-halflings-regular-CSehLiBc.svg",
+      "assets/BarlowSemiCondensed-SemiBold-BkLiAYu4.woff2",
+      "assets/BarlowSemiCondensed-Bold-BpqDG8I9.woff2",
+      "assets/IBMPlexSans-Variable-IvpUvPa2.woff2",
+      "assets/IBMPlexMono-Regular-B6RhGwqP.woff2",
+      "assets/IBMPlexMono-Medium-DCk7SIos.woff2"
     ]
   },
   "resources/js/configHighlight.js": {

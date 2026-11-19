@@ -1,6 +1,7 @@
 @import './toast.css';
 @import "tailwindcss" prefix(tw);
 @import "../../html/css/bootstrap.min.css" layer(components);
+@import "../../packages/antareja/resources/css/antareja.css"; /* ANTAREJA NMS design system */
 
 @source "../../includes/html/pages/**/*.php";
 @source "../../includes/html/**/*.inc.php";

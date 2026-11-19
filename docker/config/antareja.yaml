@@ -1,5 +1,5 @@
 # ANTAREJA NMS: default branding (diterapkan sekali saat database pertama kali di-seed)
 project_name: 'ANTAREJA NMS'
-# Query string membuat logo dimuat sebagai <img> (SVG eksternal via <use> tidak dirender browser)
-title_image: 'images/antareja/logo.svg?v=1'
-favicon: 'images/antareja/favicon.svg'
+# Logo resmi ANTAREJA (lingkaran merah); wordmark "ANTAREJA" ditambahkan lewat CSS di navbar
+title_image: 'images/antareja/antareja-mark-256.png'
+favicon: 'images/antareja/favicon-32.png'

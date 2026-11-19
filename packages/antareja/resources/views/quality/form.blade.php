@@ -71,7 +71,7 @@
 </form>
 @if($target->exists)
     <form method="post" action="{{ route('antareja.quality.destroy', $target) }}" onsubmit="return confirm('Hapus target dan seluruh data pengukurannya?')">@csrf @method('DELETE')
-        <button class="btn btn-link tw:text-red-600! tw:p-0!"><i class="fa fa-trash"></i> Hapus target</button></form>
+        <button class="btn btn-link ant-text-crit tw:p-0!"><i class="fa fa-trash"></i> Hapus target</button></form>
 @endif
 <script>
     document.getElementById('device_id').addEventListener('change', function () {

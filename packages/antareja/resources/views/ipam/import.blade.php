@@ -38,7 +38,7 @@
                     <td class="tw:text-xs">{{ $c['devices'] }}</td>
                 </tr>
             @empty
-                <tr><td colspan="5" class="tw:text-center tw:py-6 tw:text-gray-500">Tidak ada network baru. Semua network interface sudah terdaftar.</td></tr>
+                <tr><td colspan="5" class="tw:text-center tw:py-6 ant-muted">Tidak ada network baru. Semua network interface sudah terdaftar.</td></tr>
             @endforelse
             </tbody>
         </table>

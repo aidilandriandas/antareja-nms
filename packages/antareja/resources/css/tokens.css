@@ -1,0 +1,95 @@
+/*
+ * ANTAREJA NMS — design tokens (dihasilkan dari tokens.json design system ANTAREJA NMS).
+ * Jangan edit nilai di sini; ubah di design system lalu generate ulang.
+ * Prefix --ant- agar tidak bentrok dengan variabel CSS LibreNMS.
+ * Tema gelap mengikuti kelas .dark yang dipasang LibreNMS pada <html>.
+ */
+@font-face { font-family: 'Barlow Semi Condensed'; src: url('../fonts/BarlowSemiCondensed-SemiBold.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Barlow Semi Condensed'; src: url('../fonts/BarlowSemiCondensed-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'IBM Plex Sans'; src: url('../fonts/IBMPlexSans-Variable.woff2') format('woff2'); font-weight: 400 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'IBM Plex Mono'; src: url('../fonts/IBMPlexMono-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'IBM Plex Mono'; src: url('../fonts/IBMPlexMono-Medium.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+
+:root {
+  --ant-surface: #f6f5f4;
+  --ant-surface-raised: #ffffff;
+  --ant-surface-sunken: #eceae8;
+  --ant-border: #d9d5d2;
+  --ant-border-strong: #857e79;
+  --ant-ink: #1a1716;
+  --ant-ink-muted: #5a534e;
+  --ant-brand: #fe0002;
+  --ant-brand-strong: #cf0002;
+  --ant-on-brand: #ffffff;
+  --ant-brand-text: #c00002;
+  --ant-brand-tint: #fde7e6;
+  --ant-ok: #0b6e63;
+  --ant-ok-tint: #e1f3f0;
+  --ant-warn: #8f4700;
+  --ant-warn-tint: #fcefd9;
+  --ant-crit: #a8101a;
+  --ant-crit-tint: #fbe3e3;
+  --ant-crit-strong: #b3121b;
+  --ant-on-crit: #ffffff;
+  --ant-info: #1f4fc4;
+  --ant-info-tint: #e5ecfc;
+  --ant-focus: #1f4fc4;
+  --ant-loss-0: #16a34a;
+  --ant-loss-5: #0ea5e9;
+  --ant-loss-10: #2563eb;
+  --ant-loss-20: #7c3aed;
+  --ant-loss-50: #db2777;
+  --ant-loss-99: #ea580c;
+  --ant-loss-100: #dc2626;
+  --ant-shadow-popover: 0 4px 16px rgba(26,23,22,0.14);
+  --ant-space-1: 4px;
+  --ant-space-2: 8px;
+  --ant-space-3: 12px;
+  --ant-space-4: 16px;
+  --ant-space-6: 24px;
+  --ant-space-8: 32px;
+  --ant-radius-sm: 4px;
+  --ant-radius-md: 6px;
+  --ant-radius-lg: 10px;
+  --ant-radius-pill: 9999px;
+  --ant-control-sm: 28px;
+  --ant-control-md: 36px;
+  --ant-control-touch: 44px;
+  --ant-font-display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
+  --ant-font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --ant-font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+
+html.dark {
+  --ant-surface: #121110;
+  --ant-surface-raised: #1c1a19;
+  --ant-surface-sunken: #0b0a0a;
+  --ant-border: #34302d;
+  --ant-border-strong: #736c67;
+  --ant-ink: #f4f2f0;
+  --ant-ink-muted: #aba49f;
+  --ant-brand: #fe0002;
+  --ant-brand-strong: #cf0002;
+  --ant-on-brand: #ffffff;
+  --ant-brand-text: #ff6b62;
+  --ant-brand-tint: #3a1110;
+  --ant-ok: #4cc9b8;
+  --ant-ok-tint: #0e2d29;
+  --ant-warn: #f2ae4b;
+  --ant-warn-tint: #36250a;
+  --ant-crit: #ff8a82;
+  --ant-crit-tint: #3b1414;
+  --ant-crit-strong: #b3121b;
+  --ant-on-crit: #ffffff;
+  --ant-info: #8db2ff;
+  --ant-info-tint: #142242;
+  --ant-focus: #8db2ff;
+  --ant-loss-0: #16a34a;
+  --ant-loss-5: #0ea5e9;
+  --ant-loss-10: #2563eb;
+  --ant-loss-20: #7c3aed;
+  --ant-loss-50: #db2777;
+  --ant-loss-99: #ea580c;
+  --ant-loss-100: #dc2626;
+  --ant-shadow-popover: 0 4px 16px rgba(0,0,0,0.55);
+}

@@ -17,7 +17,7 @@
 
 @section('page')
     @if(request('issue') && isset(\Antareja\Services\DataQuality::ISSUES[request('issue')]))
-        <div class="alert alert-warning tw:flex tw:justify-between tw:items-center">
+        <div class="ant-alert ant-alert--warn tw:flex tw:justify-between tw:items-center">
             <span><i class="fa fa-filter"></i> Filter data quality: <strong>{{ \Antareja\Services\DataQuality::ISSUES[request('issue')]['label'] }}</strong></span>
             <a href="{{ route('antareja.inventory.index', request()->except(['issue', 'page'])) }}" class="btn btn-xs btn-default">Hapus filter</a>
         </div>
@@ -97,7 +97,7 @@
         </div>
     </form>
 
-    <div class="tw:text-sm tw:text-gray-500 tw:mb-2">{{ number_format($details->total()) }} perangkat</div>
+    <div class="tw:text-sm ant-muted tw:mb-2">{{ number_format($details->total()) }} perangkat</div>
 
     <div class="table-responsive">
         <table class="table table-hover table-condensed">
@@ -113,30 +113,28 @@
                 @php($completeness = $detail->completeness(isset($mapped[$detail->device_id])))
                 <tr>
                     <td>
-                        @if($device?->disabled)<span class="label label-default" title="Disabled">&nbsp;</span>
-                        @elseif($device?->status)<span class="label label-success" title="Online">&nbsp;</span>
-                        @else<span class="label label-danger" title="Offline">&nbsp;</span>@endif
+                        <x-antareja::device-status :device="$device" />
                     </td>
                     <td>
                         <a href="{{ route('antareja.inventory.show', $detail->device_id) }}"><strong>{{ $device?->displayName() }}</strong></a>
-                        @if($device && $device->displayName() !== $device->hostname)<br><span class="tw:text-xs tw:text-gray-500">{{ $device->hostname }}</span>@endif
+                        @if($device && $device->displayName() !== $device->hostname)<br><span class="tw:text-xs ant-muted">{{ $device->hostname }}</span>@endif
                     </td>
                     <td class="tw:whitespace-nowrap">{{ $device?->overwrite_ip ?: $device?->ip }}</td>
                     <td>
                         @if($detail->category){{ $detail->categoryLabel() }}
-                        @elseif($detail->suggested_category)<span class="tw:text-gray-500" title="Saran otomatis, belum dikonfirmasi">{{ \Antareja\Support\Catalog::label(\Antareja\Support\Catalog::DEVICE_CATEGORIES, $detail->suggested_category) }}?</span>
+                        @elseif($detail->suggested_category)<span class="ant-muted" title="Saran otomatis, belum dikonfirmasi">{{ \Antareja\Support\Catalog::label(\Antareja\Support\Catalog::DEVICE_CATEGORIES, $detail->suggested_category) }}?</span>
                         @else — @endif
                     </td>
-                    <td>{{ $device?->os }}<br><span class="tw:text-xs tw:text-gray-500">{{ \Illuminate\Support\Str::limit($detail->effectiveModel(), 40) }}</span></td>
+                    <td>{{ $device?->os }}<br><span class="tw:text-xs ant-muted">{{ \Illuminate\Support\Str::limit($detail->effectiveModel(), 40) }}</span></td>
                     <td class="tw:text-xs">{{ $detail->effectiveSerial() ?? '—' }}</td>
-                    <td>{{ $detail->site?->code ?? '—' }}@if($detail->area)<br><span class="tw:text-xs tw:text-gray-500">{{ $detail->area->name }}</span>@endif</td>
+                    <td>{{ $detail->site?->code ?? '—' }}@if($detail->area)<br><span class="tw:text-xs ant-muted">{{ $detail->area->name }}</span>@endif</td>
                     <td class="tw:text-xs">{{ \Illuminate\Support\Str::limit(trim(($detail->installation_location ?? '') . ' ' . ($detail->rack ? "Rak {$detail->rack}" : '')), 40) ?: '—' }}</td>
                     <td>{{ $detail->picLabel() ?? '—' }}</td>
                     <td>@include('antareja::partials.verification-badge', ['status' => $detail->displayStatus($completeness)])</td>
                     <td>@include('antareja::partials.completeness', ['completeness' => $completeness])</td>
                 </tr>
             @empty
-                <tr><td colspan="11" class="tw:text-center tw:py-6 tw:text-gray-500">Tidak ada perangkat yang cocok dengan filter.</td></tr>
+                <tr><td colspan="11" class="tw:text-center tw:py-6 ant-muted">Tidak ada perangkat yang cocok dengan filter.</td></tr>
             @endforelse
             </tbody>
         </table>

@@ -9,7 +9,7 @@
     <li class="active">{{ $target->name }}</li>
 @endsection
 @section('heading')
-    {{ $target->name }} <span class="label {{ $target->statusMeta()['class'] }}">{{ $target->statusMeta()['label'] }}</span>
+    {{ $target->name }} <x-antareja::status :status="$target->statusMeta()['tone']">{{ $target->statusMeta()['label'] }}</x-antareja::status>
 @endsection
 @section('subheading', implode(' · ', array_filter([$target->host, $target->group_name, $target->site?->code, $target->pings . ' ping / 5 menit'])))
 
@@ -25,18 +25,18 @@
 @section('page')
     <div class="tw:grid tw:grid-cols-1 tw:md:grid-cols-3 tw:gap-3 tw:mb-4">
         @foreach($summaries as $period => $sum)
-            <div class="tw:rounded-lg tw:border tw:border-gray-200 tw:dark:border-dark-gray-200 tw:bg-white tw:dark:bg-dark-gray-300 tw:p-3">
-                <div class="tw:text-xs tw:font-semibold tw:uppercase tw:text-gray-500 tw:mb-2">{{ $period }}</div>
+            <div class="tw:rounded-lg tw:border ant-card tw:p-3">
+                <div class="tw:text-xs tw:font-semibold tw:uppercase ant-muted tw:mb-2">{{ $period }}</div>
                 @if($sum['samples'] === 0)
-                    <div class="tw:text-sm tw:text-gray-500">Belum ada data.</div>
+                    <div class="tw:text-sm ant-muted">Belum ada data.</div>
                 @else
                     <div class="tw:grid tw:grid-cols-3 tw:gap-2 tw:text-sm">
-                        <div><div class="tw:text-xs tw:text-gray-500">Median rata-rata</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['avg_median'] ?? '—' }} ms</div></div>
-                        <div><div class="tw:text-xs tw:text-gray-500">P95 median</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['p95_median'] ?? '—' }} ms</div></div>
-                        <div><div class="tw:text-xs tw:text-gray-500">Jitter</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['avg_jitter'] ?? '—' }} ms</div></div>
-                        <div><div class="tw:text-xs tw:text-gray-500">Avg loss</div><div class="tw:font-semibold tw:tabular-nums" style="color: {{ $chart::lossColor($sum['avg_loss']) }}">{{ $sum['avg_loss'] }}%</div></div>
-                        <div><div class="tw:text-xs tw:text-gray-500">Uptime jalur</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['availability'] }}%</div></div>
-                        <div><div class="tw:text-xs tw:text-gray-500">Sampel</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['samples'] }}</div></div>
+                        <div><div class="tw:text-xs ant-muted">Median rata-rata</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['avg_median'] ?? '—' }} ms</div></div>
+                        <div><div class="tw:text-xs ant-muted">P95 median</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['p95_median'] ?? '—' }} ms</div></div>
+                        <div><div class="tw:text-xs ant-muted">Jitter</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['avg_jitter'] ?? '—' }} ms</div></div>
+                        <div><div class="tw:text-xs ant-muted">Avg loss</div><div class="tw:font-semibold tw:tabular-nums" style="color: {{ $chart::lossColor($sum['avg_loss']) }}">{{ $sum['avg_loss'] }}%</div></div>
+                        <div><div class="tw:text-xs ant-muted">Uptime jalur</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['availability'] }}%</div></div>
+                        <div><div class="tw:text-xs ant-muted">Sampel</div><div class="tw:font-semibold tw:tabular-nums">{{ $sum['samples'] }}</div></div>
                     </div>
                 @endif
             </div>
@@ -49,11 +49,11 @@
                 <strong>{{ $labels[$range] }}</strong>
                 <a href="{{ route('antareja.quality.show', [$target, 'range' => $range]) }}" class="tw:text-xs">perbesar</a>
             </div>
-            <div class="panel-body tw:text-gray-700 tw:dark:text-gray-200">{!! $chart::render($series, (float) $target->latency_warn_ms) !!}</div>
+            <div class="panel-body ">{!! $chart::render($series, (float) $target->latency_warn_ms) !!}</div>
         </div>
     @endforeach
 
-    <div class="tw:flex tw:flex-wrap tw:gap-4 tw:text-xs tw:text-gray-500 tw:mb-4">
+    <div class="tw:flex tw:flex-wrap tw:gap-4 tw:text-xs ant-muted tw:mb-4">
         <span class="tw:inline-flex tw:items-center tw:gap-1"><span class="tw:inline-block tw:w-4 tw:h-3 tw:bg-gray-400/40"></span>p10–p90</span>
         <span class="tw:inline-flex tw:items-center tw:gap-1"><span class="tw:inline-block tw:w-4 tw:h-3 tw:bg-gray-500/70"></span>p25–p75</span>
         <span>Median (warna = loss):</span>
@@ -74,13 +74,13 @@
                         @forelse($recent as $s)
                             <tr>
                                 <td class="tw:whitespace-nowrap">{{ $s->measured_at->format('d M H:i') }}</td>
-                                <td class="tw:text-right" style="color: {{ $chart::lossColor($s->loss_pct) }}">{{ number_format($s->loss_pct, 0) }}% <span class="tw:text-xs tw:text-gray-500">({{ $s->received }}/{{ $s->sent }})</span></td>
+                                <td class="tw:text-right" style="color: {{ $chart::lossColor($s->loss_pct) }}">{{ number_format($s->loss_pct, 0) }}% <span class="tw:text-xs ant-muted">({{ $s->received }}/{{ $s->sent }})</span></td>
                                 @foreach(['min_ms', 'median_ms', 'avg_ms', 'p90_ms', 'max_ms', 'jitter_ms'] as $f)
                                     <td class="tw:text-right tw:tabular-nums">{{ $s->$f !== null ? number_format($s->$f, 2) : '—' }}</td>
                                 @endforeach
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="tw:text-center tw:text-gray-500 tw:py-4">Belum ada sampel.</td></tr>
+                            <tr><td colspan="8" class="tw:text-center ant-muted tw:py-4">Belum ada sampel.</td></tr>
                         @endforelse
                         </tbody>
                     </table>
@@ -96,7 +96,7 @@
                     <tr><td>Packet loss</td><td>≥ {{ rtrim(rtrim(number_format($target->loss_warn_pct, 2), '0'), '.') }}%</td><td>≥ {{ rtrim(rtrim(number_format($target->loss_crit_pct, 2), '0'), '.') }}%</td></tr>
                     <tr><td>Jitter</td><td>≥ {{ $target->jitter_warn_ms }} ms</td><td>—</td></tr>
                 </table>
-                <div class="panel-body tw:text-xs tw:text-gray-500">Status "Putus" bila seluruh ping dalam satu siklus hilang. Perubahan status dicatat ke event log perangkat terkait.</div>
+                <div class="panel-body tw:text-xs ant-muted">Status "Putus" bila seluruh ping dalam satu siklus hilang. Perubahan status dicatat ke event log perangkat terkait.</div>
             </div>
             @if($target->description)<div class="panel panel-default"><div class="panel-body tw:text-sm">{{ $target->description }}</div></div>@endif
         </div>

@@ -48,8 +48,8 @@
                                     @foreach(array_unique(array_merge(array_keys($log->old_values ?? []), array_keys($log->new_values ?? []))) as $field)
                                         <tr>
                                             <td class="tw:font-mono">{{ $field }}</td>
-                                            <td class="tw:text-red-600 tw:dark:text-red-400">{{ is_scalar($log->old_values[$field] ?? null) ? \Illuminate\Support\Str::limit((string) $log->old_values[$field], 60) : json_encode($log->old_values[$field] ?? null) }}</td>
-                                            <td class="tw:text-emerald-700 tw:dark:text-emerald-400">{{ is_scalar($log->new_values[$field] ?? null) ? \Illuminate\Support\Str::limit((string) $log->new_values[$field], 60) : json_encode($log->new_values[$field] ?? null) }}</td>
+                                            <td class="ant-text-crit">{{ is_scalar($log->old_values[$field] ?? null) ? \Illuminate\Support\Str::limit((string) $log->old_values[$field], 60) : json_encode($log->old_values[$field] ?? null) }}</td>
+                                            <td class="ant-text-ok">{{ is_scalar($log->new_values[$field] ?? null) ? \Illuminate\Support\Str::limit((string) $log->new_values[$field], 60) : json_encode($log->new_values[$field] ?? null) }}</td>
                                         </tr>
                                     @endforeach
                                 </table>
@@ -59,7 +59,7 @@
                     <td class="tw:text-xs">{{ $log->ip_address }}</td>
                 </tr>
             @empty
-                <tr><td colspan="6" class="tw:text-center tw:py-6 tw:text-gray-500">Belum ada catatan.</td></tr>
+                <tr><td colspan="6" class="tw:text-center tw:py-6 ant-muted">Belum ada catatan.</td></tr>
             @endforelse
             </tbody>
         </table>

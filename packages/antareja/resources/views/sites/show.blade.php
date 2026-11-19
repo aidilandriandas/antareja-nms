@@ -52,14 +52,12 @@
                             <td>{{ $detail->categoryLabel() }}</td>
                             <td>{{ $detail->area?->name ?? '—' }}</td>
                             <td>
-                                @if($detail->device?->disabled)<span class="label label-default">Disabled</span>
-                                @elseif($detail->device?->status)<span class="label label-success">Online</span>
-                                @else<span class="label label-danger">Offline</span>@endif
+                                <x-antareja::device-status :device="$detail->device" />
                             </td>
                             <td>@include('antareja::partials.verification-badge', ['status' => $detail->displayStatus()])</td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="tw:text-center tw:text-gray-500 tw:py-4">Belum ada perangkat di site ini.</td></tr>
+                        <tr><td colspan="5" class="tw:text-center ant-muted tw:py-4">Belum ada perangkat di site ini.</td></tr>
                     @endforelse
                     </tbody>
                 </table>

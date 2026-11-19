@@ -15,7 +15,7 @@
         <div class="panel-body form-inline tw:flex tw:flex-wrap tw:gap-2 tw:items-center">
             <input name="group_name" class="form-control" maxlength="64" placeholder="Grup (kosong = per kategori)">
             <button class="btn btn-primary" @disabled($candidates->isEmpty())><i class="fa fa-plus"></i> Tambahkan yang dicentang</button>
-            <span class="tw:text-xs tw:text-gray-500">Ambang default: latency 100/250 ms, loss 5/20%, jitter 30 ms. Bisa diubah per target.</span>
+            <span class="tw:text-xs ant-muted">Ambang default: latency 100/250 ms, loss 5/20%, jitter 30 ms. Bisa diubah per target.</span>
         </div>
     </div>
     <table class="table table-condensed table-hover">
@@ -28,10 +28,10 @@
                 <td class="tw:font-mono tw:text-xs">{{ $d->device->overwrite_ip ?: $d->device->ip }}</td>
                 <td>{{ $d->categoryLabel() }}</td>
                 <td>{{ $d->site?->code ?? '—' }}</td>
-                <td>{!! $d->device->status ? '<span class="label label-success">Online</span>' : '<span class="label label-danger">Offline</span>' !!}</td>
+                <td><x-antareja::device-status :device="$d->device" /></td>
             </tr>
         @empty
-            <tr><td colspan="6" class="tw:text-center tw:py-6 tw:text-gray-500">Tidak ada kandidat. Pastikan kategori perangkat sudah diisi di Device Inventory.</td></tr>
+            <tr><td colspan="6" class="tw:text-center tw:py-6 ant-muted">Tidak ada kandidat. Pastikan kategori perangkat sudah diisi di Device Inventory.</td></tr>
         @endforelse
         </tbody>
     </table>

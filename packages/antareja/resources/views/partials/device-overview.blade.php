@@ -38,7 +38,7 @@
                 </tr>
             </table>
             @if($completeness['missing'])
-                <div class="panel-body tw:py-2! tw:text-xs tw:text-gray-500">Belum diisi: {{ implode(', ', $completeness['missing']) }}</div>
+                <div class="panel-body tw:py-2! tw:text-xs ant-muted">Belum diisi: {{ implode(', ', $completeness['missing']) }}</div>
             @endif
         </div>
     </div>

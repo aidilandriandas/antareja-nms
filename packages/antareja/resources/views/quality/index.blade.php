@@ -16,7 +16,7 @@
 
 @section('page')
     <div class="tw:grid tw:grid-cols-2 tw:md:grid-cols-5 tw:gap-3 tw:mb-4">
-        @foreach(['ok' => 'tw:text-emerald-600 tw:dark:text-emerald-400', 'warning' => 'tw:text-amber-600 tw:dark:text-amber-400', 'critical' => 'tw:text-red-600 tw:dark:text-red-400', 'down' => 'tw:text-red-700 tw:dark:text-red-400', 'unknown' => 'tw:text-gray-500'] as $key => $color)
+        @foreach(['ok' => 'ant-text-ok', 'warning' => 'ant-text-warn', 'critical' => 'ant-text-crit', 'down' => 'ant-text-crit', 'unknown' => 'ant-muted'] as $key => $color)
             @include('antareja::partials.stat', ['label' => \Antareja\Models\QualityTarget::STATUS[$key]['label'], 'value' => $counts[$key] ?? 0, 'color' => $color, 'href' => route('antareja.quality.index', ['status' => $key])])
         @endforeach
     </div>
@@ -55,7 +55,7 @@
                         @unless($target->enabled)<span class="label label-default">nonaktif</span>@endunless</td>
                     <td class="tw:font-mono tw:text-xs">{{ $target->host }}</td>
                     <td>{{ $target->site?->code ?? '—' }}</td>
-                    <td><span class="label {{ $target->statusMeta()['class'] }}">{{ $target->statusMeta()['label'] }}</span></td>
+                    <td><x-antareja::status :status="$target->statusMeta()['tone']">{{ $target->statusMeta()['label'] }}</x-antareja::status></td>
                     <td class="tw:text-right tw:tabular-nums">{{ $s?->median_ms !== null ? number_format($s->median_ms, 1) . ' ms' : '—' }}</td>
                     <td class="tw:text-right tw:tabular-nums" style="color: {{ $s ? $chart::lossColor($s->loss_pct) : 'inherit' }}">{{ $s ? number_format($s->loss_pct, 0) . '%' : '—' }}</td>
                     <td class="tw:text-right tw:tabular-nums">{{ $s?->jitter_ms !== null ? number_format($s->jitter_ms, 1) . ' ms' : '—' }}</td>
@@ -65,7 +65,7 @@
                     <td class="tw:text-xs">{{ $target->last_checked_at?->diffForHumans() ?? 'belum' }}</td>
                 </tr>
             @empty
-                <tr><td colspan="11" class="tw:text-center tw:py-6 tw:text-gray-500">
+                <tr><td colspan="11" class="tw:text-center tw:py-6 ant-muted">
                     Belum ada target. @can('ant-quality.update')<a href="{{ route('antareja.quality.bulk') }}">Tambahkan link kritis dari inventaris</a>.@endcan
                 </td></tr>
             @endforelse
@@ -73,7 +73,7 @@
         </table>
     </div>
 
-    <div class="tw:flex tw:flex-wrap tw:gap-3 tw:text-xs tw:text-gray-500 tw:mt-2">
+    <div class="tw:flex tw:flex-wrap tw:gap-3 tw:text-xs ant-muted tw:mt-2">
         <span>Warna loss:</span>
         @foreach($chart::LOSS_COLORS as [$max, $color, $label])
             <span class="tw:inline-flex tw:items-center tw:gap-1"><span class="tw:inline-block tw:w-3 tw:h-1 tw:rounded" style="background: {{ $color }}"></span>{{ $label }}</span>

@@ -175,7 +175,7 @@
                     </div>
                 </div>
             </div>
-            <p class="tw:text-xs tw:text-gray-500">* Wajib sebelum perangkat dapat diverifikasi: kategori, site, PIC.</p>
+            <p class="tw:text-xs ant-muted">* Wajib sebelum perangkat dapat diverifikasi: kategori, site, PIC.</p>
         </div>
     </div>
 </form>

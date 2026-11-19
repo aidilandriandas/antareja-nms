@@ -76,7 +76,7 @@
 </form>
 @if($subnet->exists)
     <form method="post" action="{{ route('antareja.ipam.subnets.destroy', $subnet) }}" onsubmit="return confirm('Hapus subnet {{ $subnet->cidr }}? Record IP tetap disimpan.')">
-        @csrf @method('DELETE')<button class="btn btn-link tw:text-red-600! tw:p-0!"><i class="fa fa-trash"></i> Hapus subnet</button>
+        @csrf @method('DELETE')<button class="btn btn-link ant-text-crit tw:p-0!"><i class="fa fa-trash"></i> Hapus subnet</button>
     </form>
 @endif
 @endsection

@@ -15,7 +15,7 @@
 
 @section('page')
     @if($ip->conflict)
-        <div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> {{ $ip->conflict_detail }}</div>
+        <div class="ant-alert ant-alert--crit"><i class="fa fa-exclamation-triangle"></i> {{ $ip->conflict_detail }}</div>
     @endif
     <div class="row">
         <div class="col-lg-5">
@@ -66,7 +66,7 @@
                     <p class="help-block tw:text-xs">Status Static / Reserved / DHCP tidak ditimpa sinkronisasi otomatis. Reserved yang aktif di jaringan ditandai konflik.</p>
                 </div>
                 <div class="panel-footer tw:flex tw:justify-between">
-                    <button form="release-form" class="btn btn-link tw:text-red-600! tw:p-0!" onclick="return confirm('Lepas IP {{ $ip->address_text }} dari IPAM?')"><i class="fa fa-unlink"></i> Lepas IP</button>
+                    <button form="release-form" class="btn btn-link ant-text-crit tw:p-0!" onclick="return confirm('Lepas IP {{ $ip->address_text }} dari IPAM?')"><i class="fa fa-unlink"></i> Lepas IP</button>
                     <button class="btn btn-primary"><i class="fa fa-save"></i> Simpan</button>
                 </div>
             </form>
@@ -81,10 +81,10 @@
                     @forelse($ip->history as $h)
                         <li class="list-group-item tw:text-sm">
                             <strong>{{ \Antareja\Models\IpHistory::EVENTS[$h->event] ?? $h->event }}</strong> — {{ $h->description }}
-                            <div class="tw:text-xs tw:text-gray-500">{{ $h->created_at->format('d M Y H:i') }} · {{ $h->user?->username ?? 'sinkronisasi otomatis' }}</div>
+                            <div class="tw:text-xs ant-muted">{{ $h->created_at->format('d M Y H:i') }} · {{ $h->user?->username ?? 'sinkronisasi otomatis' }}</div>
                         </li>
                     @empty
-                        <li class="list-group-item tw:text-gray-500">Belum ada histori.</li>
+                        <li class="list-group-item ant-muted">Belum ada histori.</li>
                     @endforelse
                 </ul>
             </div>

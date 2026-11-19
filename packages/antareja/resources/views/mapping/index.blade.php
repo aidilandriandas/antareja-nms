@@ -15,7 +15,7 @@
 @endsection
 
 @section('page')
-    <div class="alert alert-info tw:text-sm">
+    <div class="ant-alert ant-alert--info tw:text-sm">
         <i class="fa fa-info-circle"></i>
         Konvensi: <strong>A = upstream / parent</strong> (switch, router, NVR, base station), <strong>B = downstream / child</strong>.
         Mapping terverifikasi bertipe uplink, AP, CCTV, PTMP, dan NVR otomatis menjadi dependensi parent/child,

@@ -17,6 +17,7 @@ use Antareja\Support\RoleBlueprints;
 use App\Models\Device;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
@@ -27,7 +28,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.3.0';
+    public const VERSION = '0.3.1';
 
     public function register(): void
     {
@@ -46,6 +47,8 @@ class AntarejaServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'antareja');
+        // Komponen design system: <x-antareja::status>, <x-antareja::stat>, <x-antareja::progress>, <x-antareja::alert>
+        Blade::anonymousComponentPath(__DIR__ . '/../resources/views/components', 'antareja');
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         if ($this->app->runningInConsole()) {

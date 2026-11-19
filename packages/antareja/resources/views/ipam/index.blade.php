@@ -18,19 +18,19 @@
 @section('page')
     <div class="tw:grid tw:grid-cols-2 tw:md:grid-cols-3 tw:xl:grid-cols-6 tw:gap-3 tw:mb-4">
         @include('antareja::partials.stat', ['label' => 'Total IP (IPv4, usable)', 'value' => number_format($totals['usable'])])
-        @include('antareja::partials.stat', ['label' => 'Used', 'value' => number_format($totals['used']), 'color' => 'tw:text-blue-600 tw:dark:text-blue-400'])
-        @include('antareja::partials.stat', ['label' => 'Reserved', 'value' => number_format($totals['reserved']), 'color' => 'tw:text-amber-600 tw:dark:text-amber-400'])
-        @include('antareja::partials.stat', ['label' => 'Pool DHCP', 'value' => number_format($totals['dhcp_pool']), 'color' => 'tw:text-cyan-700 tw:dark:text-cyan-400'])
-        @include('antareja::partials.stat', ['label' => 'Available', 'value' => number_format($totals['available']), 'color' => 'tw:text-emerald-600 tw:dark:text-emerald-400'])
+        @include('antareja::partials.stat', ['label' => 'Used', 'value' => number_format($totals['used']), 'color' => 'ant-text-info'])
+        @include('antareja::partials.stat', ['label' => 'Reserved', 'value' => number_format($totals['reserved']), 'color' => 'ant-text-warn'])
+        @include('antareja::partials.stat', ['label' => 'Pool DHCP', 'value' => number_format($totals['dhcp_pool']), 'color' => 'ant-text-info'])
+        @include('antareja::partials.stat', ['label' => 'Available', 'value' => number_format($totals['available']), 'color' => 'ant-text-ok'])
         @include('antareja::partials.stat', ['label' => 'Utilisasi', 'value' => ($totals['usable'] ? number_format(100 * $totals['allocated'] / $totals['usable'], 1) : 0) . '%', 'hint' => $totals['subnets'] . ' subnet'])
     </div>
 
     @if($conflicts > 0)
-        <div class="alert alert-danger"><i class="fa fa-exclamation-triangle"></i> {{ $conflicts }} IP konflik terdeteksi (duplikat / MAC berbeda / reserved tetapi aktif).
+        <div class="ant-alert ant-alert--crit"><i class="fa fa-exclamation-triangle"></i> {{ $conflicts }} IP konflik terdeteksi (duplikat / MAC berbeda / reserved tetapi aktif).
             <a href="{{ route('antareja.ipam.conflicts') }}">Periksa &rarr;</a></div>
     @endif
     @if($orphans > 0)
-        <div class="alert alert-warning"><i class="fa fa-question-circle"></i> {{ $orphans }} IP perangkat berada di luar subnet IPAM.
+        <div class="ant-alert ant-alert--warn"><i class="fa fa-question-circle"></i> {{ $orphans }} IP perangkat berada di luar subnet IPAM.
             <a href="{{ route('antareja.ipam.conflicts') }}#orphans">Lihat</a> atau <a href="{{ route('antareja.ipam.import') }}">impor subnet</a>.</div>
     @endif
 
@@ -75,12 +75,12 @@
                     <td>@if($s['conflicts'])<span class="label label-danger" title="IP konflik">{{ $s['conflicts'] }} konflik</span>@endif</td>
                 </tr>
             @empty
-                <tr><td colspan="12" class="tw:text-center tw:py-6 tw:text-gray-500">
+                <tr><td colspan="12" class="tw:text-center tw:py-6 ant-muted">
                     Belum ada subnet. @can('ant-ipam.update')<a href="{{ route('antareja.ipam.subnets.create') }}">Tambah subnet</a> atau <a href="{{ route('antareja.ipam.import') }}">impor dari perangkat</a>.@endcan
                 </td></tr>
             @endforelse
             </tbody>
         </table>
     </div>
-    <p class="tw:text-xs tw:text-gray-500">Utilisasi = (IP tercatat + pool DHCP) ÷ IP usable. Available = IP yang tidak tercatat, bukan gateway, dan di luar pool DHCP.</p>
+    <p class="tw:text-xs ant-muted">Utilisasi = (IP tercatat + pool DHCP) ÷ IP usable. Available = IP yang tidak tercatat, bukan gateway, dan di luar pool DHCP.</p>
 @endsection
