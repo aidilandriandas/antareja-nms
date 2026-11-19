@@ -16,6 +16,7 @@ class RoleBlueprints
      */
     public const PERMISSIONS = [
         'ant-dashboard' => ['ant-dashboard.technical', 'ant-dashboard.management'],
+        'ant-site' => ['ant-site.view', 'ant-site.update'],
         'ant-inventory' => ['ant-inventory.view', 'ant-inventory.update', 'ant-inventory.delete'],
         'ant-discovery' => ['ant-discovery.view', 'ant-discovery.approve'],
         'ant-mapping' => ['ant-mapping.view', 'ant-mapping.update', 'ant-mapping.verify'],
@@ -54,6 +55,7 @@ class RoleBlueprints
             'tools.oui',
             // ANTAREJA
             'ant-dashboard.technical',
+            'ant-site.view', 'ant-site.update',
             'ant-inventory.view', 'ant-inventory.update',
             'ant-discovery.view', 'ant-discovery.approve',
             'ant-mapping.view', 'ant-mapping.update', 'ant-mapping.verify',
@@ -79,6 +81,7 @@ class RoleBlueprints
             'link.viewAll', 'link.view',
             // ANTAREJA
             'ant-dashboard.technical',
+            'ant-site.view',
             'ant-inventory.view', 'ant-inventory.update',
             'ant-discovery.view',
             'ant-mapping.view', 'ant-mapping.update',
@@ -96,6 +99,8 @@ class RoleBlueprints
             'outage.viewAll', 'outage.view',
             // ANTAREJA
             'ant-dashboard.management',
+            'ant-site.view',
+            'ant-inventory.view',
             'ant-incident.view',
             'ant-sla.view',
             'ant-maintenance.view',

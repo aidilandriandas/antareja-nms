@@ -2,22 +2,41 @@
 
 namespace Antareja;
 
+use Antareja\Console\SuggestMappingsCommand;
+use Antareja\Console\SyncInventoryCommand;
 use Antareja\Console\SyncRolesCommand;
+use Antareja\Listeners\AuthAuditSubscriber;
+use Antareja\Plugins\DeviceOverview;
+use Antareja\Services\AttachmentService;
+use Antareja\Services\InventorySync;
 use Antareja\Support\ModuleRegistry;
 use Antareja\Support\RoleBlueprints;
+use App\Models\Device;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use LibreNMS\Interfaces\Plugins\Hooks\DeviceOverviewHook;
+use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.1.0';
+    public const VERSION = '0.2.0';
 
     public function register(): void
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/antareja.php', 'antareja');
         $this->app->singleton(ModuleRegistry::class);
+
+        // Disk untuk evidence: /data/antareja di container (ikut volume & backup)
+        $this->app['config']->set('filesystems.disks.' . AttachmentService::DISK, [
+            'driver' => 'local',
+            'root' => AttachmentService::root(),
+            'throw' => false,
+        ]);
     }
 
     public function boot(): void
@@ -27,15 +46,48 @@ class AntarejaServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncRolesCommand::class]);
+            $this->commands([SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class]);
         }
 
-        // Menu ANTAREJA di navbar utama (disisipkan oleh patch kecil di layouts/menu.blade.php)
         View::composer('antareja::partials.navbar', function ($view): void {
             $view->with('antareja_modules', $this->app->make(ModuleRegistry::class)->menuFor(Auth::user()));
         });
 
+        Event::subscribe(AuthAuditSubscriber::class);
+
+        // Device baru di LibreNMS (discovery / tambah manual) langsung masuk antrean verifikasi
+        Device::created(function (Device $device): void {
+            try {
+                $this->app->make(InventorySync::class)->ensure($device);
+            } catch (\Throwable $e) {
+                Log::error('ANTAREJA: gagal membuat detail inventaris: ' . $e->getMessage());
+            }
+        });
+
+        $this->registerSchedule();
+        $this->registerPluginHooks();
         $this->registerPermissionLabels();
+    }
+
+    private function registerSchedule(): void
+    {
+        $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
+            // Jaring pengaman bila ada device yang dibuat tanpa event Eloquent
+            $schedule->command('antareja:sync-inventory')->everyFifteenMinutes()->withoutOverlapping()->runInBackground();
+            $schedule->command('antareja:suggest-mappings')->hourlyAt(17)->withoutOverlapping()->runInBackground();
+        });
+    }
+
+    private function registerPluginHooks(): void
+    {
+        $this->app->booted(function (): void {
+            try {
+                $this->app->make(PluginManagerInterface::class)
+                    ->publishHook('antareja', DeviceOverviewHook::class, DeviceOverview::class);
+            } catch (\Throwable $e) {
+                Log::error('ANTAREJA: gagal mendaftarkan hook device overview: ' . $e->getMessage());
+            }
+        });
     }
 
     /**
@@ -46,6 +98,7 @@ class AntarejaServiceProvider extends ServiceProvider
         $this->app->booted(function (): void {
             $titles = [
                 'ant-dashboard' => 'ANTAREJA · Dashboard',
+                'ant-site' => 'ANTAREJA · Site & Area',
                 'ant-inventory' => 'ANTAREJA · Device Inventory',
                 'ant-discovery' => 'ANTAREJA · Device Discovery',
                 'ant-mapping' => 'ANTAREJA · Device Mapping',
@@ -73,7 +126,7 @@ class AntarejaServiceProvider extends ServiceProvider
                 foreach ($permissions as $permission) {
                     $action = substr($permission, strlen($group) + 1);
                     $label = $actions[$action] ?? ucfirst($action);
-                    $lines["permissions.$group.$action"] = ['label' => $label, 'description' => $titles[$group] . ' — ' . $label];
+                    $lines["permissions.$group.$action"] = ['label' => $label, 'description' => ($titles[$group] ?? $group) . ' — ' . $label];
                 }
             }
             Lang::addLines($lines, 'en');

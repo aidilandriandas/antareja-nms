@@ -6,8 +6,9 @@ Satu aplikasi web untuk monitoring dan manajemen infrastruktur ICT tambang, diba
 LibreNMS (fork), dengan fitur ala Zabbix (problem, trigger, SLA) dan SmokePing (kualitas jaringan)
 yang diimplementasikan ulang secara native.
 
-- Versi: **0.1.0 (Fase 0 — Fondasi)** · Basis: LibreNMS 26.10.2 · Lisensi: GPLv3
+- Versi: **0.2.0 (Fase 1 — Inventaris tambang)** · Basis: LibreNMS 26.10.2 · Lisensi: GPLv3
 - Instalasi: [`docs/INSTALL.md`](docs/INSTALL.md)
+- Fase 1 (Site, Inventory, Discovery, Mapping, Audit, Data Quality): [`docs/FASE-1-Inventaris.md`](docs/FASE-1-Inventaris.md)
 - Arsitektur: [`docs/ANTAREJA-NMS-Arsitektur-v0.2-Fork.md`](docs/ANTAREJA-NMS-Arsitektur-v0.2-Fork.md)
 - Perubahan terhadap LibreNMS: [`MODIFICATIONS.md`](MODIFICATIONS.md)
 

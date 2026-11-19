@@ -231,6 +231,10 @@ groups:
         - wireless-sensor.delete
 
     # --- ANTAREJA NMS ---
+    ant-site:
+        - ant-site.view
+        - ant-site.update
+
     ant-dashboard:
         - ant-dashboard.technical
         - ant-dashboard.management

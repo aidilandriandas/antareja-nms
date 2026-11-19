@@ -3,6 +3,7 @@
 namespace Antareja\Http\Controllers;
 
 use Antareja\AntarejaServiceProvider;
+use Antareja\Services\DataQuality;
 use Antareja\Support\ModuleRegistry;
 use App\Models\Device;
 use Illuminate\Http\Request;
@@ -12,7 +13,7 @@ use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    public function __invoke(Request $request, ModuleRegistry $modules): View
+    public function __invoke(Request $request, ModuleRegistry $modules, DataQuality $quality): View
     {
         $stats = null;
         if (Gate::allows('viewAny', Device::class)) {
@@ -26,11 +27,13 @@ class HomeController extends Controller
         }
 
         $all = $modules->all();
+        $issues = $request->user()->can('ant-inventory.view') ? $quality->counts($request->user()) : null;
 
         return view('antareja::pages.home', [
             'modules' => $all,
             'counts' => $all->countBy('status'),
             'stats' => $stats,
+            'issues' => $issues,
             'version' => AntarejaServiceProvider::VERSION,
         ]);
     }

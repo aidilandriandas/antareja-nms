@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
 
 /**
- * Daftar resmi 17 modul ANTAREJA NMS beserta status pengembangannya.
+ * Daftar modul ANTAREJA NMS (17 menu utama + Site & Area dan Audit Log) beserta status pengembangannya.
  *
  * status:
  *  - native  : sudah tersedia penuh dari inti LibreNMS
@@ -31,12 +31,14 @@ class ModuleRegistry
                 'Dashboard teknis tersedia dari LibreNMS. Dashboard manajemen & ringkasan per site menyusul.'),
             $this->module('network-monitoring', 'Network Monitoring', 'server', self::NATIVE, 'devices', 0,
                 'Status perangkat, SNMP v2c/v3, ICMP, uptime, sensor hardware.', 'device.viewAll'),
-            $this->module('device-inventory', 'Device Inventory', 'boxes', self::PARTIAL, 'inventory', 1,
-                'Inventaris hardware (entPhysical) tersedia. Serial, PIC, rak, garansi, evidence menyusul.', 'inventory.viewAll'),
-            $this->module('device-discovery', 'Device Discovery', 'search-plus', self::PLANNED, null, 1,
-                'Auto-discovery + alur verifikasi engineer (Pending → Verified/Rejected).'),
-            $this->module('device-mapping', 'Device Mapping', 'project-diagram', self::PARTIAL, 'device-dependencies', 1,
-                'Relasi parent/child tersedia. Mapping port ↔ device terverifikasi & saran LLDP/FDB menyusul.', 'device.viewAll'),
+            $this->module('sites', 'Site & Area', 'map-marked-alt', self::NATIVE, 'antareja/sites', 1,
+                'Site operasional tambang (office, workshop, plant, pit, ROM, jetty, mess, remote) dan area di dalamnya.', 'ant-site.view'),
+            $this->module('device-inventory', 'Device Inventory', 'boxes', self::NATIVE, 'antareja/inventory', 1,
+                'Inventaris resmi: kategori, site/area, rak, serial, PIC, garansi, lifecycle, evidence, kelengkapan data, export CSV.', 'ant-inventory.view'),
+            $this->module('device-discovery', 'Device Discovery', 'search-plus', self::NATIVE, 'antareja/discovery', 1,
+                'Auto-discovery + verifikasi engineer: Discovered → Pending → Verified / Incomplete / Rejected / Retired.', 'ant-discovery.view'),
+            $this->module('device-mapping', 'Device Mapping', 'project-diagram', self::NATIVE, 'antareja/mapping', 1,
+                'Relasi port ↔ perangkat terverifikasi, saran dari LLDP/CDP & tabel MAC, sinkron dependensi alert parent/child.', 'ant-mapping.view'),
             $this->module('ipam', 'IP Address Management', 'network-wired', self::PLANNED, null, 2,
                 'Subnet, VLAN, alokasi IP, reserved, duplikat, histori, utilisasi.'),
             $this->module('interface-monitoring', 'Interface Monitoring', 'ethernet', self::NATIVE, 'ports', 0,
@@ -61,6 +63,8 @@ class ModuleRegistry
                 'Pengguna, role & permission granular.', 'user.view'),
             $this->module('system', 'System Administration', 'cogs', self::NATIVE, 'settings', 0,
                 'Pengaturan global, poller, validasi sistem.', 'settings.view'),
+            $this->module('audit', 'Audit Log', 'history', self::NATIVE, 'antareja/audit', 1,
+                'Jejak login, perubahan inventaris, IP, mapping, site, verifikasi, evidence.', 'ant-audit.view'),
         ]);
     }
 

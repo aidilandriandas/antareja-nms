@@ -20,7 +20,7 @@
             </p>
         </div>
         <div class="tw:text-sm tw:text-gray-500 tw:dark:text-gray-400">
-            Versi {{ $version }} · Fase 0 (Fondasi)
+            Versi {{ $version }} · Fase 1 (Inventaris tambang)
         </div>
     </div>
 
@@ -35,6 +35,27 @@
             <a href="{{ $link }}" class="tw:block tw:no-underline tw:hover:no-underline tw:rounded-lg tw:border tw:border-gray-200 tw:dark:border-dark-gray-200 tw:bg-white tw:dark:bg-dark-gray-300 tw:p-4">
                 <div class="tw:text-sm tw:text-gray-500 tw:dark:text-gray-400">{{ $label }}</div>
                 <div class="tw:text-3xl tw:font-semibold {{ $color }}">{{ number_format($value) }}</div>
+            </a>
+        @endforeach
+    </div>
+    @endif
+
+    @if($issues !== null)
+    @php($sevClass = ['danger' => 'tw:text-red-600 tw:dark:text-red-400', 'warning' => 'tw:text-amber-600 tw:dark:text-amber-400', 'info' => 'tw:text-sky-700 tw:dark:text-sky-400'])
+    <div class="tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3 tw:mb-3">
+        <h2 class="tw:text-xl tw:font-semibold tw:m-0">Kualitas Data Inventaris</h2>
+        @if($issues['suggested_links'] > 0)
+            <a href="{{ route('antareja.mapping.index', ['status' => 'suggested']) }}" class="tw:text-sm">{{ $issues['suggested_links'] }} saran mapping menunggu verifikasi &rarr;</a>
+        @endif
+    </div>
+    <div class="tw:grid tw:grid-cols-2 tw:md:grid-cols-3 tw:xl:grid-cols-4 tw:gap-3 tw:mb-8">
+        @foreach(\Antareja\Services\DataQuality::ISSUES as $key => $issue)
+            @php($n = $issues[$key] ?? 0)
+            <a href="{{ route('antareja.inventory.index', ['issue' => $key]) }}"
+               class="tw:flex tw:items-center tw:gap-3 tw:no-underline tw:hover:no-underline tw:rounded-lg tw:border tw:border-gray-200 tw:dark:border-dark-gray-200 tw:bg-white tw:dark:bg-dark-gray-300 tw:px-3 tw:py-2">
+                <i class="fa fa-{{ $issue['icon'] }} fa-fw fa-lg {{ $n > 0 ? $sevClass[$issue['severity']] : 'tw:text-gray-400' }}" aria-hidden="true"></i>
+                <span class="tw:grow tw:text-sm tw:text-gray-700 tw:dark:text-gray-200">{{ $issue['label'] }}</span>
+                <span class="tw:text-lg tw:font-semibold tw:tabular-nums {{ $n > 0 ? $sevClass[$issue['severity']] : 'tw:text-gray-400' }}">{{ $n }}</span>
             </a>
         @endforeach
     </div>
@@ -75,8 +96,8 @@
 
     <h2 class="tw:text-xl tw:font-semibold tw:mb-3">Roadmap</h2>
     <ol class="tw:list-decimal tw:pl-6 tw:text-sm tw:space-y-1 tw:mb-8">
-        <li><strong>Fase 0 — Fondasi:</strong> fork LibreNMS, paket ANTAREJA, branding, role, Docker Compose. <em>(sedang berjalan)</em></li>
-        <li><strong>Fase 1 — Inventaris tambang:</strong> Site/Area, detail device, verifikasi discovery, device mapping, audit log.</li>
+        <li><strong>Fase 0 — Fondasi:</strong> fork LibreNMS, paket ANTAREJA, branding, role, Docker Compose. <em>(selesai)</em></li>
+        <li><strong>Fase 1 — Inventaris tambang:</strong> Site/Area, detail device, verifikasi discovery, device mapping, audit log, data quality. <em>(sedang berjalan)</em></li>
         <li><strong>Fase 2 — IPAM &amp; Kualitas:</strong> IPAM, Quality Probe + grafik smoke, Wireless &amp; CCTV.</li>
         <li><strong>Fase 3 — Problem &amp; Incident:</strong> korelasi event, incident, eskalasi, kalender maintenance.</li>
         <li><strong>Fase 4 — SLA &amp; Laporan:</strong> service tree, trigger expression, SLA bulanan, dashboard manajemen, export.</li>

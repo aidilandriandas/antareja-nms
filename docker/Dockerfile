@@ -14,6 +14,9 @@ COPY --chown=librenms:librenms . /opt/librenms/
 # Branding default ANTAREJA (dibaca ConfigSeeder saat seed pertama)
 COPY --chown=librenms:librenms docker/config/antareja.yaml /opt/librenms/database/seeders/config/antareja.yaml
 
+# Init container: siapkan /data/antareja (evidence) setiap start
+COPY --chmod=755 docker/init/03a-antareja.sh /etc/cont-init.d/03a-antareja.sh
+
 # Daftarkan namespace Antareja\ ke autoloader (tanpa unduhan; vendor bawaan image dipakai ulang)
 # lalu bangun ulang cache Laravel (image resmi menyertakan cache route/event yang belum berisi route ANTAREJA).
 RUN cd /opt/librenms \
