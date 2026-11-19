@@ -230,6 +230,60 @@ groups:
         - wireless-sensor.update
         - wireless-sensor.delete
 
+    # --- ANTAREJA NMS ---
+    ant-dashboard:
+        - ant-dashboard.technical
+        - ant-dashboard.management
+
+    ant-inventory:
+        - ant-inventory.view
+        - ant-inventory.update
+        - ant-inventory.delete
+
+    ant-discovery:
+        - ant-discovery.view
+        - ant-discovery.approve
+
+    ant-mapping:
+        - ant-mapping.view
+        - ant-mapping.update
+        - ant-mapping.verify
+
+    ant-ipam:
+        - ant-ipam.view
+        - ant-ipam.update
+
+    ant-cctv:
+        - ant-cctv.view
+        - ant-cctv.update
+
+    ant-quality:
+        - ant-quality.view
+        - ant-quality.update
+
+    ant-incident:
+        - ant-incident.view
+        - ant-incident.create
+        - ant-incident.update
+        - ant-incident.close
+
+    ant-sla:
+        - ant-sla.view
+        - ant-sla.update
+
+    ant-maintenance:
+        - ant-maintenance.view
+        - ant-maintenance.update
+        - ant-maintenance.approve
+
+    ant-report:
+        - ant-report.view
+        - ant-report.export
+
+    ant-audit:
+        - ant-audit.view
+
+
 hidden:
     - customoid.update
     - customoid.create

@@ -111,7 +111,8 @@
             "LibreNMS\\Plugins\\": "html/plugins",
             "LibreNMS\\Tests\\": "tests",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Antareja\\": "packages/antareja/src/"
         },
         "classmap": [
             "vendor/dapphp/radius"

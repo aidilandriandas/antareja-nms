@@ -4,6 +4,7 @@
 
 @source "../../includes/html/pages/**/*.php";
 @source "../../includes/html/**/*.inc.php";
+@source "../../packages/antareja/resources/views/**/*.blade.php"; /* ANTAREJA NMS */
 @custom-variant dark (&:where(.dark, .dark *));
 @layer base {
     button:not(:disabled),

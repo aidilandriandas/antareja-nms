@@ -1,0 +1,4 @@
+# Rahasia & data lokal deployment — jangan di-commit
+.env
+certs/
+backups/

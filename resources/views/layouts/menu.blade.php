@@ -13,6 +13,8 @@
 
         <div class="collapse navbar-collapse" id="navHeaderCollapse" style="max-height: calc(100vh - 50px)">
             <ul class="nav navbar-nav">
+{{-- ANTAREJA NMS --}}
+                @includeIf('antareja::partials.navbar')
 {{-- Overview --}}
                 <li class="dropdown">
                     <a href="{{ url('overview') }}" class="dropdown-toggle" data-hover="dropdown"
