@@ -31,6 +31,17 @@ class HomeController extends Controller
         if ($issues !== null && $request->user()->can('ant-ipam.view')) {
             $issues['ip_conflicts'] = \Antareja\Models\IpAddress::where('conflict', true)->count();
         }
+        $ops = null;
+        if ($request->user()->can('ant-problem.view')) {
+            $open = \Antareja\Models\Problem::open();
+            $ops = [
+                'problems' => (clone $open)->whereNull('suppressed_reason')->count(),
+                'high' => (clone $open)->whereNull('suppressed_reason')->whereIn('severity', ['high', 'disaster'])->count(),
+                'unacked' => (clone $open)->whereNull('suppressed_reason')->whereNull('acknowledged_at')->count(),
+                'incidents' => \Antareja\Models\Incident::active()->count(),
+                'maintenance' => \Antareja\Models\MaintenanceWindow::whereIn('status', ['planned', 'in_progress'])->where('starts_at', '<=', now())->where('ends_at', '>=', now())->count(),
+            ];
+        }
         $qualityProblems = $request->user()->can('ant-quality.view')
             ? \Antareja\Models\QualityTarget::with('site')->where('enabled', true)->whereIn('last_status', ['warning', 'critical', 'down'])->orderByRaw("FIELD(last_status, 'down', 'critical', 'warning')")->limit(8)->get()
             : null;
@@ -41,6 +52,7 @@ class HomeController extends Controller
             'stats' => $stats,
             'issues' => $issues,
             'qualityProblems' => $qualityProblems,
+            'ops' => $ops,
             'version' => AntarejaServiceProvider::VERSION,
         ]);
     }

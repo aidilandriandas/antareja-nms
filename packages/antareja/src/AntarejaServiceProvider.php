@@ -3,6 +3,7 @@
 namespace Antareja;
 
 use Antareja\Console\IpamSyncCommand;
+use Antareja\Console\ProblemsCommand;
 use Antareja\Console\QualityMaintenanceCommand;
 use Antareja\Console\QualityProbeCommand;
 use Antareja\Console\SuggestMappingsCommand;
@@ -28,7 +29,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.3.1';
+    public const VERSION = '0.4.0';
 
     public function register(): void
     {
@@ -54,7 +55,7 @@ class AntarejaServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
-                IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class,
+                IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class, ProblemsCommand::class,
             ]);
         }
 
@@ -87,6 +88,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $schedule->command('antareja:ipam-sync')->everyFifteenMinutes()->withoutOverlapping()->runInBackground();
             $schedule->command('antareja:quality-probe')->everyFiveMinutes()->withoutOverlapping(10)->runInBackground();
             $schedule->command('antareja:quality-maintenance')->dailyAt('00:20')->withoutOverlapping()->runInBackground();
+            $schedule->command('antareja:problems')->everyMinute()->withoutOverlapping(5)->runInBackground();
         });
     }
 
@@ -117,7 +119,9 @@ class AntarejaServiceProvider extends ServiceProvider
                 'ant-ipam' => 'ANTAREJA · IP Address Management',
                 'ant-cctv' => 'ANTAREJA · CCTV Infrastructure',
                 'ant-quality' => 'ANTAREJA · Network Quality',
+                'ant-problem' => 'ANTAREJA · Event & Alert Center',
                 'ant-incident' => 'ANTAREJA · Incident Management',
+                'ant-escalation' => 'ANTAREJA · Eskalasi & Notifikasi',
                 'ant-sla' => 'ANTAREJA · SLA Management',
                 'ant-maintenance' => 'ANTAREJA · Maintenance',
                 'ant-report' => 'ANTAREJA · Reports',
@@ -126,7 +130,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $actions = [
                 'technical' => 'Technical dashboard', 'management' => 'Management dashboard',
                 'view' => 'View', 'update' => 'Create / edit', 'delete' => 'Delete', 'create' => 'Create',
-                'approve' => 'Approve', 'verify' => 'Verify', 'close' => 'Close', 'export' => 'Export',
+                'approve' => 'Approve', 'verify' => 'Verify', 'close' => 'Close', 'export' => 'Export', 'acknowledge' => 'Acknowledge',
             ];
 
             // Pastikan file terjemahan asli sudah dimuat dulu agar tidak tertimpa.

@@ -68,6 +68,12 @@ class AttachmentController extends Controller
         if ($attachment->attachable_type === 'device') {
             $device = Device::find($attachment->attachable_id);
             abort_unless($device && Gate::allows('view', $device), 403);
+        } elseif ($attachment->attachable_type === 'incident') {
+            abort_unless(Gate::allows('ant-incident.view'), 403);
+        } elseif ($attachment->attachable_type === 'maintenance') {
+            abort_unless(Gate::allows('ant-maintenance.view'), 403);
+        } else {
+            abort(403);
         }
     }
 }

@@ -15,6 +15,12 @@
 
 @section('actions')
     <a href="{{ url('device/' . $device->device_id) }}" class="btn btn-default"><i class="fa fa-chart-line"></i> Monitoring</a>
+    @can('ant-incident.create')
+        <a href="{{ route('antareja.incidents.create', ['device' => $device->device_id]) }}" class="btn btn-default"><i class="fa fa-fire-extinguisher"></i> Buat incident</a>
+    @endcan
+    @can('ant-maintenance.update')
+        <a href="{{ route('antareja.maintenance.create', ['device' => $device->device_id]) }}" class="btn btn-default"><i class="fa fa-tools"></i> Jadwalkan maintenance</a>
+    @endcan
     @can('ant-inventory.update')
         <a href="{{ route('antareja.inventory.edit', $device) }}" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit inventaris</a>
     @endcan

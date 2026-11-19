@@ -5,10 +5,14 @@ use Antareja\Http\Controllers\AttachmentController;
 use Antareja\Http\Controllers\AuditLogController;
 use Antareja\Http\Controllers\CctvController;
 use Antareja\Http\Controllers\DiscoveryController;
+use Antareja\Http\Controllers\EscalationController;
 use Antareja\Http\Controllers\HomeController;
+use Antareja\Http\Controllers\IncidentController;
 use Antareja\Http\Controllers\InventoryController;
 use Antareja\Http\Controllers\IpamController;
+use Antareja\Http\Controllers\MaintenanceController;
 use Antareja\Http\Controllers\MappingController;
+use Antareja\Http\Controllers\ProblemController;
 use Antareja\Http\Controllers\QualityController;
 use Antareja\Http\Controllers\SiteController;
 use Antareja\Http\Controllers\WirelessController;
@@ -122,6 +126,64 @@ Route::middleware(['web', 'auth'])
         // Wireless & CCTV
         Route::get('wireless', [WirelessController::class, 'index'])->middleware('can:ant-inventory.view')->name('wireless.index');
         Route::get('cctv', [CctvController::class, 'index'])->middleware('can:ant-cctv.view')->name('cctv.index');
+
+        // Event & Alert Center (problem)
+        Route::middleware('can:ant-problem.view')->group(function (): void {
+            Route::get('problems', [ProblemController::class, 'index'])->name('problems.index');
+            Route::get('problems/{problem}', [ProblemController::class, 'show'])->whereNumber('problem')->name('problems.show');
+        });
+        Route::middleware('can:ant-problem.acknowledge')->group(function (): void {
+            Route::post('problems/{problem}/acknowledge', [ProblemController::class, 'acknowledge'])->name('problems.acknowledge');
+            Route::post('problems/acknowledge', [ProblemController::class, 'bulkAcknowledge'])->name('problems.bulk-acknowledge');
+            Route::post('problems/sync', [ProblemController::class, 'sync'])->middleware('throttle:6,1')->name('problems.sync');
+        });
+        Route::middleware('can:ant-incident.create')->group(function (): void {
+            Route::post('problems/{problem}/incident', [ProblemController::class, 'createIncident'])->name('problems.incident');
+            Route::post('problems/{problem}/link', [ProblemController::class, 'linkIncident'])->name('problems.link');
+        });
+
+        // Incident Management
+        Route::middleware('can:ant-incident.view')->group(function (): void {
+            Route::get('incidents', [IncidentController::class, 'index'])->name('incidents.index');
+            Route::get('incidents/{incident}', [IncidentController::class, 'show'])->whereNumber('incident')->name('incidents.show');
+        });
+        Route::middleware('can:ant-incident.create')->group(function (): void {
+            Route::get('incidents/create', [IncidentController::class, 'create'])->name('incidents.create');
+            Route::post('incidents', [IncidentController::class, 'store'])->name('incidents.store');
+        });
+        Route::middleware('can:ant-incident.update')->group(function (): void {
+            Route::put('incidents/{incident}', [IncidentController::class, 'update'])->name('incidents.update');
+            Route::post('incidents/{incident}/transition', [IncidentController::class, 'transition'])->name('incidents.transition');
+            Route::post('incidents/{incident}/notes', [IncidentController::class, 'note'])->name('incidents.note');
+            Route::post('incidents/{incident}/assign', [IncidentController::class, 'assign'])->name('incidents.assign');
+            Route::post('incidents/{incident}/attachments', [IncidentController::class, 'attach'])->name('incidents.attach');
+        });
+
+        // Eskalasi & notifikasi
+        Route::get('escalation', [EscalationController::class, 'index'])->middleware('can:ant-escalation.view')->name('escalation.index');
+        Route::middleware('can:ant-escalation.update')->group(function (): void {
+            Route::get('escalation/create', [EscalationController::class, 'create'])->name('escalation.create');
+            Route::post('escalation', [EscalationController::class, 'store'])->name('escalation.store');
+            Route::get('escalation/{policy}/edit', [EscalationController::class, 'edit'])->name('escalation.edit');
+            Route::put('escalation/{policy}', [EscalationController::class, 'update'])->name('escalation.update');
+            Route::delete('escalation/{policy}', [EscalationController::class, 'destroy'])->name('escalation.destroy');
+            Route::post('escalation/{policy}/test', [EscalationController::class, 'test'])->middleware('throttle:6,1')->name('escalation.test');
+        });
+
+        // Maintenance
+        Route::middleware('can:ant-maintenance.view')->group(function (): void {
+            Route::get('maintenance', [MaintenanceController::class, 'index'])->name('maintenance.index');
+            Route::get('maintenance/{window}', [MaintenanceController::class, 'show'])->whereNumber('window')->name('maintenance.show');
+        });
+        Route::middleware('can:ant-maintenance.update')->group(function (): void {
+            Route::get('maintenance/create', [MaintenanceController::class, 'create'])->name('maintenance.create');
+            Route::post('maintenance', [MaintenanceController::class, 'store'])->name('maintenance.store');
+            Route::get('maintenance/{window}/edit', [MaintenanceController::class, 'edit'])->name('maintenance.edit');
+            Route::put('maintenance/{window}', [MaintenanceController::class, 'update'])->name('maintenance.update');
+            Route::post('maintenance/{window}/complete', [MaintenanceController::class, 'complete'])->name('maintenance.complete');
+            Route::post('maintenance/{window}/cancel', [MaintenanceController::class, 'cancel'])->name('maintenance.cancel');
+            Route::post('maintenance/{window}/attachments', [MaintenanceController::class, 'attach'])->name('maintenance.attach');
+        });
 
         // Audit log
         Route::get('audit', [AuditLogController::class, 'index'])->middleware('can:ant-audit.view')->name('audit.index');

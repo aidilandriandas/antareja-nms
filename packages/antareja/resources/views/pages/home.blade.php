@@ -20,7 +20,7 @@
             </p>
         </div>
         <div class="tw:text-sm ant-muted">
-            Versi {{ $version }} · Fase 2 (IPAM &amp; Kualitas Jaringan)
+            Versi {{ $version }} · Fase 3 (Problem &amp; Incident)
         </div>
     </div>
 
@@ -30,6 +30,16 @@
         <x-antareja::stat label="Online" :value="number_format($stats['up'], 0, ',', '.')" tone="ok" :href="url('devices/state=up')" />
         <x-antareja::stat label="Offline" :value="number_format($stats['down'], 0, ',', '.')" :tone="$stats['down'] > 0 ? 'crit' : 'neutral'" :href="url('devices/state=down')" />
         <x-antareja::stat label="Disabled / ignored" :value="number_format($stats['disabled'], 0, ',', '.')" :href="url('devices/disabled=1')" />
+    </div>
+    @endif
+
+    @if($ops)
+    <div class="tw:grid tw:grid-cols-2 tw:lg:grid-cols-5 tw:gap-3 tw:mb-6">
+        <x-antareja::stat label="Problem aktif" :value="$ops['problems']" :tone="$ops['problems'] ? 'warn' : 'neutral'" :href="route('antareja.problems.index')" />
+        <x-antareja::stat label="High / Disaster" :value="$ops['high']" :tone="$ops['high'] ? 'crit' : 'neutral'" :href="route('antareja.problems.index', ['severity' => 'high'])" />
+        <x-antareja::stat label="Belum di-ack" :value="$ops['unacked']" :tone="$ops['unacked'] ? 'warn' : 'neutral'" :href="route('antareja.problems.index', ['ack' => 'no'])" />
+        <x-antareja::stat label="Incident aktif" :value="$ops['incidents']" :tone="$ops['incidents'] ? 'warn' : 'neutral'" :href="route('antareja.incidents.index')" />
+        <x-antareja::stat label="Maintenance berlangsung" :value="$ops['maintenance']" :href="route('antareja.maintenance.index')" />
     </div>
     @endif
 
@@ -113,8 +123,8 @@
     <ol class="tw:list-decimal tw:pl-6 tw:text-sm tw:space-y-1 tw:mb-8">
         <li><strong>Fase 0 — Fondasi:</strong> fork LibreNMS, paket ANTAREJA, branding, role, Docker Compose. <em>(selesai)</em></li>
         <li><strong>Fase 1 — Inventaris tambang:</strong> Site/Area, detail device, verifikasi discovery, device mapping, audit log, data quality. <em>(selesai)</em></li>
-        <li><strong>Fase 2 — IPAM &amp; Kualitas:</strong> IPAM, Quality Probe + grafik smoke, Wireless &amp; CCTV. <em>(sedang berjalan)</em></li>
-        <li><strong>Fase 3 — Problem &amp; Incident:</strong> korelasi event, incident, eskalasi, kalender maintenance.</li>
+        <li><strong>Fase 2 — IPAM &amp; Kualitas:</strong> IPAM, Quality Probe + grafik smoke, Wireless &amp; CCTV. <em>(selesai)</em></li>
+        <li><strong>Fase 3 — Problem &amp; Incident:</strong> korelasi event, incident, eskalasi, kalender maintenance. <em>(selesai)</em></li>
         <li><strong>Fase 4 — SLA &amp; Laporan:</strong> service tree, trigger expression, SLA bulanan, dashboard manajemen, export.</li>
         <li><strong>Fase 5 — Lanjutan:</strong> work order, change &amp; config tracking, capacity, fiber optic, AI.</li>
     </ol>

@@ -265,6 +265,14 @@ groups:
         - ant-quality.view
         - ant-quality.update
 
+    ant-problem:
+        - ant-problem.view
+        - ant-problem.acknowledge
+
+    ant-escalation:
+        - ant-escalation.view
+        - ant-escalation.update
+
     ant-incident:
         - ant-incident.view
         - ant-incident.create
