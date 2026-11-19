@@ -12,7 +12,7 @@ trait Auditable
     public static function bootAuditable(): void
     {
         static::created(function ($model): void {
-            app(AuditLogger::class)->log('created', $model, $model->auditDescription('dibuat'), null, $model->getAttributes());
+            app(AuditLogger::class)->log('created', $model, $model->auditDescription('dibuat'), null, $model->auditValues($model->getAttributes()));
         });
 
         static::updated(function ($model): void {
@@ -20,13 +20,27 @@ trait Auditable
             if ($changes === []) {
                 return;
             }
-            $old = array_intersect_key($model->getOriginal(), $changes);
-            app(AuditLogger::class)->log('updated', $model, $model->auditDescription('diubah'), $old, $changes);
+            $old = array_intersect_key($model->getRawOriginal(), $changes);
+            app(AuditLogger::class)->log('updated', $model, $model->auditDescription('diubah'), $model->auditValues($old), $model->auditValues($changes));
         });
 
         static::deleted(function ($model): void {
-            app(AuditLogger::class)->log('deleted', $model, $model->auditDescription('dihapus'), $model->getOriginal(), null);
+            app(AuditLogger::class)->log('deleted', $model, $model->auditDescription('dihapus'), $model->auditValues($model->getRawOriginal()), null);
         });
+    }
+
+    /**
+     * Ubah kolom IP biner (didaftarkan di $ipBinaryAttributes pada model) menjadi teks sebelum dicatat.
+     */
+    public function auditValues(array $values): array
+    {
+        foreach ($this->ipBinaryAttributes ?? [] as $key) {
+            if (array_key_exists($key, $values)) {
+                $values[$key] = \Antareja\Support\IpMath::toText($values[$key]);
+            }
+        }
+
+        return $values;
     }
 
     public function auditDescription(string $verb): string

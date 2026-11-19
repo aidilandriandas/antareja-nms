@@ -30,14 +30,16 @@ panduan saat menggabungkan update dari upstream.
 | `docs/` | Dokumen analisis & arsitektur ANTAREJA |
 | `.dockerignore`, `MODIFICATIONS.md`, `ANTAREJA.md` | Pendukung |
 
-## Integrasi tanpa mengubah file inti (Fase 1)
+## Integrasi tanpa mengubah file inti (Fase 1–2)
 
 | Mekanisme | Dipakai untuk |
 |---|---|
 | Tabel baru `ant_*` dengan foreign key ke `devices`, `ports`, `users`, `locations` | Site/area, detail inventaris, mapping, evidence, audit log |
 | Event Eloquent `Device::created` | Device baru otomatis masuk antrean verifikasi |
 | Plugin hook resmi `DeviceOverviewHook` (plugin `antareja`) | Panel inventaris di halaman device |
-| Scheduler Laravel (`schedule:run` di container app) | `antareja:sync-inventory` (15 menit), `antareja:suggest-mappings` (per jam) |
+| Scheduler Laravel (`schedule:run` di container app) | `antareja:sync-inventory` & `antareja:ipam-sync` (15 menit), `antareja:quality-probe` (5 menit), `antareja:suggest-mappings` (per jam), `antareja:quality-maintenance` (harian) |
+| Tabel `ipv4_addresses`, `ipv6_addresses`, `ipv4_mac`, `wireless_sensors`, `device_outages`, `vlans` (baca saja) | IPAM, Wireless, CCTV |
+| `fping` bawaan image + `Eventlog::log()` | Quality Probe & pencatatan perubahan status kualitas |
 | Tabel `device_relationships` (fitur dependensi bawaan) | Ditulis dari mapping terverifikasi agar alert anak ditekan |
 
 ## Prosedur sinkron upstream

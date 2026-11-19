@@ -20,7 +20,7 @@
             </p>
         </div>
         <div class="tw:text-sm tw:text-gray-500 tw:dark:text-gray-400">
-            Versi {{ $version }} · Fase 1 (Inventaris tambang)
+            Versi {{ $version }} · Fase 2 (IPAM &amp; Kualitas Jaringan)
         </div>
     </div>
 
@@ -40,13 +40,35 @@
     </div>
     @endif
 
+    @if($qualityProblems !== null && $qualityProblems->isNotEmpty())
+        <div class="panel panel-default tw:mb-6">
+            <div class="panel-heading tw:flex tw:justify-between"><strong><i class="fa fa-signal"></i> Kualitas jaringan bermasalah</strong>
+                <a href="{{ route('antareja.quality.index') }}" class="tw:text-sm">Semua target &rarr;</a></div>
+            <table class="table table-condensed tw:m-0">
+                @foreach($qualityProblems as $qt)
+                    <tr>
+                        <td><a href="{{ route('antareja.quality.show', $qt) }}">{{ $qt->name }}</a></td>
+                        <td class="tw:text-xs tw:text-gray-500">{{ $qt->group_name }} {{ $qt->site?->code }}</td>
+                        <td><span class="label {{ $qt->statusMeta()['class'] }}">{{ $qt->statusMeta()['label'] }}</span></td>
+                        <td class="tw:text-xs">{{ $qt->last_checked_at?->diffForHumans() }}</td>
+                    </tr>
+                @endforeach
+            </table>
+        </div>
+    @endif
+
     @if($issues !== null)
     @php($sevClass = ['danger' => 'tw:text-red-600 tw:dark:text-red-400', 'warning' => 'tw:text-amber-600 tw:dark:text-amber-400', 'info' => 'tw:text-sky-700 tw:dark:text-sky-400'])
     <div class="tw:flex tw:flex-wrap tw:items-center tw:justify-between tw:gap-3 tw:mb-3">
         <h2 class="tw:text-xl tw:font-semibold tw:m-0">Kualitas Data Inventaris</h2>
-        @if($issues['suggested_links'] > 0)
-            <a href="{{ route('antareja.mapping.index', ['status' => 'suggested']) }}" class="tw:text-sm">{{ $issues['suggested_links'] }} saran mapping menunggu verifikasi &rarr;</a>
-        @endif
+        <span class="tw:flex tw:flex-wrap tw:gap-4 tw:text-sm">
+            @if(($issues['ip_conflicts'] ?? 0) > 0)
+                <a href="{{ route('antareja.ipam.conflicts') }}" class="tw:text-red-600 tw:dark:text-red-400"><i class="fa fa-exclamation-triangle"></i> {{ $issues['ip_conflicts'] }} konflik IP &rarr;</a>
+            @endif
+            @if($issues['suggested_links'] > 0)
+                <a href="{{ route('antareja.mapping.index', ['status' => 'suggested']) }}">{{ $issues['suggested_links'] }} saran mapping menunggu verifikasi &rarr;</a>
+            @endif
+        </span>
     </div>
     <div class="tw:grid tw:grid-cols-2 tw:md:grid-cols-3 tw:xl:grid-cols-4 tw:gap-3 tw:mb-8">
         @foreach(\Antareja\Services\DataQuality::ISSUES as $key => $issue)
@@ -97,8 +119,8 @@
     <h2 class="tw:text-xl tw:font-semibold tw:mb-3">Roadmap</h2>
     <ol class="tw:list-decimal tw:pl-6 tw:text-sm tw:space-y-1 tw:mb-8">
         <li><strong>Fase 0 — Fondasi:</strong> fork LibreNMS, paket ANTAREJA, branding, role, Docker Compose. <em>(selesai)</em></li>
-        <li><strong>Fase 1 — Inventaris tambang:</strong> Site/Area, detail device, verifikasi discovery, device mapping, audit log, data quality. <em>(sedang berjalan)</em></li>
-        <li><strong>Fase 2 — IPAM &amp; Kualitas:</strong> IPAM, Quality Probe + grafik smoke, Wireless &amp; CCTV.</li>
+        <li><strong>Fase 1 — Inventaris tambang:</strong> Site/Area, detail device, verifikasi discovery, device mapping, audit log, data quality. <em>(selesai)</em></li>
+        <li><strong>Fase 2 — IPAM &amp; Kualitas:</strong> IPAM, Quality Probe + grafik smoke, Wireless &amp; CCTV. <em>(sedang berjalan)</em></li>
         <li><strong>Fase 3 — Problem &amp; Incident:</strong> korelasi event, incident, eskalasi, kalender maintenance.</li>
         <li><strong>Fase 4 — SLA &amp; Laporan:</strong> service tree, trigger expression, SLA bulanan, dashboard manajemen, export.</li>
         <li><strong>Fase 5 — Lanjutan:</strong> work order, change &amp; config tracking, capacity, fiber optic, AI.</li>

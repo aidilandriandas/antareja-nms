@@ -62,6 +62,15 @@ class AuditLogger
 
     private function clean(array $values): array
     {
-        return array_diff_key($values, array_flip(self::IGNORED));
+        $values = array_diff_key($values, array_flip(self::IGNORED));
+
+        // Nilai biner (mis. alamat IP VARBINARY) diubah ke teks agar bisa disimpan sebagai JSON
+        foreach ($values as $key => $value) {
+            if (is_string($value) && ! mb_check_encoding($value, 'UTF-8')) {
+                $values[$key] = (in_array(strlen($value), [4, 16], true) && ($ip = @inet_ntop($value))) ? $ip : '0x' . bin2hex($value);
+            }
+        }
+
+        return $values;
     }
 }

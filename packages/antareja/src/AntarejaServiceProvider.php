@@ -2,6 +2,9 @@
 
 namespace Antareja;
 
+use Antareja\Console\IpamSyncCommand;
+use Antareja\Console\QualityMaintenanceCommand;
+use Antareja\Console\QualityProbeCommand;
 use Antareja\Console\SuggestMappingsCommand;
 use Antareja\Console\SyncInventoryCommand;
 use Antareja\Console\SyncRolesCommand;
@@ -24,7 +27,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.2.0';
+    public const VERSION = '0.3.0';
 
     public function register(): void
     {
@@ -46,7 +49,10 @@ class AntarejaServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         if ($this->app->runningInConsole()) {
-            $this->commands([SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class]);
+            $this->commands([
+                SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
+                IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class,
+            ]);
         }
 
         View::composer('antareja::partials.navbar', function ($view): void {
@@ -75,6 +81,9 @@ class AntarejaServiceProvider extends ServiceProvider
             // Jaring pengaman bila ada device yang dibuat tanpa event Eloquent
             $schedule->command('antareja:sync-inventory')->everyFifteenMinutes()->withoutOverlapping()->runInBackground();
             $schedule->command('antareja:suggest-mappings')->hourlyAt(17)->withoutOverlapping()->runInBackground();
+            $schedule->command('antareja:ipam-sync')->everyFifteenMinutes()->withoutOverlapping()->runInBackground();
+            $schedule->command('antareja:quality-probe')->everyFiveMinutes()->withoutOverlapping(10)->runInBackground();
+            $schedule->command('antareja:quality-maintenance')->dailyAt('00:20')->withoutOverlapping()->runInBackground();
         });
     }
 

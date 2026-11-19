@@ -28,12 +28,19 @@ class HomeController extends Controller
 
         $all = $modules->all();
         $issues = $request->user()->can('ant-inventory.view') ? $quality->counts($request->user()) : null;
+        if ($issues !== null && $request->user()->can('ant-ipam.view')) {
+            $issues['ip_conflicts'] = \Antareja\Models\IpAddress::where('conflict', true)->count();
+        }
+        $qualityProblems = $request->user()->can('ant-quality.view')
+            ? \Antareja\Models\QualityTarget::with('site')->where('enabled', true)->whereIn('last_status', ['warning', 'critical', 'down'])->orderByRaw("FIELD(last_status, 'down', 'critical', 'warning')")->limit(8)->get()
+            : null;
 
         return view('antareja::pages.home', [
             'modules' => $all,
             'counts' => $all->countBy('status'),
             'stats' => $stats,
             'issues' => $issues,
+            'qualityProblems' => $qualityProblems,
             'version' => AntarejaServiceProvider::VERSION,
         ]);
     }

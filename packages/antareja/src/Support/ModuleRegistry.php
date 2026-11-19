@@ -2,7 +2,6 @@
 
 namespace Antareja\Support;
 
-use App\Models\WirelessSensor;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Gate;
@@ -39,16 +38,16 @@ class ModuleRegistry
                 'Auto-discovery + verifikasi engineer: Discovered → Pending → Verified / Incomplete / Rejected / Retired.', 'ant-discovery.view'),
             $this->module('device-mapping', 'Device Mapping', 'project-diagram', self::NATIVE, 'antareja/mapping', 1,
                 'Relasi port ↔ perangkat terverifikasi, saran dari LLDP/CDP & tabel MAC, sinkron dependensi alert parent/child.', 'ant-mapping.view'),
-            $this->module('ipam', 'IP Address Management', 'network-wired', self::PLANNED, null, 2,
-                'Subnet, VLAN, alokasi IP, reserved, duplikat, histori, utilisasi.'),
+            $this->module('ipam', 'IP Address Management', 'network-wired', self::NATIVE, 'antareja/ipam', 2,
+                'Subnet, VLAN, alokasi IP (static/reserved/DHCP), IP terpakai dari interface & ARP, IP kosong, duplikat/konflik, histori, utilisasi.', 'ant-ipam.view'),
             $this->module('interface-monitoring', 'Interface Monitoring', 'ethernet', self::NATIVE, 'ports', 0,
                 'Status port, traffic, bandwidth, error, utilisasi.', 'port.viewAll'),
-            $this->module('wireless-monitoring', 'Wireless Monitoring', 'wifi', self::PARTIAL, $this->wirelessPath(), 2,
-                'Sensor wireless (client, sinyal, frekuensi) tersedia. Ringkasan PTP/PTMP menyusul.', 'device.viewAll'),
-            $this->module('cctv', 'CCTV Infrastructure', 'video', self::PLANNED, null, 2,
-                'Kamera ↔ NVR ↔ port switch, status, PIC, histori incident.'),
-            $this->module('network-quality', 'Network Quality', 'signal', self::PLANNED, null, 2,
-                'Quality Probe (20 ping/5 menit): latency, packet loss, jitter, grafik smoke.'),
+            $this->module('wireless-monitoring', 'Wireless Monitoring', 'wifi', self::NATIVE, 'antareja/wireless', 2,
+                'AP, controller, PTP, PTMP: status, client, RSSI, SNR, frekuensi, rate, CCQ, pasangan link. Metrik sesuai dukungan vendor.', 'ant-inventory.view'),
+            $this->module('cctv', 'CCTV Infrastructure', 'video', self::NATIVE, 'antareja/cctv', 2,
+                'Kamera & NVR: status, IP, MAC, port switch, NVR perekam, lokasi, PIC, riwayat gangguan 30 hari.', 'ant-cctv.view'),
+            $this->module('network-quality', 'Network Quality', 'signal', self::NATIVE, 'antareja/quality', 2,
+                'Quality Probe (20 ping / 5 menit): latency, packet loss, jitter, grafik smoke 3 jam–30 hari, ambang status.', 'ant-quality.view'),
             $this->module('alert-center', 'Event & Alert Center', 'bell', self::PARTIAL, 'alerts', 3,
                 'Alert LibreNMS tersedia. Problem lifecycle, assignment & korelasi ala Zabbix menyusul.', 'alert.viewAll'),
             $this->module('incident', 'Incident Management', 'fire-extinguisher', self::PLANNED, null, 3,
@@ -83,21 +82,6 @@ class ModuleRegistry
             ->reject(fn (array $m) => $m['status'] === self::PLANNED || $m['path'] === null)
             ->filter(fn (array $m) => $m['permission'] === null || Gate::forUser($user)->allows($m['permission']))
             ->values();
-    }
-
-    /**
-     * Halaman wireless LibreNMS hanya ada untuk kelas sensor yang sudah ditemukan (selain itu 404),
-     * jadi arahkan ke kelas pertama yang tersedia, atau null bila belum ada perangkat wireless.
-     */
-    private function wirelessPath(): ?string
-    {
-        try {
-            $class = WirelessSensor::query()->orderBy('sensor_class')->value('sensor_class');
-        } catch (\Throwable) {
-            return null;
-        }
-
-        return $class === null ? null : 'wireless/' . ($class instanceof \BackedEnum ? $class->value : $class);
     }
 
     private function module(

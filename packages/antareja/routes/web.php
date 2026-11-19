@@ -3,11 +3,15 @@
 use Antareja\Http\Controllers\AboutController;
 use Antareja\Http\Controllers\AttachmentController;
 use Antareja\Http\Controllers\AuditLogController;
+use Antareja\Http\Controllers\CctvController;
 use Antareja\Http\Controllers\DiscoveryController;
 use Antareja\Http\Controllers\HomeController;
 use Antareja\Http\Controllers\InventoryController;
+use Antareja\Http\Controllers\IpamController;
 use Antareja\Http\Controllers\MappingController;
+use Antareja\Http\Controllers\QualityController;
 use Antareja\Http\Controllers\SiteController;
+use Antareja\Http\Controllers\WirelessController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth'])
@@ -74,6 +78,50 @@ Route::middleware(['web', 'auth'])
             Route::post('mapping/{link}/verify', [MappingController::class, 'verify'])->name('mapping.verify');
             Route::post('mapping/{link}/reject', [MappingController::class, 'reject'])->name('mapping.reject');
         });
+
+        // IP Address Management
+        Route::middleware('can:ant-ipam.view')->group(function (): void {
+            Route::get('ipam', [IpamController::class, 'index'])->name('ipam.index');
+            Route::get('ipam/subnets/{subnet}', [IpamController::class, 'show'])->whereNumber('subnet')->name('ipam.subnets.show');
+            Route::get('ipam/addresses/{ip}', [IpamController::class, 'editAddress'])->name('ipam.addresses.edit');
+            Route::get('ipam/conflicts', [IpamController::class, 'conflicts'])->name('ipam.conflicts');
+            Route::get('ipam/vlans', [IpamController::class, 'vlans'])->name('ipam.vlans');
+        });
+        Route::middleware('can:ant-ipam.update')->group(function (): void {
+            Route::get('ipam/subnets/create', [IpamController::class, 'create'])->name('ipam.subnets.create');
+            Route::post('ipam/subnets', [IpamController::class, 'store'])->name('ipam.subnets.store');
+            Route::get('ipam/subnets/{subnet}/edit', [IpamController::class, 'edit'])->name('ipam.subnets.edit');
+            Route::put('ipam/subnets/{subnet}', [IpamController::class, 'update'])->name('ipam.subnets.update');
+            Route::delete('ipam/subnets/{subnet}', [IpamController::class, 'destroy'])->name('ipam.subnets.destroy');
+            Route::post('ipam/subnets/{subnet}/allocate', [IpamController::class, 'allocate'])->name('ipam.subnets.allocate');
+            Route::put('ipam/addresses/{ip}', [IpamController::class, 'updateAddress'])->name('ipam.addresses.update');
+            Route::delete('ipam/addresses/{ip}', [IpamController::class, 'releaseAddress'])->name('ipam.addresses.release');
+            Route::get('ipam/import', [IpamController::class, 'importForm'])->name('ipam.import');
+            Route::post('ipam/import', [IpamController::class, 'import'])->name('ipam.import.store');
+            Route::post('ipam/sync', [IpamController::class, 'sync'])->name('ipam.sync');
+            Route::post('ipam/vlans', [IpamController::class, 'storeVlan'])->name('ipam.vlans.store');
+            Route::delete('ipam/vlans/{vlan}', [IpamController::class, 'destroyVlan'])->name('ipam.vlans.destroy');
+        });
+
+        // Network Quality
+        Route::middleware('can:ant-quality.view')->group(function (): void {
+            Route::get('quality', [QualityController::class, 'index'])->name('quality.index');
+            Route::get('quality/targets/{target}', [QualityController::class, 'show'])->whereNumber('target')->name('quality.show');
+        });
+        Route::middleware('can:ant-quality.update')->group(function (): void {
+            Route::get('quality/targets/create', [QualityController::class, 'create'])->name('quality.create');
+            Route::post('quality/targets', [QualityController::class, 'store'])->name('quality.store');
+            Route::get('quality/targets/{target}/edit', [QualityController::class, 'edit'])->name('quality.edit');
+            Route::put('quality/targets/{target}', [QualityController::class, 'update'])->name('quality.update');
+            Route::delete('quality/targets/{target}', [QualityController::class, 'destroy'])->name('quality.destroy');
+            Route::post('quality/targets/{target}/measure', [QualityController::class, 'measure'])->middleware('throttle:10,1')->name('quality.measure');
+            Route::get('quality/bulk', [QualityController::class, 'bulkForm'])->name('quality.bulk');
+            Route::post('quality/bulk', [QualityController::class, 'bulkStore'])->name('quality.bulk.store');
+        });
+
+        // Wireless & CCTV
+        Route::get('wireless', [WirelessController::class, 'index'])->middleware('can:ant-inventory.view')->name('wireless.index');
+        Route::get('cctv', [CctvController::class, 'index'])->middleware('can:ant-cctv.view')->name('cctv.index');
 
         // Audit log
         Route::get('audit', [AuditLogController::class, 'index'])->middleware('can:ant-audit.view')->name('audit.index');
