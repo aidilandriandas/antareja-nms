@@ -17,12 +17,12 @@ window.AntTopology = (function () {
         var v = function (n, f) { var x = css.getPropertyValue(n).trim(); return x || f; };
         if (theme === 'dark') {
             return { up: '#2ee6c5', down: '#ff4d4f', off: '#6b7280', ink: '#e6edf3', muted: '#8b98a5', bg: '#0b1015',
-                ok: '#1fb89a', warn: '#f5a524', crit: '#ff4d4f', unknown: '#3b4754', glowUp: 'rgba(46,230,197,.45)', glowDown: 'rgba(255,77,79,.85)' };
+                ok: '#1fb89a', warn: '#f5a524', crit: '#ff4d4f', unknown: '#3b4754', labelBg: 'rgba(8,12,16,.92)', glowUp: 'rgba(46,230,197,.45)', glowDown: 'rgba(255,77,79,.85)' };
         }
         return { up: v('--ant-ok', '#0b6e63'), down: v('--ant-crit-strong', '#b3121b'), off: v('--ant-border-strong', '#857e79'),
             ink: v('--ant-ink', '#1a1716'), muted: v('--ant-ink-muted', '#5a534e'), bg: v('--ant-surface-raised', '#fff'),
             ok: v('--ant-ok', '#0b6e63'), warn: v('--ant-warn', '#8f4700'), crit: v('--ant-crit', '#a8101a'), unknown: v('--ant-border-strong', '#857e79'),
-            glowUp: 'rgba(0,0,0,0)', glowDown: 'rgba(179,18,27,.55)' };
+            labelBg: 'rgba(255,255,255,.94)', glowUp: 'rgba(0,0,0,0)', glowDown: 'rgba(179,18,27,.55)' };
     }
 
     function fmtBps(b) {
@@ -46,15 +46,27 @@ window.AntTopology = (function () {
             raw: n
         };
     }
-    function edgeStyle(e, P) {
+    function fmtShort(b) {
+        if (b === null || b === undefined) return '–';
+        if (b >= 1e9) return (b / 1e9).toFixed(b >= 1e10 ? 0 : 1) + 'G';
+        if (b >= 1e6) return (b / 1e6).toFixed(b >= 1e8 ? 0 : 1) + 'M';
+        if (b >= 1e3) return Math.round(b / 1e3) + 'K';
+        return Math.round(b) + '';
+    }
+    function edgeStyle(e, P, opts) {
         var color = { ok: P.ok, warn: P.warn, crit: P.crit, down: P.down, unknown: P.unknown }[e.state] || P.unknown;
         var width = e.speed >= 10e9 ? 4.5 : (e.speed >= 1e9 ? 3 : (e.speed ? 1.8 : 2));
-        var bps = fmtBps(e.bps);
-        var t = (e.a_port || '?') + ' ↔ ' + (e.b_port || '?')
-            + (bps ? '\nTrafik: ' + bps + ' (' + e.util + '%)' : '')
+        var hasT = e.down_bps !== null && e.down_bps !== undefined;
+        var t = (e.a_port || '?') + ' ↔ ' + (e.b_port || '?') + (e.port_guess ? '  (port terdeteksi dari ARP)' : '')
+            + (hasT ? '\n▼ ke bawah: ' + fmtBps(e.down_bps) + '\n▲ ke atas: ' + fmtBps(e.up_bps) + (e.util !== null && e.util !== undefined ? '\nPemakaian: ' + e.util + '%' : '')
+                + (e.live ? '\n● live (dibaca langsung dari perangkat)' : '\nRata-rata polling 5 menit') : (e.port_id ? '' : '\nPilih port pada sambungan untuk melihat trafik'))
             + (e.speed ? '\nKecepatan port: ' + fmtBps(e.speed) : '')
+            + (e.type ? '\nJenis: ' + e.type : '')
             + '\nSumber: ' + ({ verified: 'Mapping terverifikasi', suggested: 'Saran mapping (belum diverifikasi)', lldp: 'LLDP/CDP' }[e.source]);
-        return { id: e.id, from: e.from, to: e.to, title: t, width: width, color: { color: color, highlight: color, hover: color, opacity: e.state === 'unknown' ? 0.6 : 1 },
+        // Label trafik digambar sendiri di atas node (lihat drawLabels), bukan label bawaan vis yang tertimpa ikon
+        var label = (opts.traffic !== false && hasT && e.state !== 'down') ? '▼ ' + fmtShort(e.down_bps) + '  ▲ ' + fmtShort(e.up_bps) : null;
+        return { id: e.id, from: e.from, to: e.to, title: t, width: width, trafficLabel: label,
+            color: { color: color, highlight: color, hover: color, opacity: e.state === 'unknown' ? 0.6 : 1 },
             dashes: e.source === 'suggested' || e.state === 'down' ? [6, 6] : false, smooth: false, raw: e };
     }
 
@@ -62,6 +74,50 @@ window.AntTopology = (function () {
         var P = palette(opts.theme);
         var nodes = new vis.DataSet(), edges = new vis.DataSet();
         var network = null, timer = null, mode = opts.layout || 'auto', lastData = null, phase = 0, raf = null;
+        // Trafik live: counter port dibaca dari perangkat tiap 5 detik, bps = selisih counter / selang waktu
+        var live = { on: !!opts.live, prev: {}, vals: {}, timer: null, busy: false };
+        function applyLive(e) {
+            var v = e.port_id && live.on ? live.vals[e.port_id] : null;
+            if (!v || Date.now() - v.at > 20000) return e;
+            var x = Object.assign({}, e);
+            x.down_bps = e.port_side === 'a' ? v.out : v.in;
+            x.up_bps = e.port_side === 'a' ? v.in : v.out;
+            x.bps = Math.max(v.in, v.out); x.live = true;
+            x.util = e.speed ? Math.round(Math.min(100, x.bps / e.speed * 100) * 10) / 10 : null;
+            if (e.state !== 'down') x.state = x.util === null ? 'ok' : (x.util >= 90 ? 'crit' : (x.util >= 70 ? 'warn' : 'ok'));
+            return x;
+        }
+        function style(e) { var s = edgeStyle(applyLive(e), P, opts); s.orig = e; return s; }
+        function pollLive() {
+            if (!live.on || live.busy || document.hidden) return;
+            var ports = {}; edges.forEach(function (e) { if (e.orig && e.orig.port_id && e.orig.state !== 'down') ports[e.orig.port_id] = 1; });
+            var ids = Object.keys(ports).slice(0, 40);
+            if (!ids.length || !opts.liveUrl) return;
+            live.busy = true;
+            fetch(opts.liveUrl + '?' + ids.map(function (i) { return 'ports[]=' + i; }).join('&'), { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
+                .then(function (r) { return r.ok ? r.json() : { counters: {} }; })
+                .then(function (d) {
+                    var now = Date.now();
+                    Object.keys(d.counters || {}).forEach(function (id) {
+                        var c = d.counters[id], p = live.prev[id];
+                        live.prev[id] = c;
+                        if (!p || c.t <= p.t) return;
+                        var dt = c.t - p.t, di = BigInt(c.in) - BigInt(p.in), dout = BigInt(c.out) - BigInt(p.out);
+                        if (di < 0n || dout < 0n) return; // counter di-reset / berputar
+                        live.vals[id] = { in: Number(di) * 8 / dt, out: Number(dout) * 8 / dt, at: now };
+                    });
+                    edges.update(edges.get().map(function (e) { return style(e.orig); }));
+                    if (opts.onLive) opts.onLive(Object.keys(live.vals).length);
+                })
+                .catch(function () {})
+                .then(function () { live.busy = false; });
+        }
+        function setLive(on) {
+            live.on = on; clearInterval(live.timer); live.prev = {}; live.vals = {};
+            if (on) { live.timer = setInterval(pollLive, 5000); pollLive(); }
+            edges.update(edges.get().map(function (e) { return style(e.orig); }));
+        }
+        if (live.on) live.timer = setInterval(pollLive, 5000);
 
         function build(data) {
             var positioned = data.nodes.some(function (n) { return n.x !== null; });
@@ -72,7 +128,7 @@ window.AntTopology = (function () {
                 if (!hier && n.x !== null) { s.x = n.x; s.y = n.y; }
                 return s;
             }));
-            edges.add(data.edges.map(function (e) { return edgeStyle(e, P); }));
+            edges.add(data.edges.map(function (e) { return style(e); }));
             var options = {
                 autoResize: true,
                 interaction: { hover: true, tooltipDelay: 120, navigationButtons: false, keyboard: false, multiselect: false, dragNodes: !opts.readonly },
@@ -107,6 +163,7 @@ window.AntTopology = (function () {
                 network.on('afterDrawing', drawPulse);
                 if (!raf) loop();
             }
+            network.on('afterDrawing', drawLabels); // paling akhir = paling atas
         }
 
         function connected(id) {
@@ -114,6 +171,32 @@ window.AntTopology = (function () {
                 var other = nodes.get(e.from === id ? e.to : e.from);
                 return { node: other ? other.raw : null, edge: e.raw, localPort: e.from === id ? e.raw.a_port : e.raw.b_port };
             });
+        }
+
+        // Label trafik di titik tengah garis; bila titik itu tertutup perangkat lain, geser sepanjang garis
+        function drawLabels(ctx) {
+            var pos = network.getPositions(), ids = Object.keys(pos);
+            ctx.save();
+            ctx.font = '500 11px "IBM Plex Mono", ui-monospace, monospace';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            edges.forEach(function (e) {
+                if (!e.trafficLabel || !pos[e.from] || !pos[e.to]) return;
+                var a = pos[e.from], b = pos[e.to], pt = null;
+                [0.5, 0.35, 0.65, 0.25, 0.75].some(function (f) {
+                    var x = a.x + (b.x - a.x) * f, y = a.y + (b.y - a.y) * f;
+                    var blocked = ids.some(function (id) { var p = pos[id]; return Math.abs(p.x - x) < 46 && Math.abs(p.y - y) < 30; });
+                    if (!blocked) { pt = { x: x, y: y }; return true; }
+                    return false;
+                });
+                if (!pt) pt = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+                var w = ctx.measureText(e.trafficLabel).width + 12, h = 18;
+                ctx.fillStyle = P.labelBg; ctx.strokeStyle = e.color.color; ctx.lineWidth = 1;
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(pt.x - w / 2, pt.y - h / 2, w, h, 4); else ctx.rect(pt.x - w / 2, pt.y - h / 2, w, h);
+                ctx.fill(); ctx.stroke();
+                ctx.fillStyle = P.ink; ctx.fillText(e.trafficLabel, pt.x, pt.y + 0.5);
+            });
+            ctx.restore();
         }
 
         // Cincin berdenyut di sekitar perangkat down
@@ -160,7 +243,7 @@ window.AntTopology = (function () {
             nodes.update(data.nodes.map(function (n) { var s = nodeStyle(n, P, opts); delete s.level; return s; }));
             var eids = {}; data.edges.forEach(function (e) { eids[e.id] = 1; });
             edges.remove(edges.getIds().filter(function (id) { return !eids[id]; }));
-            edges.update(data.edges.map(function (e) { return edgeStyle(e, P); }));
+            edges.update(data.edges.map(function (e) { return style(e); }));
         }
 
         var fontsReady = document.fonts && document.fonts.load
@@ -169,7 +252,7 @@ window.AntTopology = (function () {
         function load() {
             return fontsReady.then(function () { return fetch(opts.dataUrl(), { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }, credentials: 'same-origin' })
                 .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-                .then(function (data) { update(data.graph || data); if (opts.onData) opts.onData(data); return data; }); });
+                .then(function (data) { update(data.graph || data); if (opts.onData) opts.onData(data); if (live.on && !live.started) { live.started = true; setTimeout(pollLive, 300); } return data; }); });
         }
 
         return {
@@ -190,6 +273,7 @@ window.AntTopology = (function () {
                 if (hit) { this.focus(hit.id); if (opts.onSelect) opts.onSelect(hit.raw, connected(hit.id)); }
                 return !!hit;
             },
+            setLive: setLive,
             fmtBps: fmtBps
         };
     }

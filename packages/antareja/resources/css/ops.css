@@ -242,3 +242,8 @@ html body .ant-topo__mode b { color: var(--ant-surface-raised); }
 html body .ant-linkpair__side small { color: var(--ant-ink-muted); }
 .ant-linkpair__role { font: 600 11px var(--ant-font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ant-ink-muted); margin-bottom: 4px; }
 @media (max-width: 600px) { .ant-linkpair { grid-template-columns: 1fr; } .ant-linkpair__swap { justify-self: center; transform: rotate(90deg); } }
+html body label.ant-topo__live { display: inline-flex; align-items: center; gap: 6px; margin: 0 4px; font-size: 13px; white-space: nowrap; }
+.ant-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ant-ok); box-shadow: 0 0 0 3px var(--ant-ok-tint); animation: ant-live 1.6s ease-in-out infinite; }
+.ant-live-dot[hidden] { display: none; }
+@keyframes ant-live { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .ant-live-dot { animation: none; } }

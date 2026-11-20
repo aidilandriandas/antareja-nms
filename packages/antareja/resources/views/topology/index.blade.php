@@ -25,6 +25,9 @@
             <button type="button" data-layout="physics" aria-selected="false">Bebas</button>
         </div>
         <form id="t-find" class="ant-topo__find"><input type="search" class="form-control input-sm" placeholder="Cari nama / IP di peta…" aria-label="Cari di peta"></form>
+        <label class="ant-check ant-topo__live" title="Baca counter port langsung dari perangkat tiap 5 detik (SNMP)">
+            <input type="checkbox" id="t-live" checked> Trafik live <span class="ant-live-dot" id="t-live-dot" hidden></span>
+        </label>
         <span class="ant-topo__spacer"></span>
         <button type="button" class="btn btn-default btn-sm" id="t-fit" title="Tampilkan semua"><i class="fa-solid fa-expand"></i></button>
         @if($canEdit)
@@ -124,6 +127,8 @@
     var topo = AntTopology.create(document.getElementById('t-canvas'), {
         theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
         dataUrl: function () { return '{{ route('antareja.topology.data') }}?site_id=' + site.value + '&group_id=' + group.value; },
+        live: true, liveUrl: '{{ route('antareja.topology.live') }}',
+        onLive: function (n) { document.getElementById('t-live-dot').hidden = n === 0; },
         onData: function (d) {
             var s = d.graph.stats;
             document.getElementById('t-stats').innerHTML = '<b>' + s.nodes + '</b> perangkat · <b>' + s.edges + '</b> sambungan'
@@ -136,11 +141,11 @@
             if (!n) { panel.hidden = true; return; }
             var st = { up: ['ok', 'Online'], down: ['down', 'Down'], off: ['unknown', 'Nonaktif'] }[n.state];
             var rows = links.map(function (l) {
-                var e = l.edge, bps = AntTopology.fmtBps(e.bps);
+                var e = l.edge, bps = e.down_bps != null ? '▼ ' + AntTopology.fmtBps(e.down_bps) + ' ▲ ' + AntTopology.fmtBps(e.up_bps) + (e.live ? ' ●' : '') : null;
                 var src = { verified: 'mapping', suggested: 'belum diverifikasi', lldp: 'LLDP/CDP' }[e.source];
                 var del = (canEdit && e.link_id) ? '<button type="button" class="ant-topo__del" data-link="' + e.link_id + '" data-name="' + esc(l.node ? l.node.label : '') + '" title="Hapus sambungan"><i class="fa-solid fa-trash"></i></button>' : '';
                 return '<li><span class="ant-dotc ant-fill--' + (e.state === 'unknown' ? 'unknown' : e.state) + '"></span><div><b>' + esc(l.node ? l.node.label : '?') + '</b>'
-                    + '<small>' + esc(l.localPort || 'port ?') + (bps ? ' · ' + bps + ' (' + e.util + '%)' : '') + ' · ' + src + '</small></div>' + del + '</li>';
+                    + '<small>' + esc(l.localPort || 'port ?') + (bps ? ' · ' + bps + (e.util != null ? ' (' + e.util + '%)' : '') : '') + ' · ' + src + '</small></div>' + del + '</li>';
             }).join('');
             document.getElementById('t-detail').innerHTML =
                 '<p class="ant-eyebrow">' + esc(n.group) + (n.site ? ' · ' + esc(n.site) : '') + '</p>'
@@ -154,6 +159,7 @@
         }
     });
     window.AntTopologyPage = topo;
+    document.getElementById('t-live').addEventListener('change', function () { topo.setLive(this.checked); if (!this.checked) document.getElementById('t-live-dot').hidden = true; });
     topo.load(); topo.every(30);
     site.addEventListener('change', function () { topo.reload(); });
     group.addEventListener('change', function () { topo.reload(); });

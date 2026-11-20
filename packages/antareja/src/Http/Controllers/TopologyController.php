@@ -117,4 +117,13 @@ class TopologyController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    /** Counter port langsung dari perangkat untuk mode "Trafik live" di peta & layar NOC. */
+    public function live(Request $request, TopologyService $topology): JsonResponse
+    {
+        Gate::authorize('viewAny', Device::class);
+        $data = $request->validate(['ports' => ['required', 'array', 'max:40'], 'ports.*' => ['integer']]);
+
+        return response()->json(['counters' => $topology->liveCounters($request->user(), $data['ports'])]);
+    }
 }

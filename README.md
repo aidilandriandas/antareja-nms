@@ -64,7 +64,7 @@ manajemen fiber optic, laporan bulanan, dan dashboard manajemen.
 | Modul | Isi |
 |---|---|
 | **Layar NOC** | Tampilan layar penuh untuk TV/monitor ruang kontrol: peta topologi live (trafik mengalir, perangkat down berdenyut), ketersediaan, feed problem, perangkat down, status per site & grup — diperbarui tiap 15 detik tanpa reload |
-| **Peta Topologi** | Siapa terhubung ke siapa (mapping terverifikasi + LLDP/CDP), warna garis = pemakaian bandwidth port, filter site/grup, cari perangkat, simpan tata letak; **hubungkan perangkat manual** langsung di peta (klik 2 perangkat → pilih port & jenis sambungan) |
+| **Peta Topologi** | Siapa terhubung ke siapa (mapping terverifikasi + LLDP/CDP), **trafik live di tiap garis** (▼ ke bawah / ▲ ke atas, dibaca langsung dari perangkat tiap 5 detik), warna garis = pemakaian bandwidth port, filter site/grup, cari perangkat, simpan tata letak; **hubungkan perangkat manual** langsung di peta (klik 2 perangkat → pilih port & jenis sambungan) |
 | **Tambah perangkat** | Form ANTAREJA: nama perangkat, grup, site/area, SNMP v2c/v3 atau ping saja; tambah banyak sekaligus (tempel dari Excel: `IP, Nama, Grup`) |
 | **Grup perangkat** | Grup otomatis per kategori (CCTV, Access Point, Switch, NVR, …) beserta status online/down; juga grup buatan sendiri |
 | **Network Monitoring** | Status perangkat (SNMP v2c/v3, ICMP), uptime, sensor hardware, grafik — dari LibreNMS |

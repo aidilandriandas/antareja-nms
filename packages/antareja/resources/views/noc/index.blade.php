@@ -291,7 +291,7 @@
     }
 
     var topo = AntTopology.create($('noc-map'), {
-        theme: 'dark', flow: true, readonly: true,
+        theme: 'dark', flow: true, readonly: true, live: true, liveUrl: '{{ route('antareja.topology.live') }}',
         dataUrl: function () { return '{{ route('antareja.noc.data') }}?site_id=' + site.value; },
         onData: function (d) { lastOk = Date.now(); render(d); },
         onSelect: function (n) { if (n) window.open(n.url, '_blank', 'noopener'); }
