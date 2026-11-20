@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  Versi 0.6.2 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
+  Versi 0.7.0 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
 </p>
 
 ---
@@ -109,8 +109,14 @@ manajemen fiber optic, laporan bulanan, dan dashboard manajemen.
 
 > Gambar memakai data uji.
 
-| Dashboard manajemen | Incident |
+Semua halaman memakai kerangka ANTAREJA: menu samping dikelompokkan per pekerjaan (Monitoring, Alert & Insiden, Inventaris & Aset, Operasional, Laporan, Administrasi), pencarian global (tekan `/`), penanda jumlah problem aktif, tema terang/gelap, dan tampilan HP. Halaman awal setelah login adalah **Pusat Operasi**; dashboard widget LibreNMS tetap ada di menu *Dashboard Widget*.
+
+| Pusat Operasi (halaman awal) | Pusat Operasi — tema gelap |
 |---|---|
+| ![Pusat Operasi](docs/screenshots/pusat-operasi.png) | ![Pusat Operasi gelap](docs/screenshots/pusat-operasi-gelap.png) |
+| **Daftar perangkat dalam kerangka ANTAREJA** | **Halaman login** |
+| ![Perangkat](docs/screenshots/perangkat.png) | ![Login](docs/screenshots/login.png) |
+| **Dashboard manajemen** | **Incident** |
 | ![Dashboard manajemen](docs/screenshots/dashboard-manajemen.png) | ![Incident](docs/screenshots/incident.png) |
 | **SLA layanan** | **Capacity planning** |
 | ![SLA](docs/screenshots/sla.png) | ![Capacity](docs/screenshots/capacity.png) |

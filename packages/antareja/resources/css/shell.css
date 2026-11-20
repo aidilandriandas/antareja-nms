@@ -1,0 +1,311 @@
+/*
+ * ANTAREJA NMS — kerangka aplikasi (sidebar + topbar) dan penyelarasan halaman LibreNMS.
+ * Semua aturan diawali "html body.ant-has-shell" agar lebih spesifik dari html/css/styles.css dan
+ * html/css/tw_dark.css (".dark .panel" dst.) yang dimuat sesudah stylesheet ini.
+ */
+
+:root {
+  --ant-side-w: 248px;
+  --ant-side-w-collapsed: 64px;
+  --ant-top-h: 56px;
+  --ant-gutter: 20px;
+  /* Sidebar selalu gelap (arang tambang) di kedua tema */
+  --ant-side-bg: #141211;
+  --ant-side-ink: #d6d0cb;
+  --ant-side-muted: #8d8580;
+  --ant-side-hover: rgba(255, 255, 255, .06);
+  --ant-side-line: #2a2624;
+}
+html.dark { --ant-side-bg: #0b0a0a; --ant-side-line: #221f1d; }
+
+/* ------------------------------------------------------------------ halaman */
+html body.ant-has-shell {
+  background: var(--ant-surface);
+  color: var(--ant-ink);
+  padding: calc(var(--ant-top-h) + var(--ant-gutter)) var(--ant-gutter) 32px calc(var(--ant-side-w) + var(--ant-gutter));
+  overflow-y: auto;
+  line-height: 1.45;
+}
+html.ant-nav-collapsed body.ant-has-shell { padding-left: calc(var(--ant-side-w-collapsed) + var(--ant-gutter)); }
+html body.ant-has-shell > .container-fluid,
+html body.ant-has-shell > .container { padding-left: 0; padding-right: 0; }
+html body.ant-has-shell > .container { width: auto; max-width: 1400px; }
+html body.ant-has-shell a { color: var(--ant-info); }
+html body.ant-has-shell a:hover { color: var(--ant-ink); }
+
+/* ------------------------------------------------------------------ sidebar */
+.ant-side {
+  position: fixed; z-index: 1040; inset: 0 auto 0 0; width: var(--ant-side-w);
+  display: flex; flex-direction: column; background: var(--ant-side-bg); color: var(--ant-side-ink);
+  border-right: 1px solid var(--ant-side-line);
+}
+.ant-side::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--ant-brand); }
+.ant-side__brand {
+  display: flex; align-items: center; gap: 10px; height: var(--ant-top-h); flex: none;
+  padding: 0 18px; border-bottom: 1px solid var(--ant-side-line); text-decoration: none !important;
+}
+.ant-side__brand img { width: 32px; height: 32px; flex: none; }
+.ant-side__wordmark { display: flex; align-items: baseline; gap: 6px; font: 700 22px/1 var(--ant-font-display); letter-spacing: .03em; color: #fff; white-space: nowrap; }
+.ant-side__wordmark small { font: 600 11px/1 var(--ant-font-mono); letter-spacing: .14em; color: var(--ant-side-muted); }
+.ant-side__nav { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 10px 10px 16px; scrollbar-width: thin; scrollbar-color: #3a3532 transparent; }
+.ant-side ul { list-style: none; margin: 0; padding: 0; }
+.ant-navgroup + .ant-navgroup { margin-top: 6px; }
+.ant-navgroup__title {
+  display: flex; align-items: center; justify-content: space-between; width: 100%; height: 30px; padding: 0 10px; margin-top: 4px;
+  background: none; border: 0; border-radius: 6px; cursor: pointer;
+  font: 600 11px/1 var(--ant-font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ant-side-muted);
+}
+.ant-navgroup__title:hover { color: var(--ant-side-ink); }
+.ant-navgroup__title i { font-size: 10px; transition: transform .15s; }
+.ant-navgroup[data-closed] .ant-navgroup__title i { transform: rotate(-90deg); }
+.ant-navgroup[data-closed] > ul { display: none; }
+html body .ant-side a.ant-navlink {
+  position: relative; display: flex; align-items: center; gap: 12px; height: 36px; padding: 0 10px; border-radius: 6px;
+  color: var(--ant-side-ink); font: 400 14px/1 var(--ant-font-sans); text-decoration: none; white-space: nowrap;
+}
+.ant-navlink i { width: 18px; text-align: center; font-size: 15px; color: var(--ant-side-muted); flex: none; }
+.ant-navlink span { overflow: hidden; text-overflow: ellipsis; }
+html body .ant-side a.ant-navlink:hover { background: var(--ant-side-hover); color: #fff; }
+html body .ant-side a.ant-navlink:hover i { color: var(--ant-side-ink); }
+html body .ant-side a.ant-navlink.is-active { background: rgba(254, 0, 2, .16); color: #fff; font-weight: 600; }
+html body .ant-side a.ant-navlink.is-active i { color: #ff5a55; }
+.ant-navlink.is-active::before { content: ""; position: absolute; left: -10px; top: 7px; bottom: 7px; width: 3px; border-radius: 0 3px 3px 0; background: var(--ant-brand); }
+.ant-side__collapse {
+  display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 20px; flex: none;
+  background: none; border: 0; border-top: 1px solid var(--ant-side-line); color: var(--ant-side-muted); font: 400 13px var(--ant-font-sans); cursor: pointer; text-align: left;
+}
+.ant-side__collapse:hover { color: #fff; }
+.ant-side__collapse i { width: 18px; text-align: center; transition: transform .15s; }
+
+/* Sidebar ringkas: hanya ikon */
+html.ant-nav-collapsed .ant-side { width: var(--ant-side-w-collapsed); }
+html.ant-nav-collapsed .ant-side__wordmark,
+html.ant-nav-collapsed .ant-navlink span,
+html.ant-nav-collapsed .ant-side__collapse span,
+html.ant-nav-collapsed .ant-navgroup__title span { display: none; }
+html.ant-nav-collapsed .ant-side__brand { padding: 0 16px; }
+html.ant-nav-collapsed .ant-navgroup__title { justify-content: center; height: 12px; margin: 8px 0 4px; pointer-events: none; }
+html.ant-nav-collapsed .ant-navgroup__title i { display: none; }
+html.ant-nav-collapsed .ant-navgroup__title::after { content: ""; width: 20px; height: 1px; background: var(--ant-side-line); }
+html.ant-nav-collapsed .ant-navgroup[data-closed] > ul { display: block; }
+html.ant-nav-collapsed .ant-navgroup[data-group="more"] { display: none; }
+html.ant-nav-collapsed .ant-navlink { justify-content: center; padding: 0; }
+html.ant-nav-collapsed .ant-side__collapse { justify-content: center; padding: 0; }
+html.ant-nav-collapsed .ant-side__collapse i { transform: rotate(180deg); }
+
+/* ------------------------------------------------------------------ topbar */
+.ant-top {
+  position: fixed; z-index: 1030; top: 0; right: 0; left: var(--ant-side-w); height: var(--ant-top-h);
+  display: flex; align-items: center; gap: 12px; padding: 0 var(--ant-gutter);
+  background: var(--ant-surface-raised); border-bottom: 1px solid var(--ant-border);
+}
+html.ant-nav-collapsed .ant-top { left: var(--ant-side-w-collapsed); }
+.ant-top__menu, .ant-top__brand { display: none !important; }
+html body .ant-top__brand { align-items: center; gap: 8px; text-decoration: none; font: 700 19px/1 var(--ant-font-display); letter-spacing: .03em; color: var(--ant-ink); }
+
+.ant-iconbtn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; flex: none;
+  border-radius: 8px; border: 1px solid transparent; background: none; color: var(--ant-ink-muted); font-size: 16px; cursor: pointer;
+}
+html body .ant-top a.ant-iconbtn { color: var(--ant-ink-muted); }
+.ant-iconbtn:hover, html body .ant-top a.ant-iconbtn:hover { background: var(--ant-surface-sunken); color: var(--ant-ink); }
+.ant-dot {
+  position: absolute; top: 3px; right: 2px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 9px;
+  background: var(--ant-crit-strong); color: #fff; font: 600 10px/17px var(--ant-font-sans); text-align: center;
+}
+
+.ant-search { position: relative; flex: 1; max-width: 560px; }
+.ant-search__icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ant-ink-muted); font-size: 14px; pointer-events: none; }
+html body .ant-search__input {
+  width: 100%; height: 38px; padding: 0 36px 0 36px; border-radius: 8px; border: 1px solid var(--ant-border);
+  background: var(--ant-surface); color: var(--ant-ink); font: 400 14px var(--ant-font-sans); box-shadow: none;
+}
+.ant-search__input::placeholder { color: var(--ant-ink-muted); }
+html body .ant-search__input:focus { outline: 2px solid var(--ant-focus); outline-offset: 0; border-color: transparent; background: var(--ant-surface-raised); }
+.ant-search__input::-webkit-search-cancel-button { display: none; }
+.ant-search__kbd {
+  position: absolute; right: 9px; top: 50%; transform: translateY(-50%); padding: 1px 6px; border-radius: 4px;
+  border: 1px solid var(--ant-border); background: var(--ant-surface-raised); color: var(--ant-ink-muted); font: 500 11px var(--ant-font-mono); box-shadow: none;
+}
+.ant-search__input:focus ~ .ant-search__kbd { display: none; }
+.ant-search__results {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); max-height: 70vh; overflow-y: auto; z-index: 1050;
+  background: var(--ant-surface-raised); border: 1px solid var(--ant-border); border-radius: 10px; box-shadow: var(--ant-shadow-popover);
+}
+.ant-search__state { padding: 12px 16px; color: var(--ant-ink-muted); font-size: 13px; }
+.ant-search__group { padding: 6px 16px; background: var(--ant-surface-sunken); color: var(--ant-ink-muted); font: 600 11px var(--ant-font-mono); letter-spacing: .1em; text-transform: uppercase; }
+html body a.ant-search__item { display: flex; align-items: center; gap: 10px; padding: 8px 16px; color: var(--ant-ink); text-decoration: none; }
+html body a.ant-search__item:hover, html body a.ant-search__item.is-active { background: var(--ant-surface-sunken); color: var(--ant-ink); }
+.ant-search__item img { width: 26px; height: 26px; object-fit: contain; flex: none; }
+.ant-search__text { display: flex; flex-direction: column; min-width: 0; }
+.ant-search__text span, .ant-search__text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body .ant-search__text small { color: var(--ant-ink-muted); font-size: 12px; }
+
+.ant-top__actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+html body a.ant-pill {
+  display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 12px; margin-right: 6px; border-radius: 16px;
+  font: 600 13px var(--ant-font-sans); text-decoration: none; white-space: nowrap;
+}
+html body a.ant-pill--ok { background: var(--ant-ok-tint); color: var(--ant-ok); }
+html body a.ant-pill--info { background: var(--ant-info-tint); color: var(--ant-info); }
+html body a.ant-pill--warn { background: var(--ant-warn-tint); color: var(--ant-warn); }
+html body a.ant-pill--crit { background: var(--ant-crit-tint); color: var(--ant-crit); }
+html body a.ant-pill--down { background: var(--ant-crit-strong); color: var(--ant-on-crit); }
+html body a.ant-pill:hover { filter: brightness(.95); }
+
+.ant-user { margin-left: 6px; }
+.ant-user__btn {
+  display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 8px 0 4px; border-radius: 10px;
+  background: none; border: 1px solid transparent; color: var(--ant-ink); cursor: pointer; text-align: left;
+}
+.ant-user__btn:hover, .ant-user.open .ant-user__btn { background: var(--ant-surface-sunken); }
+.ant-avatar {
+  display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; flex: none;
+  background: var(--ant-ink); color: var(--ant-surface-raised); font: 700 15px/1 var(--ant-font-display);
+}
+.ant-user__name { display: flex; flex-direction: column; font: 600 13px/1.2 var(--ant-font-sans); max-width: 160px; }
+.ant-user__name small, html.dark body .ant-user__name small { font-weight: 400; font-size: 11.5px; color: var(--ant-ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ant-user__caret { font-size: 10px; color: var(--ant-ink-muted); }
+html body .ant-menu { min-width: 230px; padding: 6px; border-radius: 10px; border: 1px solid var(--ant-border); background: var(--ant-surface-raised); box-shadow: var(--ant-shadow-popover); }
+html body .ant-menu > li > a { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; color: var(--ant-ink); }
+html body .ant-menu > li > a:hover { background: var(--ant-surface-sunken); color: var(--ant-ink); }
+html body .ant-menu .divider { background: var(--ant-border); margin: 6px 0; }
+.ant-menu__head { padding: 6px 10px 8px; font-weight: 600; font-size: 13px; color: var(--ant-ink); }
+html body .ant-menu__head small { display: block; font-weight: 400; color: var(--ant-ink-muted); }
+.ant-menu .dropdown-submenu > .dropdown-menu { right: 100%; left: auto; }
+
+.ant-scrim { position: fixed; inset: 0; z-index: 1035; background: rgba(10, 9, 9, .5); }
+.ant-scrim[hidden] { display: none; }
+
+/* ------------------------------------------------------------------ layar sempit: sidebar jadi laci */
+@media (max-width: 1023px) {
+  html body.ant-has-shell, html.ant-nav-collapsed body.ant-has-shell { padding: calc(var(--ant-top-h) + 16px) 16px 32px; }
+  .ant-side, html.ant-nav-collapsed .ant-side { width: 272px; transform: translateX(-100%); transition: transform .2s ease; box-shadow: none; }
+  html.ant-nav-open .ant-side { transform: none; box-shadow: 0 0 40px rgba(0,0,0,.35); }
+  html.ant-nav-collapsed .ant-side__wordmark, html.ant-nav-collapsed .ant-navlink span, html.ant-nav-collapsed .ant-navgroup__title span { display: revert; }
+  html.ant-nav-collapsed .ant-navlink { justify-content: flex-start; padding: 0 10px; }
+  html.ant-nav-collapsed .ant-navgroup__title { justify-content: space-between; height: 30px; pointer-events: auto; }
+  html.ant-nav-collapsed .ant-navgroup__title::after { display: none; }
+  html.ant-nav-collapsed .ant-navgroup__title i { display: inline-block; }
+  html.ant-nav-collapsed .ant-navgroup[data-group="more"] { display: block; }
+  .ant-side__collapse { display: none; }
+  .ant-top, html.ant-nav-collapsed .ant-top { left: 0; padding: 0 12px; gap: 8px; }
+  .ant-top__menu { display: inline-flex !important; }
+  .ant-top__brand { display: inline-flex !important; }
+  .ant-user__name, .ant-user__caret { display: none; }
+}
+.ant-menu__theme { display: none; }
+@media (max-width: 640px) {
+  .ant-top__brand span { display: none; }
+  #ant-theme, .ant-user__caret { display: none; }
+  .ant-menu__theme { display: block; }
+  .ant-top__actions { gap: 0; }
+  .ant-search { min-width: 0; }
+  .ant-pill span { display: none; }
+  html body a.ant-pill { padding: 0 10px; margin-right: 0; }
+  .ant-search__kbd { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .ant-side, .ant-navgroup__title i { transition: none; } }
+@media print { .ant-side, .ant-top { display: none !important; } html body.ant-has-shell { padding: 0 !important; } }
+
+/* ================================================================== penyelarasan komponen LibreNMS */
+html body.ant-has-shell h1, html body.ant-has-shell h2, html body.ant-has-shell h3,
+html body.ant-has-shell .h1, html body.ant-has-shell .h2, html body.ant-has-shell .h3 { font-family: var(--ant-font-display); letter-spacing: 0; color: var(--ant-ink); }
+html body.ant-has-shell h4, html body.ant-has-shell h5 { color: var(--ant-ink); font-weight: 600; }
+html body.ant-has-shell small, html body.ant-has-shell .text-muted { color: var(--ant-ink-muted); }
+
+/* Panel → kartu */
+html body.ant-has-shell .panel { background: var(--ant-surface-raised); border: 1px solid var(--ant-border); border-radius: 10px; box-shadow: none; margin-bottom: 16px; color: var(--ant-ink); }
+html body.ant-has-shell .panel > .panel-heading,
+html body.ant-has-shell .panel-default > .panel-heading {
+  background: transparent; color: var(--ant-ink); border-bottom: 1px solid var(--ant-border); padding: 12px 16px; border-radius: 10px 10px 0 0;
+}
+html body.ant-has-shell .panel-title, html body.ant-has-shell .panel > .panel-heading strong { font: 600 15px/1.3 var(--ant-font-sans); color: var(--ant-ink); }
+html body.ant-has-shell .panel > .panel-footer { background: var(--ant-surface-sunken); border-top: 1px solid var(--ant-border); border-radius: 0 0 10px 10px; }
+html body.ant-has-shell .panel > .table, html body.ant-has-shell .panel > .table-responsive > .table { margin-bottom: 0; }
+html body.ant-has-shell .well { background: var(--ant-surface-sunken); border: 1px solid var(--ant-border); border-radius: 10px; box-shadow: none; color: var(--ant-ink); }
+html body.ant-has-shell .list-group-item { background: var(--ant-surface-raised); border-color: var(--ant-border); color: var(--ant-ink); }
+
+/* Tabel */
+html body.ant-has-shell .table { color: var(--ant-ink); background: transparent; }
+html body.ant-has-shell .table > thead > tr > th {
+  font: 600 11.5px/16px var(--ant-font-sans); letter-spacing: .05em; text-transform: uppercase; color: var(--ant-ink-muted);
+  background: var(--ant-surface-sunken); border-bottom: 1px solid var(--ant-border); border-top: 0; padding: 9px 10px; vertical-align: middle;
+}
+html body.ant-has-shell .table > thead > tr > th a { color: var(--ant-ink-muted); }
+html body.ant-has-shell .table > tbody > tr > td, html body.ant-has-shell .table > tbody > tr > th { border-top: 1px solid var(--ant-border); padding: 8px 10px; vertical-align: middle; }
+html body.ant-has-shell .table-striped > tbody > tr:nth-of-type(odd) { background: transparent; }
+html body.ant-has-shell .table-hover > tbody > tr:hover, html body.ant-has-shell .bootgrid-table > tbody > tr:hover { background: var(--ant-surface-sunken); }
+html body.ant-has-shell .table-condensed > tbody > tr > td { padding: 6px 10px; }
+html body.ant-has-shell .table-bordered, html body.ant-has-shell .table-bordered > tbody > tr > td, html body.ant-has-shell .table-bordered > thead > tr > th { border-color: var(--ant-border); }
+
+/* Bootgrid (tabel AJAX LibreNMS) */
+html body.ant-has-shell .bootgrid-header, html body.ant-has-shell .bootgrid-footer { margin: 0; padding: 10px 0; }
+html body.ant-has-shell .bootgrid-header .search .form-control { height: 36px; }
+html body.ant-has-shell .bootgrid-table th > .column-header-anchor { color: var(--ant-ink-muted); }
+html body.ant-has-shell .bootgrid-table th:hover, html body.ant-has-shell .bootgrid-table th:active { background: var(--ant-border); }
+
+/* Tombol */
+html body.ant-has-shell .btn { border-radius: 6px; font-weight: 500; box-shadow: none; text-shadow: none; }
+html body.ant-has-shell .btn-default { background: var(--ant-surface-raised); border-color: var(--ant-border-strong); color: var(--ant-ink); }
+html body.ant-has-shell .btn-default:hover, html body.ant-has-shell .btn-default:focus, html body.ant-has-shell .btn-default.active,
+html body.ant-has-shell .open > .btn-default.dropdown-toggle { background: var(--ant-surface-sunken); border-color: var(--ant-border-strong); color: var(--ant-ink); }
+html body.ant-has-shell .btn-primary { background: var(--ant-ink); border-color: var(--ant-ink); color: var(--ant-surface-raised); }
+html body.ant-has-shell .btn-primary:hover, html body.ant-has-shell .btn-primary:focus, html body.ant-has-shell .btn-primary.active { background: var(--ant-ink-muted); border-color: var(--ant-ink-muted); color: var(--ant-surface-raised); }
+html body.ant-has-shell .btn-success { background: var(--ant-ok); border-color: var(--ant-ok); color: var(--ant-surface-raised); }
+html body.ant-has-shell .btn-info { background: var(--ant-info); border-color: var(--ant-info); color: #fff; }
+html body.ant-has-shell .btn-warning { background: var(--ant-warn); border-color: var(--ant-warn); color: var(--ant-surface-raised); }
+html body.ant-has-shell .btn-danger { background: var(--ant-crit-strong); border-color: var(--ant-crit-strong); color: var(--ant-on-crit); }
+html body.ant-has-shell .btn-success:hover, html body.ant-has-shell .btn-info:hover, html body.ant-has-shell .btn-warning:hover, html body.ant-has-shell .btn-danger:hover { filter: brightness(.9); }
+html body.ant-has-shell .btn-link { color: var(--ant-info); }
+
+/* Form */
+html body.ant-has-shell .form-control {
+  background: var(--ant-surface-raised); color: var(--ant-ink); border: 1px solid var(--ant-border-strong); border-radius: 6px; box-shadow: none;
+}
+html body.ant-has-shell .form-control:focus { border-color: var(--ant-focus); box-shadow: 0 0 0 1px var(--ant-focus); }
+html body.ant-has-shell .form-control[disabled], html body.ant-has-shell .form-control[readonly] { background: var(--ant-surface-sunken); }
+html body.ant-has-shell .input-group-addon { background: var(--ant-surface-sunken); border-color: var(--ant-border-strong); color: var(--ant-ink-muted); }
+html body.ant-has-shell .control-label, html body.ant-has-shell label { color: var(--ant-ink); font-weight: 600; }
+html body.ant-has-shell .help-block { color: var(--ant-ink-muted); }
+html body.ant-has-shell .select2-container--bootstrap .select2-selection { background: var(--ant-surface-raised); border-color: var(--ant-border-strong); border-radius: 6px; color: var(--ant-ink); }
+
+/* Tab, pill, pagination, breadcrumb */
+html body.ant-has-shell .nav-tabs { border-bottom: 1px solid var(--ant-border); }
+html body.ant-has-shell .nav-tabs > li > a { border: 0; border-bottom: 2px solid transparent; border-radius: 0; color: var(--ant-ink-muted); margin-right: 4px; }
+html body.ant-has-shell .nav-tabs > li > a:hover { background: transparent; color: var(--ant-ink); border-bottom-color: var(--ant-border-strong); }
+html body.ant-has-shell .nav-tabs > li.active > a, html body.ant-has-shell .nav-tabs > li.active > a:hover, html body.ant-has-shell .nav-tabs > li.active > a:focus {
+  background: transparent; border: 0; border-bottom: 2px solid var(--ant-brand); color: var(--ant-ink); font-weight: 600;
+}
+html body.ant-has-shell .nav-pills > li > a { border-radius: 6px; color: var(--ant-ink-muted); }
+html body.ant-has-shell .nav-pills > li.active > a { background: var(--ant-ink); color: var(--ant-surface-raised); }
+html body.ant-has-shell .pagination > li > a, html body.ant-has-shell .pagination > li > span { background: var(--ant-surface-raised); border-color: var(--ant-border); color: var(--ant-ink); }
+html body.ant-has-shell .pagination > .active > a, html body.ant-has-shell .pagination > .active > span { background: var(--ant-ink); border-color: var(--ant-ink); color: var(--ant-surface-raised); }
+html body.ant-has-shell .breadcrumb { background: transparent; padding: 0; margin-bottom: 8px; }
+html body.ant-has-shell .breadcrumb > li, html body.ant-has-shell .breadcrumb > li > a { color: var(--ant-ink-muted); font-size: 13px; }
+
+/* Dropdown, modal, alert, label */
+html body.ant-has-shell .dropdown-menu { background: var(--ant-surface-raised); border: 1px solid var(--ant-border); border-radius: 8px; box-shadow: var(--ant-shadow-popover); }
+html body.ant-has-shell .dropdown-menu > li > a { color: var(--ant-ink); padding: 6px 14px; }
+html body.ant-has-shell .dropdown-menu > li > a:hover, html body.ant-has-shell .dropdown-menu > li > a:focus { background: var(--ant-surface-sunken); color: var(--ant-ink); }
+html body.ant-has-shell .dropdown-menu .divider { background: var(--ant-border); }
+html body.ant-has-shell .modal-content { background: var(--ant-surface-raised); border: 1px solid var(--ant-border); border-radius: 12px; box-shadow: 0 20px 50px rgba(0,0,0,.25); color: var(--ant-ink); }
+html body.ant-has-shell .modal-header, html body.ant-has-shell .modal-footer { border-color: var(--ant-border); }
+html body.ant-has-shell .modal-title { font: 700 20px/1.2 var(--ant-font-display); }
+html body.ant-has-shell .alert { border-radius: 8px; border: 0; border-left: 3px solid; }
+html body.ant-has-shell .alert-success { background: var(--ant-ok-tint); color: var(--ant-ok); border-color: var(--ant-ok); }
+html body.ant-has-shell .alert-info { background: var(--ant-info-tint); color: var(--ant-info); border-color: var(--ant-info); }
+html body.ant-has-shell .alert-warning { background: var(--ant-warn-tint); color: var(--ant-warn); border-color: var(--ant-warn); }
+html body.ant-has-shell .alert-danger { background: var(--ant-crit-tint); color: var(--ant-crit); border-color: var(--ant-crit); }
+html body.ant-has-shell .label { border-radius: 999px; padding: 3px 8px; font-weight: 500; }
+html body.ant-has-shell .label-success { background: var(--ant-ok); }
+html body.ant-has-shell .label-warning { background: var(--ant-warn); }
+html body.ant-has-shell .label-danger { background: var(--ant-crit-strong); }
+html body.ant-has-shell .label-info, html body.ant-has-shell .label-primary { background: var(--ant-info); }
+html body.ant-has-shell .label-default { background: var(--ant-ink-muted); }
+html body.ant-has-shell .badge { background: var(--ant-surface-sunken); color: var(--ant-ink); font-weight: 600; }
+
+/* Halaman perangkat LibreNMS: header perangkat & menu tab */
+html body.ant-has-shell #device-header, html body.ant-has-shell .device-header-table { background: var(--ant-surface-raised); border: 1px solid var(--ant-border); border-radius: 10px; }
+html body.ant-has-shell .pagemenu-selected { color: var(--ant-ink); }
+html body.ant-has-shell #pace .pace-progress, html body.ant-has-shell .pace .pace-progress { background: var(--ant-brand); }

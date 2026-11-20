@@ -109,7 +109,8 @@
     @endauth
     @yield('javascript')
 </head>
-<body>
+{{-- ANTAREJA NMS: kelas ant-has-shell = halaman memakai kerangka sidebar + topbar ANTAREJA --}}
+<body @if($show_menu && request()->input('bare') != 'yes') class="ant-has-shell" @endif>
 @if(Auth::check())
     <script>
         // only update resolution if it doesn't match what is stored in the session
@@ -122,7 +123,8 @@
 @if(request()->input('bare') == 'yes')
     <style>body { padding-top: 0 !important; padding-bottom: 0 !important; }</style>
 @elseif($show_menu)
-    @include('layouts.menu')
+    {{-- ANTAREJA NMS: kerangka aplikasi ANTAREJA menggantikan navbar LibreNMS (cadangan: menu asli) --}}
+    @includeFirst(['antareja::shell.chrome', 'layouts.menu'])
 @endif
 
 @yield('content')

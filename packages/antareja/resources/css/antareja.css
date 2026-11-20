@@ -5,6 +5,8 @@
  * yang dimuat tanpa layer; properti yang juga diatur kelas tw:* sengaja tidak disentuh.
  */
 @import "./tokens.css";
+@import "./shell.css";
+@import "./ops.css";
 
 /* ---------------------------------------------------------------- 2. tampilan bersama */
 /* html body: lebih spesifik dari "body" di html/css/styles.css LibreNMS yang dimuat sesudahnya */

@@ -6,7 +6,7 @@ Satu aplikasi web untuk monitoring dan manajemen infrastruktur ICT tambang, diba
 LibreNMS (fork), dengan fitur ala Zabbix (problem, trigger, SLA) dan SmokePing (kualitas jaringan)
 yang diimplementasikan ulang secara native.
 
-- Versi: **0.6.2 (Fase 5 + live view CCTV + Setup Awal ANTAREJA)** · Basis: LibreNMS 26.10.2 · Lisensi: GPLv3
+- Versi: **0.7.0 (Fase 5 + live view CCTV + Setup Awal + tampilan ANTAREJA: sidebar & Pusat Operasi)** · Basis: LibreNMS 26.10.2 · Lisensi: GPLv3
 - Instalasi: [`docs/INSTALL.md`](docs/INSTALL.md)
 - Fase 1 (Site, Inventory, Discovery, Mapping, Audit, Data Quality): [`docs/FASE-1-Inventaris.md`](docs/FASE-1-Inventaris.md)
 - Fase 2 (IPAM, Network Quality, Wireless, CCTV): [`docs/FASE-2-IPAM-Kualitas.md`](docs/FASE-2-IPAM-Kualitas.md)

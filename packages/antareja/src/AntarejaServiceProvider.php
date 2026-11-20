@@ -38,7 +38,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.6.2';
+    public const VERSION = '0.7.0';
 
     public function register(): void
     {
@@ -76,6 +76,10 @@ class AntarejaServiceProvider extends ServiceProvider
                 SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class, SetupTokenCommand::class,
             ]);
         }
+
+        // Kerangka aplikasi: data menu LibreNMS (pencarian, notifikasi, preferensi) + navigasi ANTAREJA
+        View::composer('antareja::shell.chrome', \App\Http\ViewComposers\MenuComposer::class);
+        View::composer('antareja::shell.chrome', \Antareja\View\ShellComposer::class);
 
         View::composer('antareja::partials.navbar', function ($view): void {
             $view->with('antareja_modules', $this->app->make(ModuleRegistry::class)->menuFor(Auth::user()));

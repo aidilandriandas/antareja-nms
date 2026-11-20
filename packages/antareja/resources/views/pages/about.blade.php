@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="tw:max-w-4xl">
+    <div class="tw:max-w-6xl">
         <h1 class="tw:text-2xl tw:font-bold tw:mt-2">Tentang ANTAREJA NMS</h1>
         <p class="tw:text-base">
             <strong>ANTAREJA NMS</strong> {{ $version }} — {{ config('antareja.full_name') }}.
@@ -44,6 +44,7 @@
         </div>
 
         <p class="tw:text-sm"><a href="{{ url('about') }}">Informasi sistem LibreNMS &rarr;</a></p>
+        <div class="tw:mt-8">@include('antareja::partials.module-catalog')</div>
     </div>
 </div>
 @endsection
