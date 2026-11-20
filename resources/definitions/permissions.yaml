@@ -301,6 +301,14 @@ groups:
         - ant-config.view
         - ant-config.update
 
+    ant-capacity:
+        - ant-capacity.view
+        - ant-capacity.update
+
+    ant-fiber:
+        - ant-fiber.view
+        - ant-fiber.update
+
     ant-maintenance:
         - ant-maintenance.view
         - ant-maintenance.update

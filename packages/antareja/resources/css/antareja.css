@@ -196,3 +196,15 @@ html .panel:has(img.logon-logo) .btn-primary:hover { filter: brightness(.88); }
 .ant-diff__del { background: color-mix(in srgb, var(--ant-crit) 14%, transparent); }
 .ant-diff__gap td { text-align: center; color: var(--ant-ink-muted); background: var(--ant-surface-sunken, transparent); }
 .ant-config-text { margin: 0; border: 0; border-radius: 0; max-height: 600px; overflow: auto; font-size: 12px; background: transparent; color: inherit; }
+
+/* ---------- Fiber: chip nomor core dengan warna TIA-598 ---------- */
+.ant-core-chip { display: inline-flex; align-items: center; gap: 4px; font-family: var(--ant-font-mono); font-size: 12px; font-weight: 600; }
+.ant-core-chip__dot { width: 12px; height: 12px; border-radius: 999px; box-shadow: 0 0 0 1px var(--ant-border); flex: none; }
+.ant-fiber-path { list-style: none; margin: 0; padding: 0; }
+.ant-fiber-path > li { position: relative; padding: 0 0 14px 28px; }
+.ant-fiber-path > li::before { content: ""; position: absolute; left: 9px; top: 18px; bottom: 0; border-left: 2px solid var(--ant-border); }
+.ant-fiber-path > li:last-child::before { display: none; }
+.ant-fiber-path__node { position: absolute; left: 2px; top: 3px; width: 16px; height: 16px; border-radius: 4px; background: var(--ant-surface); border: 2px solid var(--ant-ink-muted); }
+.ant-fiber-path__node--joint { border-radius: 999px; }
+.ant-fiber-path__node--cable { border: 0; background: transparent; }
+.ant-fiber-path__node--fault { border-color: var(--ant-crit); background: var(--ant-crit); }

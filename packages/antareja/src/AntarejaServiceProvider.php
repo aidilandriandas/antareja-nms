@@ -2,6 +2,7 @@
 
 namespace Antareja;
 
+use Antareja\Console\CapacityCommand;
 use Antareja\Console\ConfigBackupCommand;
 use Antareja\Console\IpamSyncCommand;
 use Antareja\Console\ProblemsCommand;
@@ -59,7 +60,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $this->commands([
                 SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
                 IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class, ProblemsCommand::class,
-                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class,
+                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class,
             ]);
         }
 
@@ -95,6 +96,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $schedule->command('antareja:problems')->everyMinute()->withoutOverlapping(5)->runInBackground();
             $schedule->command('antareja:sla')->dailyAt('00:35')->withoutOverlapping()->runInBackground();
             $schedule->command('antareja:config-backup')->hourlyAt(41)->withoutOverlapping(120)->runInBackground();
+            $schedule->command('antareja:capacity')->cron('23 */6 * * *')->withoutOverlapping(120)->runInBackground();
         });
     }
 
@@ -133,6 +135,8 @@ class AntarejaServiceProvider extends ServiceProvider
                 'ant-workorder' => 'ANTAREJA · Work Order',
                 'ant-change' => 'ANTAREJA · Change Request',
                 'ant-config' => 'ANTAREJA · Backup Konfigurasi',
+                'ant-capacity' => 'ANTAREJA · Capacity Planning',
+                'ant-fiber' => 'ANTAREJA · Fiber Optic',
                 'ant-maintenance' => 'ANTAREJA · Maintenance',
                 'ant-report' => 'ANTAREJA · Reports',
                 'ant-audit' => 'ANTAREJA · Audit Log',

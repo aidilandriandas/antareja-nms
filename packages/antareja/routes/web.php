@@ -3,11 +3,13 @@
 use Antareja\Http\Controllers\AboutController;
 use Antareja\Http\Controllers\AttachmentController;
 use Antareja\Http\Controllers\AuditLogController;
+use Antareja\Http\Controllers\CapacityController;
 use Antareja\Http\Controllers\CctvController;
 use Antareja\Http\Controllers\ChangeController;
 use Antareja\Http\Controllers\ConfigController;
 use Antareja\Http\Controllers\DiscoveryController;
 use Antareja\Http\Controllers\EscalationController;
+use Antareja\Http\Controllers\FiberController;
 use Antareja\Http\Controllers\HomeController;
 use Antareja\Http\Controllers\IncidentController;
 use Antareja\Http\Controllers\InventoryController;
@@ -276,6 +278,43 @@ Route::middleware(['web', 'auth'])
             Route::post('config/credentials', [ConfigController::class, 'storeCredential'])->name('config.credentials.store');
             Route::put('config/credentials/{credential}', [ConfigController::class, 'updateCredential'])->name('config.credentials.update');
             Route::delete('config/credentials/{credential}', [ConfigController::class, 'destroyCredential'])->name('config.credentials.destroy');
+        });
+
+        // Capacity planning
+        Route::middleware('can:ant-capacity.view')->group(function (): void {
+            Route::get('capacity', [CapacityController::class, 'index'])->name('capacity.index');
+            Route::get('capacity/{item}', [CapacityController::class, 'show'])->whereNumber('item')->name('capacity.show');
+        });
+        Route::middleware('can:ant-capacity.update')->group(function (): void {
+            Route::put('capacity/{item}', [CapacityController::class, 'update'])->name('capacity.update');
+            Route::post('capacity/ports', [CapacityController::class, 'addPort'])->name('capacity.ports');
+            Route::post('capacity/refresh', [CapacityController::class, 'refresh'])->middleware('throttle:4,1')->name('capacity.refresh');
+        });
+
+        // Fiber optic
+        Route::middleware('can:ant-fiber.view')->group(function (): void {
+            Route::get('fiber', [FiberController::class, 'index'])->name('fiber.index');
+            Route::get('fiber/cables/{cable}', [FiberController::class, 'showCable'])->whereNumber('cable')->name('fiber.cables.show');
+            Route::get('fiber/odfs/{odf}', [FiberController::class, 'showOdf'])->name('fiber.odfs.show');
+            Route::get('fiber/joints/{joint}', [FiberController::class, 'showJoint'])->name('fiber.joints.show');
+            Route::get('fiber/trace/{core}', [FiberController::class, 'trace'])->name('fiber.trace');
+            Route::get('fiber/port/{port}', [FiberController::class, 'traceForPort'])->whereNumber('port')->name('fiber.port');
+        });
+        Route::middleware('can:ant-fiber.update')->group(function (): void {
+            Route::get('fiber/cables/create', [FiberController::class, 'createCable'])->name('fiber.cables.create');
+            Route::post('fiber/cables', [FiberController::class, 'storeCable'])->name('fiber.cables.store');
+            Route::get('fiber/cables/{cable}/edit', [FiberController::class, 'editCable'])->name('fiber.cables.edit');
+            Route::put('fiber/cables/{cable}', [FiberController::class, 'updateCable'])->name('fiber.cables.update');
+            Route::put('fiber/cores/{core}', [FiberController::class, 'updateCore'])->name('fiber.cores.update');
+            Route::post('fiber/cores/{core}/tests', [FiberController::class, 'storeTest'])->name('fiber.cores.tests');
+            Route::post('fiber/odfs', [FiberController::class, 'storeOdf'])->name('fiber.odfs.store');
+            Route::put('fiber/odfs/{odf}', [FiberController::class, 'updateOdf'])->name('fiber.odfs.update');
+            Route::put('fiber/odf-ports/{port}', [FiberController::class, 'updateOdfPort'])->name('fiber.odf-ports.update');
+            Route::get('fiber/device-ports/{device}', [FiberController::class, 'devicePorts'])->name('fiber.device-ports');
+            Route::post('fiber/joints', [FiberController::class, 'storeJoint'])->name('fiber.joints.store');
+            Route::put('fiber/joints/{joint}', [FiberController::class, 'updateJoint'])->name('fiber.joints.update');
+            Route::post('fiber/joints/{joint}/splices', [FiberController::class, 'storeSplice'])->name('fiber.splices.store');
+            Route::delete('fiber/splices/{splice}', [FiberController::class, 'destroySplice'])->name('fiber.splices.destroy');
         });
 
         // Audit log

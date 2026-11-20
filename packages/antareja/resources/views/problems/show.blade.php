@@ -37,7 +37,8 @@
                 <div class="panel-heading"><strong>Detail</strong></div>
                 <table class="table table-condensed tw:m-0">
                     <tr><th class="tw:w-44">Perangkat</th><td>@if($problem->device)<a href="{{ route('antareja.inventory.show', $problem->device_id) }}">{{ $problem->device->displayName() }}</a> <x-antareja::device-status :device="$problem->device" />@else — @endif</td></tr>
-                    @if($problem->port)<tr><th>Port</th><td class="ant-data">{{ $problem->port->getShortLabel() }}</td></tr>@endif
+                    @if($problem->port)<tr><th>Port</th><td><span class="ant-data">{{ $problem->port->getShortLabel() }}</span>
+                        @can('ant-fiber.view')@if(\Antareja\Models\FiberOdfPort::where('port_id', $problem->port_id)->whereNotNull('core_id')->exists()) · <a href="{{ route('antareja.fiber.port', $problem->port_id) }}"><i class="fa fa-grip-lines"></i> jalur fiber</a>@endif @endcan</td></tr>@endif
                     <tr><th>Site</th><td>{{ $problem->site ? $problem->site->code . ' · ' . $problem->site->name : '—' }}</td></tr>
                     <tr><th>Keterangan</th><td>{{ $problem->detail ?? '—' }}</td></tr>
                     <tr><th>Correlation key</th><td class="ant-data tw:text-xs">{{ $problem->correlation_key }}</td></tr>
