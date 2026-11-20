@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  Versi 0.8.0 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
+  Versi 0.8.1 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
 </p>
 
 ---
@@ -47,37 +47,47 @@ ANTAREJA NMS menggabungkan kemampuan tiga alat monitoring populer dalam **satu a
 | **SmokePing** (dibuat ulang secara native) | Quality Probe: latency, packet loss, jitter, grafik "smoke" |
 
 Ditambah modul khusus kebutuhan operasional tambang: inventaris resmi per site/area, verifikasi perangkat hasil discovery,
-device mapping terverifikasi, IPAM, CCTV, incident & work order, change request, backup konfigurasi, capacity planning,
-manajemen fiber optic, laporan bulanan, dan dashboard manajemen.
+device mapping terverifikasi, IPAM, CCTV & live view, incident & work order, change request, backup konfigurasi,
+capacity planning, manajemen fiber optic, laporan bulanan, dashboard manajemen, **layar NOC** dengan peta topologi
+dan trafik live, serta **backup & pemulihan NMS** dari web.
+
+Tampilannya dibuat sendiri (bukan tampilan LibreNMS): menu samping berbahasa Indonesia yang dikelompokkan per pekerjaan,
+halaman awal **Pusat Operasi**, tema terang/gelap, dan nyaman dipakai di HP.
 
 **Prinsip desain**
 - Semua fitur berjalan **di server Anda sendiri** (VM Proxmox) dan tetap berfungsi **tanpa internet**. Hanya asisten AI yang opsional butuh internet.
 - ANTAREJA **tidak pernah mengubah konfigurasi perangkat jaringan**. Backup konfigurasi hanya memakai perintah baca; AI hanya menulis draf teks.
-- Topologi tidak ditebak: hubungan antar perangkat berasal dari **mapping yang diverifikasi engineer**.
+- Topologi tidak ditebak: sambungan antar perangkat berasal dari **mapping yang diverifikasi engineer** dan tetangga
+  **LLDP/CDP** yang dilaporkan perangkat. Saran yang belum diverifikasi selalu ditandai (garis putus-putus).
 - Setiap perubahan data penting tercatat di **audit log**.
 
 ---
 
 ## 2. Fitur
 
+### Pusat kendali
+| Modul | Isi |
+|---|---|
+| **Pusat Operasi** | Halaman awal setelah login: status keseluruhan dalam satu kalimat, ketersediaan, perangkat down, problem aktif per severity, status per site, pekerjaan tim, CCTV, kualitas link, kelengkapan data — diperbarui otomatis tiap 60 detik |
+| **Layar NOC** | Tampilan layar penuh untuk TV/monitor ruang kontrol: peta topologi live (trafik mengalir, perangkat down berdenyut), ketersediaan, feed problem, perangkat down, status per site & grup — diperbarui tiap 15 detik tanpa reload |
+| **Peta Topologi** | Siapa terhubung ke siapa (mapping terverifikasi + LLDP/CDP), **trafik live di tiap garis** (▼ ke bawah / ▲ ke atas, dibaca langsung dari perangkat tiap 5 detik), warna garis = pemakaian bandwidth port, filter site/grup, cari perangkat, simpan tata letak; **hubungkan perangkat manual** langsung di peta (klik 2 perangkat → pilih port & jenis sambungan) |
+
 ### Monitoring
 | Modul | Isi |
 |---|---|
-| **Layar NOC** | Tampilan layar penuh untuk TV/monitor ruang kontrol: peta topologi live (trafik mengalir, perangkat down berdenyut), ketersediaan, feed problem, perangkat down, status per site & grup — diperbarui tiap 15 detik tanpa reload |
-| **Peta Topologi** | Siapa terhubung ke siapa (mapping terverifikasi + LLDP/CDP), **trafik live di tiap garis** (▼ ke bawah / ▲ ke atas, dibaca langsung dari perangkat tiap 5 detik), warna garis = pemakaian bandwidth port, filter site/grup, cari perangkat, simpan tata letak; **hubungkan perangkat manual** langsung di peta (klik 2 perangkat → pilih port & jenis sambungan) |
-| **Tambah perangkat** | Form ANTAREJA: nama perangkat, grup, site/area, SNMP v2c/v3 atau ping saja; tambah banyak sekaligus (tempel dari Excel: `IP, Nama, Grup`) |
-| **Uji koneksi** | Tes ping + SNMP dari server ANTAREJA (form tambah perangkat & halaman inventaris), lengkap dengan diagnosis penyebab; perangkat "ping saja" bisa dialihkan ke SNMP dengan satu klik |
-| **Grup perangkat** | Grup otomatis per kategori (CCTV, Access Point, Switch, NVR, …) beserta status online/down; juga grup buatan sendiri |
 | **Network Monitoring** | Status perangkat (SNMP v2c/v3, ICMP), uptime, sensor hardware, grafik — dari LibreNMS |
 | **Interface Monitoring** | Status port, traffic, bandwidth, error, utilisasi |
-| **Wireless Monitoring** | AP, controller, PTP/PTMP: client, RSSI, SNR, frekuensi, CCQ, pasangan link |
+| **Wireless Monitoring** | AP, controller, PTP/PTMP: client, RSSI, SNR, frekuensi, channel, rate, CCQ, jarak, pasangan link; nilai buruk disorot |
 | **CCTV Infrastructure** | Kamera & NVR: status, IP, MAC, port switch, NVR perekam, lokasi, riwayat gangguan |
 | **Live view CCTV** | Grid snapshot & video langsung dari NVR Hikvision di browser (tanpa iVMS); cek otomatis gambar gelap, polos, beku, buram, bergeser |
 | **Network Quality** | Quality Probe (20 ping tiap 5 menit): latency, loss, jitter, grafik smoke 3 jam – 30 hari |
 
-### Inventaris & jaringan
+### Perangkat & inventaris
 | Modul | Isi |
 |---|---|
+| **Tambah perangkat** | Form ANTAREJA: nama perangkat, grup, site/area, SNMP v2c/v3 atau ping saja; tambah banyak sekaligus (tempel dari Excel: `IP, Nama, Grup`) |
+| **Uji koneksi** | Tes ping + SNMP dari server ANTAREJA (form tambah perangkat & halaman inventaris), lengkap dengan diagnosis penyebab; perangkat "ping saja" bisa dialihkan ke SNMP dengan satu klik |
+| **Grup perangkat** | Grup otomatis per kategori (CCTV, Access Point, Switch, NVR, …) beserta status online/down; juga grup buatan sendiri |
 | **Site & Area** | Office, workshop, plant, pit, ROM, jetty, mess, remote, beserta area di dalamnya |
 | **Device Inventory** | Kategori, site/area, rak, serial, PIC, garansi, lifecycle, evidence foto/PDF, kelengkapan data, export CSV |
 | **Device Discovery** | Perangkat baru masuk antrean verifikasi: Pending → Verified / Incomplete / Rejected / Retired |
@@ -106,6 +116,13 @@ manajemen fiber optic, laporan bulanan, dan dashboard manajemen.
 | **Asisten AI** (opsional) | Draf laporan serah terima shift & analisis incident — hanya teks, tanpa akses ke perangkat |
 | **Dashboard Manajemen** | KPI availability, SLA, incident, MTTA/MTTR, tren 6 bulan, per site |
 | **Reports** | Laporan bulanan 9 bagian per site: cetak/PDF, Excel, CSV |
+
+### Administrasi
+| Modul | Isi |
+|---|---|
+| **Setup Awal** | Admin pertama dibuat di halaman `/setup` yang dijaga kode setup dari server (bukan wizard LibreNMS) |
+| **Backup & Pemulihan** | Backup NMS lengkap (database, kredensial, grup, site, inventaris, user, grafik) harian & manual, unduh dari browser, salinan otomatis ke NAS/server lain lewat SFTP, pulihkan dengan satu perintah |
+| **User & Role** | Akun dan hak akses per modul (grup permission `ant-*`) |
 | **Audit Log** | Jejak login & perubahan data (sebelum/sesudah) |
 
 ---
@@ -119,10 +136,14 @@ Semua halaman memakai kerangka ANTAREJA: menu samping dikelompokkan per pekerjaa
 | Layar NOC (layar penuh untuk TV ruang kontrol) | Peta topologi |
 |---|---|
 | ![Layar NOC](docs/screenshots/layar-noc.png) | ![Peta topologi](docs/screenshots/peta-topologi.png) |
+| **Trafik live di setiap sambungan** | **Hubungkan perangkat langsung dari peta** |
+| ![Trafik live](docs/screenshots/trafik-live.png) | ![Hubungkan perangkat](docs/screenshots/hubungkan-perangkat.png) |
 | **Grup perangkat** | **Tambah perangkat (satu / banyak sekaligus)** |
 | ![Grup perangkat](docs/screenshots/grup-perangkat.png) | ![Tambah perangkat](docs/screenshots/tambah-perangkat.png) |
 | **Pusat Operasi (halaman awal)** | **Pusat Operasi — tema gelap** |
 | ![Pusat Operasi](docs/screenshots/pusat-operasi.png) | ![Pusat Operasi gelap](docs/screenshots/pusat-operasi-gelap.png) |
+| **Uji koneksi (ping + SNMP)** | **Backup & pemulihan NMS** |
+| ![Uji koneksi](docs/screenshots/uji-koneksi.png) | ![Backup](docs/screenshots/backup.png) |
 | **Daftar perangkat dalam kerangka ANTAREJA** | **Halaman login** |
 | ![Perangkat](docs/screenshots/perangkat.png) | ![Login](docs/screenshots/login.png) |
 | **Dashboard manajemen** | **Incident** |
@@ -142,18 +163,20 @@ ANTAREJA berjalan sebagai beberapa container Docker di **satu VM**:
 
 ```
  Pengguna (browser) ──HTTPS 443──▶ nginx ──▶ app (ANTAREJA + LibreNMS, PHP/Laravel)
-                                              │        ├─ scheduler (problem, SLA, kapasitas, anomali, backup konfigurasi)
+                                              │        ├─ scheduler (problem, SLA, kapasitas, anomali, backup konfigurasi, grup, backup NMS)
                                               │        └─ Quality Probe (fping)
                                               ├─▶ db (MariaDB)        ├─▶ redis (cache & sesi)
                                               ├─▶ rrdcached (grafik)  └─▶ dispatcher (poller SNMP/ICMP)
                                               └─▶ go2rtc (gateway video CCTV, internal) ──RTSP 554──▶ NVR Hikvision
                                                          │
                          Perangkat jaringan ◀── SNMP UDP 161 / ICMP / SSH 22 (opsional, backup konfigurasi)
+                         NAS / server backup ◀── SFTP 22 (opsional, salinan backup NMS)
 ```
 
 - Kode ANTAREJA berada di `packages/antareja/` sebagai paket Laravel; perubahan pada kode LibreNMS dibuat seminimal mungkin
   dan dicatat di [`MODIFICATIONS.md`](MODIFICATIONS.md).
-- Data tersimpan di volume Docker (database, RRD, evidence) dan ikut di-backup oleh `./antareja.sh backup`.
+- Data tersimpan di volume Docker (database, RRD, evidence, backup NMS) dan ikut di-backup oleh menu *Backup & Pemulihan*
+  maupun `./antareja.sh backup`.
 
 ---
 
@@ -169,6 +192,8 @@ ANTAREJA berjalan sebagai beberapa container Docker di **satu VM**:
 - **Firewall:**
   - Pengguna → VM: TCP 443 (dan 80, otomatis dialihkan ke 443).
   - VM → perangkat: ICMP dan UDP 161 (SNMP). TCP 22 bila memakai backup konfigurasi. TCP 554 (RTSP) ke NVR untuk live view CCTV. Opsional: UDP 162 masuk (SNMP trap).
+  - VM → NAS/server backup: TCP 22 (SFTP) bila salinan backup NMS diaktifkan.
+  - Di perangkat, **izinkan IP VM ANTAREJA** pada daftar akses SNMP (mis. `addresses=` di community MikroTik) dan jangan blok ICMP darinya.
 - **Internet:** dibutuhkan **saat instalasi/update** (mengunduh image Docker dan paket). Setelah berjalan, internet tidak wajib.
 
 ---
@@ -224,6 +249,9 @@ sudo mkdir -p /opt/antareja && sudo chown $USER /opt/antareja
 git clone https://github.com/aidilandriandas/antareja-nms.git /opt/antareja && cd /opt/antareja
 ```
 
+> Semua perintah di README ini dijalankan dari folder `/opt/antareja`. Bila kode di-clone ke folder lain
+> (mis. `/opt/antareja/antareja-nms`), masuk ke folder itu dan sesuaikan path pada contoh.
+
 > **Repo private?** Saat diminta login, isi username GitHub dan tempelkan **Personal Access Token** sebagai password
 > (GitHub → Settings → Developer settings → Personal access tokens, cukup izin baca repo).
 
@@ -239,6 +267,10 @@ Ganti `antareja.local` dengan nama DNS yang akan dipakai pengguna (atau biarkan 
 2. membuat sertifikat HTTPS self-signed (sudah mencakup IP VM),
 3. membangun image dan menjalankan semua container (pertama kali ±10–20 menit),
 4. menampilkan **alamat Setup Awal (`https://<IP-VM>/setup`) dan kode setup**.
+
+> Install ulang di VM yang sama? Jangan hapus `docker/.env` lama — password database tersimpan di sana. Bila skrip berhenti
+> dengan pesan "Volume database ... dari instalasi sebelumnya masih ada", salin `docker/.env` lama ke folder ini, atau
+> pulihkan dari backup (bagian 9).
 
 ### 6.5 Buka aplikasi
 
@@ -259,25 +291,34 @@ Hasil yang diharapkan diakhiri tulisan **SEHAT**.
 
 ## 7. Konfigurasi awal setelah login
 
-1. **SNMP:** menu *Settings → Global Settings → Poller → SNMP* — isi community v2c read-only (jangan `public`) atau kredensial SNMPv3.
-2. **Tambah perangkat:** menu *Devices → Add Device*, atau lewat terminal:
-   ```bash
-   ./antareja.sh lnms device:add 10.10.1.1 --v2c -c <community>
-   ```
-   Auto-discovery satu subnet (hanya setelah ada izin tertulis IT Security):
-   ```bash
-   ./antareja.sh lnms config:set nets.+ '10.10.0.0/16'
-   ```
-3. **Site & Area:** menu *ANTAREJA → Site & Area* — buat site (Kantor, Pit A, Workshop, …) dan area di dalamnya.
-4. **Verifikasi perangkat:** menu *Device Discovery* — lengkapi kategori, site, PIC, lalu setujui.
-5. **Device Mapping:** catat uplink antar perangkat (switch core → radio PTP → switch pit → kamera). Ini mengaktifkan
-   korelasi gangguan induk/anak dan mengisi Capacity Planning otomatis.
-6. **Quality Probe:** menu *Network Quality* — tambahkan target link penting (PTP, uplink antar site, gateway internet).
-7. **Notifikasi:** buat transport di *Alerts → Alert Transports* (mis. Telegram), lalu kebijakan di *Eskalasi & Notifikasi*.
-8. **SLA:** menu *SLA Management* — buat layanan seperti "Jaringan Pit A" dan pilih perangkatnya.
-9. **Live view CCTV:** di NVR Hikvision buat user dengan hak *Live View* saja, lalu di *CCTV → Sumber stream* simpan
-   kredensialnya dan tambahkan kamera (pilih NVR + nomor channel). Tekan *Cek sekarang*, lalu *Jadikan acuan* saat gambar normal.
-10. **User:** buat akun tim dan beri role yang sesuai (lihat bagian berikut).
+Urutan yang disarankan (semua lewat menu di sidebar):
+
+1. **Community SNMP bersama:** *Administrasi → Pengaturan Sistem → Poller → SNMP*. Isi community v2c read-only (jangan
+   `public`) atau kredensial SNMPv3. Di setiap perangkat, aktifkan SNMP dan izinkan IP VM ANTAREJA.
+2. **Site & Area:** *Inventaris & Aset → Site & Area* — buat site (Kantor, Pit A, Workshop, Mess, …) dan area di dalamnya.
+3. **Tambah perangkat:** *Inventaris & Aset → Tambah Perangkat*.
+   - Isi **Nama perangkat**, IP, **Grup** (CCTV, Access Point, Switch, Router, Radio PTP, …), site/area, dan cara pemantauan
+     (SNMP v2c/v3, atau *Ping saja* untuk kamera tanpa SNMP).
+   - Klik **Uji koneksi** dulu: ping & SNMP dites dari server, lengkap dengan saran bila gagal.
+   - Banyak perangkat sekaligus: tab **Banyak sekaligus**, tempel dari Excel dengan format `IP, Nama, Grup` (maks. 50 baris).
+   - Perangkat yang sudah terdaftar tapi masih tampil sebagai IP: beri nama di *Inventaris Perangkat → Edit → Nama perangkat*.
+4. **Grup perangkat:** *Inventaris & Aset → Grup Perangkat* → **Sinkronkan grup** sekali. Setelah itu grup (CCTV berisi
+   semua kamera, Access Point berisi semua AP, dst.) diperbarui otomatis tiap 10 menit.
+5. **Sambungan antar perangkat:** aktifkan **LLDP/CDP** di switch & router (MikroTik: *IP → Neighbors → Discovery Settings*).
+   Sambungan yang tidak terdeteksi dibuat manual di *Peta Topologi* → **Hubungkan perangkat** → klik dua perangkat → pilih
+   port. Pilih port agar trafik tampil di garis dan alert perangkat di bawahnya diredam saat induknya down.
+   Atur posisi perangkat lalu **Simpan tata letak** — tata letak ini juga dipakai Layar NOC.
+6. **Verifikasi perangkat hasil discovery:** *Inventaris & Aset → Discovery* — lengkapi kategori, site, PIC, lalu setujui.
+7. **Kualitas link:** *Monitoring → Kualitas Jaringan* — tambahkan target link penting (PTP, uplink antar site, gateway internet).
+8. **Notifikasi:** buat transport di *Fitur Lainnya → Transport Alert* (mis. Telegram), lalu kebijakan di
+   *Alert & Insiden → Eskalasi & Notifikasi*.
+9. **SLA:** *Laporan → SLA* — buat layanan seperti "Jaringan Pit A" dan pilih perangkatnya.
+10. **Live view CCTV:** di NVR Hikvision buat user dengan hak *Live View* saja, lalu di *CCTV → Sumber stream* simpan
+    kredensialnya dan tambahkan kamera (pilih NVR + nomor channel). Tekan *Cek sekarang*, lalu *Jadikan acuan* saat gambar normal.
+11. **Backup NMS:** *Administrasi → Backup & Pemulihan* — atur jam backup dan aktifkan **salinan SFTP** ke NAS/server lain.
+12. **Layar NOC:** buka *Layar NOC* di PC/TV ruang kontrol, tekan `F` untuk layar penuh. Login dengan centang
+    *Ingat saya* agar tampilan tidak keluar sendiri.
+13. **User:** buat akun tim dan beri role yang sesuai (lihat bagian berikut).
 
 ---
 
@@ -290,7 +331,8 @@ Hasil yang diharapkan diakhiri tulisan **SEHAT**.
 | **ICT Admin** | `admin` | Semua akses, termasuk pengaturan sistem & user |
 | **Management** | `management` | Dashboard manajemen, laporan & export, SLA, problem/incident (lihat saja), menyetujui change request |
 
-Hak akses bisa disesuaikan per permission di *ANTAREJA → User Management → Roles* (grup `ant-*`).
+Hak akses bisa disesuaikan per permission di *Administrasi → User & Role* (grup `ant-*`). Menu yang tidak boleh dibuka
+tidak ditampilkan di sidebar. *Backup & Pemulihan* hanya untuk admin, karena file backup berisi seluruh kredensial.
 
 ---
 
@@ -322,7 +364,13 @@ Hak akses bisa disesuaikan per permission di *ANTAREJA → User Management → R
 (mis. WinSCP), lalu:
 
 ```bash
-./antareja.sh restore /opt/antareja/antareja-nms/antareja-YYYYmmdd-HHMMSS.tar.gz
+./antareja.sh restore /opt/antareja/antareja-YYYYmmdd-HHMMSS.tar.gz
+```
+
+Di VM yang sama cukup sebut namanya (lihat daftarnya dengan `./antareja.sh backups`):
+
+```bash
+./antareja.sh restore antareja-YYYYmmdd-HHMMSS.tar.gz
 ```
 
 Semua perangkat, grup, site, user, dan grafik kembali seperti saat backup — tidak perlu menambah perangkat ulang.
@@ -331,7 +379,20 @@ Aktifkan juga backup VM mingguan di Proxmox (*Datacenter → Backup → Add*) se
 **Update ke versi terbaru:**
 
 ```bash
-cd /opt/antareja && ./antareja.sh update
+cd /opt/antareja && git pull && ./antareja.sh update
+```
+
+`update` otomatis membuat backup dulu, membangun ulang image, menjalankan migrasi database, lalu memeriksa kesehatan.
+Setelah update, tekan **Ctrl+F5** di browser agar tampilan terbaru termuat.
+
+**Cek koneksi ke perangkat dari terminal** (sama dengan tombol *Uji koneksi*):
+
+```bash
+cd /opt/antareja/docker && docker compose exec app ping -c 4 <IP-perangkat>
+```
+
+```bash
+cd /opt/antareja/docker && docker compose exec app snmpget -v2c -c <community> <IP-perangkat> 1.3.6.1.2.1.1.5.0
 ```
 
 ---
@@ -367,18 +428,20 @@ Bila proxy memeriksa TLS, simpan sertifikat CA proxy di `docker/build-ca.crt`.
 ### VM tanpa internet
 Bangun image di mesin yang punya internet, lalu pindahkan:
 ```bash
-docker save antareja-nms:0.6.0 | gzip > antareja-nms-0.6.0.tar.gz
+docker save antareja-nms:0.8.1 | gzip > antareja-nms-0.8.1.tar.gz
 ```
 ```bash
-gunzip -c antareja-nms-0.6.0.tar.gz | docker load
+gunzip -c antareja-nms-0.8.1.tar.gz | docker load
 ```
-Image pihak ketiga (`mariadb`, `redis`, `crazymax/rrdcached`, `nginx`, `librenms/librenms`) dipindahkan dengan cara yang sama.
+Tag image mengikuti `ANTAREJA_TAG` di `docker/.env`. Image pihak ketiga (`mariadb`, `redis`, `crazymax/rrdcached`, `nginx`,
+`librenms/librenms`, `alexxit/go2rtc`) dipindahkan dengan cara yang sama.
 
 ---
 
 ## 11. Tugas terjadwal otomatis
 
-Berjalan sendiri di dalam container `app` — tidak perlu cron tambahan.
+Berjalan sendiri di dalam container `app` — tidak perlu cron tambahan. Trafik live di peta & Layar NOC tidak dijadwalkan:
+dibaca hanya selama halaman itu terbuka (SNMP GET tiap 5 detik, maks. 40 port).
 
 | Tugas | Jadwal |
 |---|---|
@@ -389,6 +452,8 @@ Berjalan sendiri di dalam container `app` — tidak perlu cron tambahan.
 | Saran mapping (LLDP/CDP) | tiap jam |
 | Backup konfigurasi (perangkat yang sudah waktunya) | tiap jam |
 | Cek kesehatan gambar CCTV | tiap 15 menit |
+| Sinkron grup perangkat (per kategori) | tiap 10 menit |
+| Backup NMS (+ salinan SFTP bila aktif) | harian, bawaan 01:30 (diatur di menu Backup & Pemulihan) |
 | Capacity planning | tiap 6 jam |
 | Rollup kualitas harian | 00:20 |
 | Pembekuan SLA bulan lalu | 00:35 |
@@ -404,6 +469,10 @@ Berjalan sendiri di dalam container `app` — tidak perlu cron tambahan.
 - Backup konfigurasi hanya menjalankan perintah **baca** dari daftar tetap per vendor. Gunakan akun read-only di perangkat.
 - Change request tidak bisa disetujui oleh pengajunya sendiri; work order tidak bisa diverifikasi oleh pelaksananya.
 - Kunci API AI hanya disimpan di server dan tidak pernah dikirim ke browser.
+- Admin pertama hanya bisa dibuat dengan **kode setup** yang dibaca dari server; halaman `/setup` tertutup setelahnya.
+- File backup NMS berisi seluruh database & APP_KEY: hanya admin yang bisa membuat/mengunduhnya, file di VM ber-permission 600,
+  password SFTP disimpan terenkripsi, dan host key server SFTP diperiksa di setiap salinan.
+- Uji koneksi dan trafik live hanya membaca (ping, SNMP GET). Community/password tidak pernah dikirim ke browser.
 - Gunakan SNMPv3 (authPriv) bila perangkat mendukung; untuk v2c gunakan community read-only, bukan `public`.
 - Mintalah persetujuan tertulis atasan/IT Security sebelum memindai (discovery) jaringan perusahaan.
 
@@ -415,7 +484,16 @@ Berjalan sendiri di dalam container `app` — tidak perlu cron tambahan.
 |---|---|
 | `./antareja.sh install` gagal saat build, "Could not authenticate against github.com" / timeout | VM tidak bisa mengunduh paket. Periksa internet/proxy (bagian 10) |
 | Halaman tidak bisa dibuka | `./antareja.sh status` dan `./antareja.sh logs nginx`; pastikan firewall membuka TCP 443 |
-| Perangkat selalu down | Cek ping & SNMP dari VM: `./antareja.sh lnms device:poll <hostname> -v`; periksa community & ACL SNMP di perangkat |
+| Peringatan Chrome "The information you're about to submit is not secure" | Buka lewat `https://`, lalu `git pull && ./antareja.sh update` (versi lama membuat form ber-`http://`) |
+| Container `app` tidak sehat, log: "Failed to connect to database on db" | Password di `docker/.env` tidak cocok dengan volume database lama (install ulang / clone kedua). Salin `docker/.env` lama, atau mulai dari nol dengan `cd docker && docker compose down -v` (**semua data hilang**) |
+| Perangkat selalu down | Buka perangkat di *Inventaris* → **Uji koneksi**. Bila ping gagal: cek rute dan firewall ICMP dari IP VM |
+| SNMP sudah diaktifkan di perangkat tapi tidak terbaca | **Uji koneksi** → lihat saran. Tersering: community salah (huruf besar/kecil), IP VM belum diizinkan di community, UDP 161 diblok. Bila perangkat terdaftar "ping saja", klik **Aktifkan SNMP** setelah uji berhasil |
+| Perangkat tampil sebagai IP saja | *Inventaris Perangkat → Edit → Nama perangkat*, atau ⚙ perangkat → *Device* → *Display Name* |
+| Peta topologi tanpa garis | Aktifkan LLDP/CDP di switch/router, atau buat sambungan dengan **Hubungkan perangkat** di peta |
+| Garis topologi abu-abu / trafik tidak muncul | Sambungan belum punya port: hapus lalu hubungkan ulang dengan memilih port. Perangkat "ping saja" tidak punya data port — ukur dari port switch/router lawannya |
+| Layar NOC menampilkan "Sesi berakhir" | Login ulang dengan centang *Ingat saya* |
+| Backup gagal "Ruang disk tersisa kurang dari 512 MB" | Kurangi jumlah backup yang disimpan, hapus backup lama, atau perbesar disk VM |
+| Uji SFTP gagal "Host key server tujuan berubah" | Server tujuan memang diganti: centang *lupakan host key* di pengaturan backup, simpan, uji lagi |
 | Grafik kosong | Perangkat baru butuh 2× polling (±10 menit) sebelum traffic port muncul |
 | Setelah login kembali lagi ke halaman login | Akses selalu lewat `https://` dengan alamat yang sama (IP atau nama), lalu hapus cookie browser untuk alamat itu. Bila `DOCKER_SUBNET` diubah, jalankan `./antareja.sh restart` |
 | Subnet `172.30.250.0/24` bentrok dengan jaringan tambang | Ubah `DOCKER_SUBNET` di `docker/.env` **sebelum** instalasi |
@@ -455,7 +533,7 @@ html/images/antareja/   Logo & favicon
 | [`docs/FASE-2-IPAM-Kualitas.md`](docs/FASE-2-IPAM-Kualitas.md) | IPAM, Network Quality, Wireless, CCTV |
 | [`docs/FASE-3-Problem-Incident.md`](docs/FASE-3-Problem-Incident.md) | Event & Alert Center, incident, eskalasi, maintenance |
 | [`docs/FASE-4-SLA-Laporan.md`](docs/FASE-4-SLA-Laporan.md) | SLA, trigger, dashboard manajemen, laporan |
-| [`docs/FASE-5-Lanjutan.md`](docs/FASE-5-Lanjutan.md) | Work order, change, backup konfigurasi, capacity, fiber, anomali, AI |
+| [`docs/FASE-5-Lanjutan.md`](docs/FASE-5-Lanjutan.md) | Work order, change, backup konfigurasi, capacity, fiber, anomali, AI, live view CCTV |
 | [`docs/ANTAREJA-NMS-Arsitektur-v0.2-Fork.md`](docs/ANTAREJA-NMS-Arsitektur-v0.2-Fork.md) | Arsitektur & keputusan desain |
 | [`MODIFICATIONS.md`](MODIFICATIONS.md) | Daftar perubahan terhadap kode LibreNMS & prosedur sinkron upstream |
 | [`ANTAREJA.md`](ANTAREJA.md) | Ringkasan proyek |

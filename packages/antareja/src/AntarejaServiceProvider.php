@@ -40,7 +40,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.8.0';
+    public const VERSION = '0.8.1';
 
     public function register(): void
     {

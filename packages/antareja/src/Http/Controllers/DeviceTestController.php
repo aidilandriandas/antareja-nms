@@ -77,6 +77,7 @@ class DeviceTestController extends Controller
         $p['port'] = $device->port ?: 161;
         if ($p['mode'] === 'v2c' && empty($p['community']) && $device->community) {
             $p['community'] = $device->community;
+            $p['community_source'] = 'community yang tersimpan di perangkat';
         }
         if ($p['mode'] === 'v3' && empty($p['v3_user']) && $device->authname) {
             $p += ['v3_user' => $device->authname, 'v3_auth_pass' => $device->authpass, 'v3_auth_algo' => $device->authalgo,

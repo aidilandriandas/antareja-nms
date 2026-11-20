@@ -74,7 +74,7 @@ class ConnectionTester
                 : Arr::where(Arr::wrap(LibrenmsConfig::get('snmp.community')), fn ($c) => $c && is_string($c));
             $attempts = [];
             foreach (array_slice(array_values($communities), 0, 5) as $i => $c) {
-                $attempts[] = ['label' => ! empty($p['community']) ? 'community yang diisi' : 'community #' . ($i + 1) . ' dari Pengaturan Sistem',
+                $attempts[] = ['label' => ! empty($p['community']) ? ($p['community_source'] ?? 'community yang diisi') : 'community #' . ($i + 1) . ' dari Pengaturan Sistem',
                     'attrs' => ['snmpver' => 'v2c', 'community' => $c]];
             }
             if (! $attempts) {

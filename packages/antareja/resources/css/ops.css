@@ -28,7 +28,7 @@ html body .ant-banner__cta a { color: var(--ant-ink); font-weight: 600; text-dec
 
 /* KPI */
 .ant-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 46%), 1fr)); gap: 14px; margin-bottom: 18px; }
-html body a.ant-kpi {
+html body .ant-kpi {
   position: relative; display: flex; flex-direction: column; gap: 6px; padding: 16px 18px 14px; overflow: hidden;
   background: var(--ant-surface-raised); border: 1px solid var(--ant-border); border-radius: 12px; color: var(--ant-ink); text-decoration: none;
   transition: border-color .15s, transform .15s;
@@ -57,7 +57,7 @@ html body a.ant-kpi:hover { border-color: var(--ant-border-strong); color: var(-
   html body .ant-ops__title { font-size: 25px; }
   .ant-ops__refresh { display: none; }
   .ant-kpis { gap: 10px; }
-  html body a.ant-kpi { padding: 12px 14px; }
+  html body .ant-kpi { padding: 12px 14px; }
   .ant-kpi__value { font-size: 30px; }
   .ant-kpi__label { font-size: 10.5px; letter-spacing: .05em; }
 }

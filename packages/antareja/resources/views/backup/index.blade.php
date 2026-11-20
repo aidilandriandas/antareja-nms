@@ -87,14 +87,14 @@
                 <div class="panel-heading"><strong><i class="fa-solid fa-life-ring"></i> Cara memulihkan</strong></div>
                 <div class="panel-body tw:text-sm">
                     <p><b>VM yang sama</b> (mis. setelah salah konfigurasi) — di terminal VM:</p>
-<pre class="ant-pre">cd /opt/antareja/antareja-nms
+<pre class="ant-pre">cd /opt/antareja      # folder hasil git clone
 ./antareja.sh backups                       # lihat daftar backup di VM
 ./antareja.sh restore antareja-YYYYmmdd-HHMMSS.tar.gz</pre>
                     <p class="tw:mt-3"><b>VM baru</b> (VM lama rusak / hilang):</p>
                     <ol class="tw:pl-5 tw:space-y-1">
                         <li>Pasang ANTAREJA seperti biasa (<code>./antareja.sh install</code>), tidak perlu membuat admin.</li>
-                        <li>Salin file backup ke VM baru, mis. dengan WinSCP ke <code>/opt/antareja/antareja-nms/</code> (atau ambil dari NAS/server SFTP).</li>
-                        <li>Jalankan <code>./antareja.sh restore /opt/antareja/antareja-nms/antareja-YYYYmmdd-HHMMSS.tar.gz</code> lalu ketik <code>YA</code>.</li>
+                        <li>Salin file backup ke VM baru, mis. dengan WinSCP ke <code>/opt/antareja/</code> (atau ambil dari NAS/server SFTP).</li>
+                        <li>Jalankan <code>./antareja.sh restore /opt/antareja/antareja-YYYYmmdd-HHMMSS.tar.gz</code> lalu ketik <code>YA</code>.</li>
                         <li>Selesai — semua perangkat, grup, site, user, dan grafik kembali. Login dengan akun lama.</li>
                     </ol>
                     <p class="ant-muted tw:m-0">File backup berisi seluruh kredensial (SNMP, SSH, APP_KEY). Simpan di tempat yang aman dan jangan dibagikan.</p>

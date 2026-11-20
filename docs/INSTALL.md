@@ -69,18 +69,23 @@ Bila VM lama rusak: pasang ANTAREJA seperti di atas (tidak perlu membuat admin),
 
 ## 4. Konfigurasi awal setelah login
 
-1. **Settings → Global Settings → Poller → SNMP**: isi community v2c (read-only, jangan `public`)
-   atau kredensial SNMPv3.
-2. Tambah perangkat: menu **Devices → Add Device**, atau
+1. **Administrasi → Pengaturan Sistem → Poller → SNMP**: isi community v2c (read-only, jangan `public`)
+   atau kredensial SNMPv3. Di setiap perangkat, aktifkan SNMP dan izinkan IP VM ANTAREJA.
+2. **Inventaris & Aset → Site & Area**: buat site dan area.
+3. **Inventaris & Aset → Tambah Perangkat**: isi nama, IP, grup, site; klik **Uji koneksi** sebelum menyimpan.
+   Banyak perangkat sekaligus lewat tab *Banyak sekaligus* (`IP, Nama, Grup`). Lewat terminal juga bisa:
    ```bash
-   ./antareja.sh lnms device:add 10.10.1.1 --v2c -c <community>
+   ./antareja.sh lnms device:add 10.10.1.1 --v2c -c <community> --display-name "Switch Pit A"
    ```
-3. Auto-discovery subnet (hanya setelah ada izin tertulis IT Security):
+4. **Inventaris & Aset → Grup Perangkat → Sinkronkan grup** (sekali; setelah itu otomatis tiap 10 menit).
+5. **Peta Topologi**: aktifkan LLDP/CDP di perangkat, atau hubungkan manual dengan **Hubungkan perangkat**.
+6. Auto-discovery subnet (hanya setelah ada izin tertulis IT Security):
    ```bash
    ./antareja.sh lnms config:set nets.+ '10.10.0.0/16'
    ```
-4. Buat user dan beri role `ict-network`, `ict-cctv-support`, `management`, atau `admin`
-   (menu **ANTAREJA → User Management**).
+7. **Administrasi → Backup & Pemulihan**: atur jam backup dan salinan SFTP ke NAS/server lain.
+8. Buat user dan beri role `ict-network`, `ict-cctv-support`, `management`, atau `admin`
+   (menu **Administrasi → User & Role**).
 
 ## 5. Fitur opsional
 
