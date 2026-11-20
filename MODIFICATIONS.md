@@ -51,6 +51,9 @@ panduan saat menggabungkan update dari upstream.
 | `AlertTransport::instance()->deliverAlert()` | Notifikasi eskalasi lewat transport yang dikonfigurasi di LibreNMS (kredensial tetap di LibreNMS) |
 | Tabel `device_outages` (baca) | Downtime untuk SLA & laporan; tidak diduplikasi |
 | Tabel `ports`, `sensors`, `wireless_sensors`, `devices` (baca) | Nilai item trigger expression |
+| `ValidateDeviceAndCreate` (form Tambah Perangkat ANTAREJA) | Perangkat ditambahkan lewat jalur resmi LibreNMS (cek ping/SNMP, cegah duplikat); nama disimpan di `display_template` |
+| Tabel `device_groups` + `device_group_device` (tulis) | Grup otomatis per kategori dibuat sebagai Device Group *static* bertanda `desc = ANTAREJA:auto:<kategori>`; grup lain tidak disentuh |
+| Tabel `links` (baca) | Tetangga LLDP/CDP untuk peta topologi & layar NOC |
 | `AlertSchedule` + `Device::isUnderMaintenance()` | Jendela maintenance ANTAREJA dibuat sebagai Alert Schedule (mute alerts) dan dipakai untuk menekan problem |
 
 ## Dependensi tidak langsung yang dipakai

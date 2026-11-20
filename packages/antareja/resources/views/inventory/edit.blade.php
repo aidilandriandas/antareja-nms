@@ -18,7 +18,13 @@
                 <div class="panel-heading"><strong>Identitas &amp; klasifikasi</strong></div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label for="category">Kategori *</label>
+                        <label for="display_name">Nama perangkat</label>
+                        <input type="text" id="display_name" name="display_name" class="form-control" maxlength="128"
+                               value="{{ old('display_name', $device->display_template) }}" placeholder="mis. CCTV Gerbang Pit A">
+                        <p class="help-block">Nama yang tampil di seluruh ANTAREJA (daftar, peta, notifikasi). Kosong = pakai sysName / IP.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Kategori (grup) *</label>
                         <select id="category" name="category" class="form-control">
                             <option value="">— pilih —</option>
                             @foreach($categories as $key => $label)

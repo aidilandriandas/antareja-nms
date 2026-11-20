@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ANTAREJA NMS — skrip operasional
-# Pemakaian: ./antareja.sh {install|start|stop|restart|status|logs|update|backup|restore|health|admin|setup-token|lnms}
+# Pemakaian: ./antareja.sh {install|start|stop|restart|status|logs|update|backup|backups|restore|health|admin|setup-token|lnms}
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -146,7 +146,7 @@ cmd_backup() {
         | gzip > "$dir/$name/database.sql.gz"
     c_ok "Backup data aplikasi + RRD..."
     "${COMPOSE[@]}" run --rm --no-deps -T -v "$dir/$name:/backup" --entrypoint tar app \
-        czf /backup/data.tar.gz --exclude=./logs -C /data .
+        czf /backup/data.tar.gz --exclude=./logs --exclude=./antareja/backups -C /data .
     cp "$ENV_FILE" "$dir/$name/env.backup"; chmod 600 "$dir/$name/env.backup"
     [[ -d "$DOCKER_DIR/certs" ]] && cp -r "$DOCKER_DIR/certs" "$dir/$name/certs"
     tar czf "$dir/$name.tar.gz" -C "$dir" "$name" && rm -rf "${dir:?}/$name"
@@ -157,26 +157,52 @@ cmd_backup() {
     c_warn "Salin file backup ke luar VM (NAS / share) secara berkala."
 }
 
+# Daftar backup yang dibuat dari web (tersimpan di volume data aplikasi)
+cmd_backups() {
+    require_env
+    echo "Backup di volume aplikasi (dibuat dari menu Backup & Pemulihan / jadwal otomatis):"
+    "${COMPOSE[@]}" exec -T app sh -c 'ls -lh /data/antareja/backups/antareja-*.tar.gz 2>/dev/null | awk "{print \"  \" \$9 \"  (\" \$5 \")\"}" | sed "s#/data/antareja/backups/##"' || true
+    echo "Backup dari ./antareja.sh backup (di $(backup_dir)):"
+    ls -lh "$(backup_dir)"/antareja-*.tar.gz 2>/dev/null | awk '{print "  " $9 "  (" $5 ")"}' || true
+    echo "Pulihkan: ./antareja.sh restore <nama atau path file>"
+}
+
 cmd_restore() {
     require_env
     local file="${1:-}"
-    [[ -f "$file" ]] || die "Pemakaian: ./antareja.sh restore <file antareja-YYYYmmdd-HHMMSS.tar.gz>"
+    [[ -n "$file" ]] || die "Pemakaian: ./antareja.sh restore <file antareja-YYYYmmdd-HHMMSS.tar.gz>  (lihat: ./antareja.sh backups)"
+    local tmp; tmp="$(mktemp -d)"
+    if [[ ! -f "$file" ]]; then
+        # Nama backup web di volume aplikasi
+        [[ "$file" =~ ^antareja-[0-9]{8}-[0-9]{6}\.tar\.gz$ ]] || die "File $file tidak ditemukan."
+        c_ok "Mengambil $file dari volume aplikasi..."
+        "${COMPOSE[@]}" cp "app:/data/antareja/backups/$file" "$tmp/$file" || die "Backup $file tidak ada di volume (cek: ./antareja.sh backups)."
+        file="$tmp/$file"
+    fi
     read -r -p "Restore akan MENIMPA database & data saat ini. Lanjut? (ketik YA): " ans
     [[ "$ans" == "YA" ]] || die "Dibatalkan."
-    local tmp; tmp="$(mktemp -d)"
-    tar xzf "$file" -C "$tmp"
-    local src; src="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -1)"
+    mkdir -p "$tmp/x"
+    tar xzf "$file" -C "$tmp/x"
+    local src; src="$(find "$tmp/x" -mindepth 1 -maxdepth 1 -type d | head -1)"
     [[ -f "$src/database.sql.gz" && -f "$src/data.tar.gz" ]] || die "Isi backup tidak lengkap."
+    local keep_rrd=0
+    if [[ -f "$src/manifest.json" ]] && grep -q '"include_rrd": false' "$src/manifest.json"; then
+        keep_rrd=1; c_warn "Backup ini tanpa grafik (RRD): grafik yang ada sekarang dipertahankan."
+    fi
     "${COMPOSE[@]}" stop app dispatcher nginx >/dev/null 2>&1 || true
     "${COMPOSE[@]}" up -d db redis rrdcached
     sleep 10
     c_ok "Restore database..."
     gunzip -c "$src/database.sql.gz" | "${COMPOSE[@]}" exec -T db sh -c 'mariadb -u"$MARIADB_USER" -p"$MARIADB_PASSWORD" "$MARIADB_DATABASE"'
     c_ok "Restore data aplikasi + RRD..."
-    "${COMPOSE[@]}" run --rm --no-deps -T -v "$src:/backup:ro" --entrypoint sh app \
-        -c 'find /data -mindepth 1 -maxdepth 1 ! -name rrd ! -name logs -exec rm -rf {} + ; rm -rf /data/rrd/* ; tar xzf /backup/data.tar.gz -C /data'
+    # Folder backup di volume (/data/antareja/backups) tidak ikut dihapus
+    "${COMPOSE[@]}" run --rm --no-deps -T -e KEEP_RRD="$keep_rrd" -v "$src:/backup:ro" --entrypoint sh app -c '
+        find /data -mindepth 1 -maxdepth 1 ! -name rrd ! -name logs ! -name antareja -exec rm -rf {} +
+        [ -d /data/antareja ] && find /data/antareja -mindepth 1 -maxdepth 1 ! -name backups -exec rm -rf {} +
+        [ "$KEEP_RRD" = "1" ] || find /data/rrd -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+        tar xzf /backup/data.tar.gz -C /data'
     rm -rf "$tmp"
-    c_warn "File env.backup & certs di dalam backup TIDAK otomatis dipulihkan; salin manual bila VM baru."
+    c_warn "File env.backup & certs (khusus backup dari ./antareja.sh backup) TIDAK otomatis dipulihkan; salin manual bila VM baru."
     cmd_start
 }
 
@@ -230,7 +256,8 @@ ANTAREJA NMS — skrip operasional
   logs [service]     Lihat log (app, dispatcher, db, nginx, ...)
   update             Backup -> git pull -> build -> restart -> health
   backup             Backup database + data/RRD ke docker/backups
-  restore <file>     Pulihkan dari file backup
+  backups            Daftar backup (dari web & dari perintah backup)
+  restore <file>     Pulihkan dari file backup (path, atau nama backup web)
   health             Cek kesehatan semua komponen
   admin              Buat user admin baru
   setup-token        Tampilkan alamat & kode Setup Awal (selama admin pertama belum dibuat)
@@ -249,6 +276,7 @@ main() {
         logs) cmd_logs "$@" ;;
         update) cmd_update ;;
         backup) cmd_backup ;;
+        backups) cmd_backups ;;
         restore) cmd_restore "$@" ;;
         health) cmd_health ;;
         admin) require_env; cmd_admin ;;

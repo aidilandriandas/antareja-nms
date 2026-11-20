@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  Versi 0.7.0 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
+  Versi 0.8.0 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
 </p>
 
 ---
@@ -63,6 +63,10 @@ manajemen fiber optic, laporan bulanan, dan dashboard manajemen.
 ### Monitoring
 | Modul | Isi |
 |---|---|
+| **Layar NOC** | Tampilan layar penuh untuk TV/monitor ruang kontrol: peta topologi live (trafik mengalir, perangkat down berdenyut), ketersediaan, feed problem, perangkat down, status per site & grup — diperbarui tiap 15 detik tanpa reload |
+| **Peta Topologi** | Siapa terhubung ke siapa (mapping terverifikasi + LLDP/CDP), warna garis = pemakaian bandwidth port, filter site/grup, cari perangkat, simpan tata letak |
+| **Tambah perangkat** | Form ANTAREJA: nama perangkat, grup, site/area, SNMP v2c/v3 atau ping saja; tambah banyak sekaligus (tempel dari Excel: `IP, Nama, Grup`) |
+| **Grup perangkat** | Grup otomatis per kategori (CCTV, Access Point, Switch, NVR, …) beserta status online/down; juga grup buatan sendiri |
 | **Network Monitoring** | Status perangkat (SNMP v2c/v3, ICMP), uptime, sensor hardware, grafik — dari LibreNMS |
 | **Interface Monitoring** | Status port, traffic, bandwidth, error, utilisasi |
 | **Wireless Monitoring** | AP, controller, PTP/PTMP: client, RSSI, SNR, frekuensi, CCQ, pasangan link |
@@ -111,8 +115,12 @@ manajemen fiber optic, laporan bulanan, dan dashboard manajemen.
 
 Semua halaman memakai kerangka ANTAREJA: menu samping dikelompokkan per pekerjaan (Monitoring, Alert & Insiden, Inventaris & Aset, Operasional, Laporan, Administrasi), pencarian global (tekan `/`), penanda jumlah problem aktif, tema terang/gelap, dan tampilan HP. Halaman awal setelah login adalah **Pusat Operasi**; dashboard widget LibreNMS tetap ada di menu *Dashboard Widget*.
 
-| Pusat Operasi (halaman awal) | Pusat Operasi — tema gelap |
+| Layar NOC (layar penuh untuk TV ruang kontrol) | Peta topologi |
 |---|---|
+| ![Layar NOC](docs/screenshots/layar-noc.png) | ![Peta topologi](docs/screenshots/peta-topologi.png) |
+| **Grup perangkat** | **Tambah perangkat (satu / banyak sekaligus)** |
+| ![Grup perangkat](docs/screenshots/grup-perangkat.png) | ![Tambah perangkat](docs/screenshots/tambah-perangkat.png) |
+| **Pusat Operasi (halaman awal)** | **Pusat Operasi — tema gelap** |
 | ![Pusat Operasi](docs/screenshots/pusat-operasi.png) | ![Pusat Operasi gelap](docs/screenshots/pusat-operasi-gelap.png) |
 | **Daftar perangkat dalam kerangka ANTAREJA** | **Halaman login** |
 | ![Perangkat](docs/screenshots/perangkat.png) | ![Login](docs/screenshots/login.png) |
@@ -293,20 +301,31 @@ Hak akses bisa disesuaikan per permission di *ANTAREJA → User Management → R
 | `./antareja.sh logs app` | Lihat log (`app`, `dispatcher`, `db`, `nginx`) |
 | `./antareja.sh health` | Cek container, database, Redis, HTTPS, poller, disk |
 | `./antareja.sh backup` | Backup database + data + RRD ke `docker/backups/` (rotasi 14 hari) |
-| `./antareja.sh restore <file>` | Pulihkan dari backup |
+| `./antareja.sh backups` | Daftar backup (dari web & dari perintah `backup`) |
+| `./antareja.sh restore <file>` | Pulihkan dari backup (path file, atau nama backup web) |
 | `./antareja.sh update` | Backup → git pull → build → restart → cek kesehatan |
 | `./antareja.sh admin` | Buat user admin baru |
 | `./antareja.sh setup-token` | Tampilkan alamat & kode Setup Awal (sebelum admin pertama dibuat) |
 | `./antareja.sh lnms <perintah>` | Jalankan perintah LibreNMS/ANTAREJA (mis. `device:add`, `antareja:problems`) |
 
-**Backup harian otomatis:**
+**Backup NMS (menu Administrasi → Backup & Pemulihan, khusus admin):**
+
+- Backup otomatis setiap hari (jam bisa diatur, bawaan 01:30) + tombol **Backup sekarang**. Isi: seluruh database
+  (perangkat, kredensial SNMP/SSH, grup, site, inventaris, alert, user), file `.env` berisi APP_KEY, data ANTAREJA,
+  dan — opsional — grafik historis (RRD).
+- **Salinan otomatis ke server lain lewat SFTP** (NAS Synology/QNAP, server Linux, Windows OpenSSH) — supaya backup
+  selamat walau VM rusak. Tombol *Uji koneksi* memeriksa login & hak tulis; host key server dicatat dan diperiksa.
+- File bisa **diunduh** dari browser. Rotasi otomatis di VM maupun di server tujuan.
+
+**Memulihkan di VM baru** (VM lama rusak): pasang ANTAREJA (`./antareja.sh install`), salin file backup ke VM
+(mis. WinSCP), lalu:
 
 ```bash
-(crontab -l 2>/dev/null; echo "30 1 * * * cd /opt/antareja && ./antareja.sh backup >> /var/log/antareja-backup.log 2>&1") | crontab -
+./antareja.sh restore /opt/antareja/antareja-nms/antareja-YYYYmmdd-HHMMSS.tar.gz
 ```
 
-Salin isi `docker/backups/` ke NAS/share di luar VM secara berkala, dan aktifkan juga backup VM mingguan di Proxmox
-(*Datacenter → Backup → Add*).
+Semua perangkat, grup, site, user, dan grafik kembali seperti saat backup — tidak perlu menambah perangkat ulang.
+Aktifkan juga backup VM mingguan di Proxmox (*Datacenter → Backup → Add*) sebagai lapisan kedua.
 
 **Update ke versi terbaru:**
 

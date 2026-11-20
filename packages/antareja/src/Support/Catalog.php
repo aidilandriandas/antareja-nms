@@ -25,6 +25,33 @@ class Catalog
         'other' => 'Other ICT Infrastructure',
     ];
 
+    /** Nama grup perangkat otomatis per kategori (ditampilkan di halaman Grup & Device Group LibreNMS). */
+    public const GROUP_NAMES = [
+        'router' => 'Router',
+        'switch' => 'Switch',
+        'core-switch' => 'Core Switch',
+        'distribution-switch' => 'Distribution Switch',
+        'access-switch' => 'Access Switch',
+        'wireless-ap' => 'Access Point',
+        'wireless-controller' => 'Wireless Controller',
+        'ptp' => 'Radio PTP',
+        'ptmp' => 'Radio PTMP',
+        'firewall' => 'Firewall',
+        'cctv-camera' => 'CCTV',
+        'nvr' => 'NVR',
+        'server' => 'Server',
+        'ups' => 'UPS',
+        'other' => 'Lainnya',
+    ];
+
+    /** Ikon Font Awesome per kategori (peta topologi, layar NOC, halaman grup). */
+    public const CATEGORY_ICONS = [
+        'router' => 'route', 'switch' => 'network-wired', 'core-switch' => 'server', 'distribution-switch' => 'network-wired',
+        'access-switch' => 'ethernet', 'wireless-ap' => 'wifi', 'wireless-controller' => 'tower-broadcast', 'ptp' => 'tower-cell',
+        'ptmp' => 'satellite-dish', 'firewall' => 'shield-halved', 'cctv-camera' => 'video', 'nvr' => 'hard-drive',
+        'server' => 'server', 'ups' => 'car-battery', 'other' => 'microchip',
+    ];
+
     /** Kategori yang wajib punya mapping terverifikasi (terhubung ke port switch / NVR / radio lawan). */
     public const EDGE_CATEGORIES = ['wireless-ap', 'cctv-camera', 'ptp', 'ptmp', 'access-switch'];
 

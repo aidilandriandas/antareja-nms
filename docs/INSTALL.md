@@ -61,6 +61,12 @@ Selanjutnya buka `https://<IP-VM>/` lalu login. Browser akan memperingatkan sert
 ganti `docker/certs/antareja.crt` dan `antareja.key` dengan sertifikat dari CA perusahaan bila ada,
 lalu `./antareja.sh restart`.
 
+### Memulihkan dari backup (VM baru)
+
+Bila VM lama rusak: pasang ANTAREJA seperti di atas (tidak perlu membuat admin), salin file backup
+(`antareja-YYYYmmdd-HHMMSS.tar.gz` — dari menu *Backup & Pemulihan*, dari NAS/SFTP, atau dari `docker/backups/`) ke VM, lalu
+`./antareja.sh restore <path file>` dan ketik `YA`. Semua perangkat, grup, site, user, kredensial, dan grafik kembali.
+
 ## 4. Konfigurasi awal setelah login
 
 1. **Settings → Global Settings → Poller → SNMP**: isi community v2c (read-only, jangan `public`)

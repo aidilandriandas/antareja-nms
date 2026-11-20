@@ -125,6 +125,7 @@ class InventoryController extends Controller
         $detail = $this->sync->ensure($device);
 
         $data = $request->validate([
+            'display_name' => ['nullable', 'string', 'max:128'],
             'category' => ['nullable', Rule::in(array_keys(Catalog::DEVICE_CATEGORIES))],
             'site_id' => ['nullable', 'integer', 'exists:ant_sites,id'],
             'area_id' => ['nullable', 'integer', Rule::exists('ant_areas', 'id')->where('site_id', (int) $request->input('site_id'))],
@@ -154,7 +155,14 @@ class InventoryController extends Controller
             $data['mac_address'] = implode(':', str_split($hex, 2));
         }
 
+        $displayName = trim((string) ($data['display_name'] ?? ''));
+        unset($data['display_name']);
+        if ($displayName !== (string) $device->display_template) {
+            $device->display_template = $displayName !== '' ? $displayName : null;
+            $device->save();
+        }
         $detail->update($data);
+        app(\Antareja\Services\DeviceGroupSync::class)->syncDevice($device->device_id, $detail->category);
 
         $message = "Data inventaris {$device->displayName()} disimpan.";
         if ($request->boolean('verify_after_save') && $request->user()->can('ant-discovery.approve')) {

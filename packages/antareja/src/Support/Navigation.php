@@ -37,6 +37,8 @@ class Navigation
         $groups = [
             ['title' => null, 'key' => 'main', 'items' => [
                 ['label' => 'Pusat Operasi', 'icon' => 'gauge-high', 'url' => route('antareja.home'), 'path' => 'antareja', 'exact' => true],
+                $core($can('viewAny', Models\Device::class), 'Layar NOC', 'display', 'antareja/noc'),
+                $core($can('viewAny', Models\Device::class), 'Peta Topologi', 'diagram-project', 'antareja/topology'),
                 $m('management', 'Dashboard Manajemen', 'chart-column'),
                 $m('dashboard', 'Dashboard Widget', 'table-cells-large'),
             ]],
@@ -60,6 +62,8 @@ class Navigation
                 $core($can('viewAny', Models\AlertRule::class), 'Aturan Alert', 'sliders', 'alert-rules'),
             ]],
             ['title' => 'Inventaris & Aset', 'key' => 'assets', 'items' => [
+                $core($can('device.create'), 'Tambah Perangkat', 'circle-plus', 'antareja/devices/add'),
+                $core($can('viewAny', Models\Device::class), 'Grup Perangkat', 'layer-group', 'antareja/groups'),
                 $m('sites', 'Site & Area', 'map-location-dot'),
                 $m('device-inventory', 'Inventaris Perangkat', 'boxes-stacked'),
                 $m('device-discovery', 'Discovery', 'magnifying-glass-plus'),
@@ -79,8 +83,8 @@ class Navigation
                 $m('reports', 'Laporan Bulanan', 'file-lines'),
             ]],
             ['title' => 'Fitur Lainnya', 'key' => 'more', 'collapsed' => true, 'items' => [
-                $core($can('device.create'), 'Tambah Perangkat', 'plus', 'addhost'),
-                $core($can('viewAny', Models\DeviceGroup::class), 'Grup Perangkat', 'layer-group', 'device-groups'),
+                $core($can('device.create'), 'Tambah (form LibreNMS)', 'plus', 'addhost'),
+                $core($can('viewAny', Models\DeviceGroup::class), 'Aturan Device Group', 'layer-group', 'device-groups'),
                 $core($can('viewAny', Models\Location::class), 'Lokasi Geografis', 'location-dot', 'locations'),
                 $core($can('viewAny', Models\Device::class), 'Peta Jaringan', 'sitemap', 'map'),
                 $core($can('viewAny', Models\Vlan::class), 'VLAN', 'tags', 'vlans'),
@@ -95,6 +99,7 @@ class Navigation
             ['title' => 'Administrasi', 'key' => 'admin', 'items' => [
                 $m('users', 'User & Role', 'users'),
                 $m('audit', 'Audit Log', 'clock-rotate-left'),
+                $core($can('settings.update'), 'Backup & Pemulihan', 'box-archive', 'antareja/backup'),
                 $m('system', 'Pengaturan Sistem', 'gears'),
                 $core($can('viewAny', Models\PollerCluster::class) || $can('viewAny', Models\PollerGroup::class), 'Poller', 'microchip', 'poller'),
                 $core($can('settings.view'), 'Validasi Sistem', 'circle-check', 'validate'),

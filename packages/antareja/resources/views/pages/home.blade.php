@@ -33,11 +33,12 @@
             <span class="ant-ops__refresh" id="ant-refresh" title="Halaman diperbarui otomatis setiap 60 detik">
                 <i class="fa-solid fa-rotate" aria-hidden="true"></i> Otomatis 60 dtk
             </span>
+            <a href="{{ route('antareja.noc') }}" class="ant-btn ant-btn--secondary" target="_blank" rel="noopener"><i class="fa-solid fa-display" aria-hidden="true"></i> Layar NOC</a>
             @can('ant-incident.create')
                 <a href="{{ route('antareja.incidents.create') }}" class="ant-btn ant-btn--secondary"><i class="fa-solid fa-fire-extinguisher" aria-hidden="true"></i> Buat insiden</a>
             @endcan
             @can('device.create')
-                <a href="{{ url('addhost') }}" class="ant-btn ant-btn--primary"><i class="fa-solid fa-plus" aria-hidden="true"></i> Tambah perangkat</a>
+                <a href="{{ route('antareja.devices.add') }}" class="ant-btn ant-btn--primary"><i class="fa-solid fa-plus" aria-hidden="true"></i> Tambah perangkat</a>
             @endcan
         </div>
     </header>
@@ -50,7 +51,7 @@
                 <div><strong>Belum ada perangkat yang dipantau.</strong> Mulai dengan menambahkan site tambang, lalu daftarkan perangkat lewat SNMP.</div>
                 <div class="ant-banner__cta">
                     @can('ant-site.view')<a href="{{ route('antareja.sites.index') }}">Atur Site &amp; Area</a>@endcan
-                    @can('device.create')<a href="{{ url('addhost') }}">Tambah perangkat &rarr;</a>@endcan
+                    @can('device.create')<a href="{{ route('antareja.devices.add') }}">Tambah perangkat &rarr;</a>@endcan
                 </div>
             </div>
         @elseif($allClear)

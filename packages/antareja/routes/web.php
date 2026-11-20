@@ -5,6 +5,11 @@ use Antareja\Http\Controllers\AnomalyController;
 use Antareja\Http\Controllers\AssistantController;
 use Antareja\Http\Controllers\AttachmentController;
 use Antareja\Http\Controllers\AuditLogController;
+use Antareja\Http\Controllers\BackupController;
+use Antareja\Http\Controllers\DeviceAddController;
+use Antareja\Http\Controllers\GroupController;
+use Antareja\Http\Controllers\NocController;
+use Antareja\Http\Controllers\TopologyController;
 use Antareja\Http\Controllers\CapacityController;
 use Antareja\Http\Controllers\CctvController;
 use Antareja\Http\Controllers\CctvLiveController;
@@ -43,6 +48,32 @@ Route::middleware(['web', 'auth'])
     ->group(function (): void {
         Route::get('/', HomeController::class)->name('home');
         Route::get('about', AboutController::class)->name('about');
+
+        // Tambah perangkat (nama, grup, site, massal) — hak "device.create" dicek di controller
+        Route::get('devices/add', [DeviceAddController::class, 'create'])->name('devices.add');
+        Route::post('devices', [DeviceAddController::class, 'store'])->middleware('throttle:20,1')->name('devices.store');
+
+        // Grup perangkat
+        Route::get('groups', [GroupController::class, 'index'])->name('groups.index');
+        Route::get('groups/{group}', [GroupController::class, 'show'])->whereNumber('group')->name('groups.show');
+        Route::post('groups/sync', [GroupController::class, 'sync'])->middleware('throttle:6,1')->name('groups.sync');
+
+        // Peta topologi & layar NOC
+        Route::get('topology', [TopologyController::class, 'index'])->name('topology.index');
+        Route::get('topology/data', [TopologyController::class, 'data'])->name('topology.data');
+        Route::post('topology/positions', [TopologyController::class, 'savePositions'])->name('topology.positions');
+        Route::post('topology/positions/reset', [TopologyController::class, 'resetPositions'])->name('topology.positions.reset');
+        Route::get('noc', [NocController::class, 'index'])->name('noc');
+        Route::get('noc/data', [NocController::class, 'data'])->name('noc.data');
+
+        // Backup & pemulihan NMS (admin)
+        Route::get('backup', [BackupController::class, 'index'])->name('backup.index');
+        Route::post('backup', [BackupController::class, 'run'])->middleware('throttle:6,1')->name('backup.run');
+        Route::get('backup/status', [BackupController::class, 'status'])->name('backup.status');
+        Route::put('backup/settings', [BackupController::class, 'settings'])->name('backup.settings');
+        Route::post('backup/test', [BackupController::class, 'testSftp'])->middleware('throttle:6,1')->name('backup.test');
+        Route::get('backup/{backup}/download', [BackupController::class, 'download'])->whereNumber('backup')->name('backup.download');
+        Route::delete('backup/{backup}', [BackupController::class, 'destroy'])->whereNumber('backup')->name('backup.destroy');
 
         // Site & Area
         Route::middleware('can:ant-site.view')->group(function (): void {

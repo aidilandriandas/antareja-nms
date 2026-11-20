@@ -3,6 +3,8 @@
 namespace Antareja;
 
 use Antareja\Console\AnomaliesCommand;
+use Antareja\Console\BackupCommand;
+use Antareja\Console\GroupsCommand;
 use Antareja\Console\CapacityCommand;
 use Antareja\Console\CctvHealthCommand;
 use Antareja\Console\ConfigBackupCommand;
@@ -38,7 +40,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.7.0';
+    public const VERSION = '0.8.0';
 
     public function register(): void
     {
@@ -73,7 +75,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $this->commands([
                 SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
                 IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class, ProblemsCommand::class,
-                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class, SetupTokenCommand::class,
+                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class, SetupTokenCommand::class, BackupCommand::class, GroupsCommand::class,
             ]);
         }
 
@@ -101,6 +103,17 @@ class AntarejaServiceProvider extends ServiceProvider
         $this->registerPermissionLabels();
     }
 
+    private function backupTime(): string
+    {
+        try {
+            $t = \Illuminate\Support\Facades\DB::table('ant_backup_settings')->value('schedule_time');
+        } catch (\Throwable) {
+            $t = null; // tabel belum ada (sebelum migrasi)
+        }
+
+        return is_string($t) && preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $t) ? $t : '01:30';
+    }
+
     private function registerSchedule(): void
     {
         $this->callAfterResolving(Schedule::class, function (Schedule $schedule): void {
@@ -116,6 +129,9 @@ class AntarejaServiceProvider extends ServiceProvider
             $schedule->command('antareja:capacity')->cron('23 */6 * * *')->withoutOverlapping(120)->runInBackground();
             $schedule->command('antareja:anomalies')->cron('*/15 * * * *')->withoutOverlapping(14)->runInBackground();
             $schedule->command('antareja:cctv-health')->cron('7,22,37,52 * * * *')->withoutOverlapping(14)->runInBackground();
+            $schedule->command('antareja:groups')->cron('*/10 * * * *')->withoutOverlapping(9)->runInBackground();
+            // Backup NMS harian; jam diambil dari pengaturan backup (bawaan 01:30)
+            $schedule->command('antareja:backup --scheduled')->dailyAt($this->backupTime())->withoutOverlapping(360)->runInBackground();
         });
     }
 
