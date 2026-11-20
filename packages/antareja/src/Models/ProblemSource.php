@@ -16,6 +16,7 @@ class ProblemSource extends Model
         'quality' => 'Quality Probe',
         'ipam' => 'IPAM',
         'librenms_alert' => 'Alert rule poller',
+        'trigger' => 'Trigger expression',
     ];
 
     protected $table = 'ant_problem_sources';
@@ -42,6 +43,7 @@ class ProblemSource extends Model
             'quality' => route('antareja.quality.show', $this->source_ref),
             'ipam' => route('antareja.ipam.index', ['q' => $this->source_ref]),
             'librenms_alert' => url('alerts'),
+            'trigger' => route('antareja.triggers.show', $this->source_ref),
             default => null,
         };
     }

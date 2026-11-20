@@ -27,6 +27,7 @@ class RoleBlueprints
         'ant-incident' => ['ant-incident.view', 'ant-incident.create', 'ant-incident.update', 'ant-incident.close'],
         'ant-escalation' => ['ant-escalation.view', 'ant-escalation.update'],
         'ant-sla' => ['ant-sla.view', 'ant-sla.update'],
+        'ant-trigger' => ['ant-trigger.view', 'ant-trigger.update'],
         'ant-maintenance' => ['ant-maintenance.view', 'ant-maintenance.update', 'ant-maintenance.approve'],
         'ant-report' => ['ant-report.view', 'ant-report.export'],
         'ant-audit' => ['ant-audit.view'],
@@ -56,7 +57,7 @@ class RoleBlueprints
             'config-backup.view', 'oxidized.search',
             'tools.oui',
             // ANTAREJA
-            'ant-dashboard.technical',
+            'ant-dashboard.technical', 'ant-dashboard.management',
             'ant-site.view', 'ant-site.update',
             'ant-inventory.view', 'ant-inventory.update',
             'ant-discovery.view', 'ant-discovery.approve',
@@ -67,9 +68,10 @@ class RoleBlueprints
             'ant-problem.view', 'ant-problem.acknowledge',
             'ant-incident.view', 'ant-incident.create', 'ant-incident.update', 'ant-incident.close',
             'ant-escalation.view',
-            'ant-sla.view',
+            'ant-sla.view', 'ant-sla.update',
+            'ant-trigger.view', 'ant-trigger.update',
             'ant-maintenance.view', 'ant-maintenance.update',
-            'ant-report.view',
+            'ant-report.view', 'ant-report.export',
         ],
         'ict-cctv-support' => [
             // LibreNMS
@@ -95,7 +97,8 @@ class RoleBlueprints
             'ant-problem.view', 'ant-problem.acknowledge',
             'ant-incident.view', 'ant-incident.create', 'ant-incident.update', 'ant-incident.close',
             'ant-maintenance.view', 'ant-maintenance.update',
-            'ant-report.view',
+            'ant-sla.view', 'ant-trigger.view',
+            'ant-report.view', 'ant-report.export',
         ],
         'management' => [
             // LibreNMS (hanya baca)

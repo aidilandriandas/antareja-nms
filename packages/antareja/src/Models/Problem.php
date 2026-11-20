@@ -26,6 +26,7 @@ class Problem extends Model
         'quality' => 'Kualitas link',
         'ip_conflict' => 'Konflik IP',
         'alert' => 'Alert rule',
+        'trigger' => 'Trigger expression',
     ];
 
     public const SUPPRESSION = [

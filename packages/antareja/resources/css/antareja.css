@@ -180,3 +180,10 @@ img.logon-logo { width: 96px !important; height: 96px !important; display: block
 /* Tombol Masuk = varian "brand" design system (satu-satunya pemakaian merah merek pada tombol) */
 html .panel:has(img.logon-logo) .btn-primary { background: var(--ant-brand-strong) !important; border-color: var(--ant-brand-strong) !important; color: var(--ant-on-brand) !important; font-weight: 500; }
 html .panel:has(img.logon-logo) .btn-primary:hover { filter: brightness(.88); }
+
+/* ---------- Laporan bulanan (tampilan aplikasi) ---------- */
+.ant-report h2 { font-size: 1.125rem; margin: 1.5rem 0 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--ant-border); }
+.ant-report .ant-report-section:first-child h2 { margin-top: 0; }
+.ant-report .ant-report-kv th { width: 34%; }
+.ant-report-muted, .ant-report-empty { color: var(--ant-ink-muted); font-size: 0.8125rem; }
+.ant-report-nowrap { white-space: nowrap; }

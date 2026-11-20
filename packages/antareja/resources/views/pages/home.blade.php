@@ -20,7 +20,7 @@
             </p>
         </div>
         <div class="tw:text-sm ant-muted">
-            Versi {{ $version }} · Fase 3 (Problem &amp; Incident)
+            Versi {{ $version }} · Fase 4 (SLA &amp; Laporan)
         </div>
     </div>
 
@@ -125,7 +125,7 @@
         <li><strong>Fase 1 — Inventaris tambang:</strong> Site/Area, detail device, verifikasi discovery, device mapping, audit log, data quality. <em>(selesai)</em></li>
         <li><strong>Fase 2 — IPAM &amp; Kualitas:</strong> IPAM, Quality Probe + grafik smoke, Wireless &amp; CCTV. <em>(selesai)</em></li>
         <li><strong>Fase 3 — Problem &amp; Incident:</strong> korelasi event, incident, eskalasi, kalender maintenance. <em>(selesai)</em></li>
-        <li><strong>Fase 4 — SLA &amp; Laporan:</strong> service tree, trigger expression, SLA bulanan, dashboard manajemen, export.</li>
+        <li><strong>Fase 4 — SLA &amp; Laporan:</strong> service tree, trigger expression, SLA bulanan, dashboard manajemen, export. <em>(selesai)</em></li>
         <li><strong>Fase 5 — Lanjutan:</strong> work order, change &amp; config tracking, capacity, fiber optic, AI.</li>
     </ol>
 </div>

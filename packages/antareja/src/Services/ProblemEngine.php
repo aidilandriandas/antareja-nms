@@ -190,6 +190,21 @@ class ProblemEngine
                     "Alert rule \"{$a->name}\" ({$a->severity})", "Rule \"{$a->name}\" (alert #{$a->id})", $a->timestamp ? \Carbon\Carbon::parse($a->timestamp) : null);
             });
 
+        // 6. Trigger expression ANTAREJA yang sedang problem
+        \Antareja\Models\Trigger::where('enabled', true)->where('state', 'problem')->get()
+            ->each(function (\Antareja\Models\Trigger $t) use (&$obs, $skip, $sites): void {
+                if ($t->device_id && $skip($t->device_id)) {
+                    return;
+                }
+                $unit = TriggerEngine::sensorUnit($t);
+                $value = \Antareja\Models\Trigger::fmt($t->last_value, $unit);
+                $item = TriggerEngine::itemLabel($t);
+                $obs[] = $this->o('trigger', $t->id, "trigger:{$t->id}", 'trigger', $t->severity,
+                    "{$t->name} ({$value})", $t->device_id, $t->source === 'port' ? (int) $t->ref_id : null,
+                    $t->device_id ? ($sites[$t->device_id] ?? null) : null,
+                    $t->expression($item) . " — nilai {$value}", "{$t->name}: {$value}", $t->state_changed_at);
+            });
+
         return $obs;
     }
 

@@ -5,6 +5,7 @@ namespace Antareja\Console;
 use Antareja\Services\EscalationService;
 use Antareja\Services\MaintenanceService;
 use Antareja\Services\ProblemEngine;
+use Antareja\Services\TriggerEngine;
 use Illuminate\Console\Command;
 
 class ProblemsCommand extends Command
@@ -13,10 +14,12 @@ class ProblemsCommand extends Command
 
     protected $description = 'Sinkron problem dari semua sumber, korelasi, incident otomatis, dan eskalasi notifikasi';
 
-    public function handle(ProblemEngine $engine, MaintenanceService $maintenance, EscalationService $escalation): int
+    public function handle(ProblemEngine $engine, MaintenanceService $maintenance, EscalationService $escalation, TriggerEngine $triggers): int
     {
         $started = $maintenance->tick();
+        $t = $triggers->evaluate();
         $p = $engine->sync();
+        $this->info(sprintf('Trigger: %d dievaluasi, %d problem, %d tanpa data.', $t['evaluated'], $t['problem'], $t['unknown']));
         $this->info(sprintf('Problem: %d observasi, %d baru, %d selesai. Maintenance dimulai: %d.', $p['observations'], $p['opened'], $p['resolved'], $started));
 
         if (! $this->option('no-escalation')) {

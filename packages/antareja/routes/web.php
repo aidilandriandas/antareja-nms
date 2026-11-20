@@ -9,12 +9,16 @@ use Antareja\Http\Controllers\EscalationController;
 use Antareja\Http\Controllers\HomeController;
 use Antareja\Http\Controllers\IncidentController;
 use Antareja\Http\Controllers\InventoryController;
+use Antareja\Http\Controllers\ManagementController;
 use Antareja\Http\Controllers\IpamController;
 use Antareja\Http\Controllers\MaintenanceController;
 use Antareja\Http\Controllers\MappingController;
 use Antareja\Http\Controllers\ProblemController;
 use Antareja\Http\Controllers\QualityController;
+use Antareja\Http\Controllers\ReportController;
 use Antareja\Http\Controllers\SiteController;
+use Antareja\Http\Controllers\SlaController;
+use Antareja\Http\Controllers\TriggerController;
 use Antareja\Http\Controllers\WirelessController;
 use Illuminate\Support\Facades\Route;
 
@@ -183,6 +187,42 @@ Route::middleware(['web', 'auth'])
             Route::post('maintenance/{window}/complete', [MaintenanceController::class, 'complete'])->name('maintenance.complete');
             Route::post('maintenance/{window}/cancel', [MaintenanceController::class, 'cancel'])->name('maintenance.cancel');
             Route::post('maintenance/{window}/attachments', [MaintenanceController::class, 'attach'])->name('maintenance.attach');
+        });
+
+        // SLA & service tree
+        Route::middleware('can:ant-sla.view')->group(function (): void {
+            Route::get('sla', [SlaController::class, 'index'])->name('sla.index');
+            Route::get('sla/devices', [SlaController::class, 'devices'])->name('sla.devices');
+            Route::get('sla/{service}', [SlaController::class, 'show'])->whereNumber('service')->name('sla.show');
+        });
+        Route::middleware('can:ant-sla.update')->group(function (): void {
+            Route::get('sla/create', [SlaController::class, 'create'])->name('sla.create');
+            Route::post('sla', [SlaController::class, 'store'])->name('sla.store');
+            Route::get('sla/{service}/edit', [SlaController::class, 'edit'])->name('sla.edit');
+            Route::put('sla/{service}', [SlaController::class, 'update'])->name('sla.update');
+            Route::delete('sla/{service}', [SlaController::class, 'destroy'])->name('sla.destroy');
+        });
+
+        // Trigger expression
+        Route::middleware('can:ant-trigger.view')->group(function (): void {
+            Route::get('triggers', [TriggerController::class, 'index'])->name('triggers.index');
+            Route::get('triggers/{trigger}', [TriggerController::class, 'show'])->whereNumber('trigger')->name('triggers.show');
+        });
+        Route::middleware('can:ant-trigger.update')->group(function (): void {
+            Route::get('triggers/create', [TriggerController::class, 'create'])->name('triggers.create');
+            Route::post('triggers', [TriggerController::class, 'store'])->name('triggers.store');
+            Route::get('triggers/{trigger}/edit', [TriggerController::class, 'edit'])->name('triggers.edit');
+            Route::put('triggers/{trigger}', [TriggerController::class, 'update'])->name('triggers.update');
+            Route::delete('triggers/{trigger}', [TriggerController::class, 'destroy'])->name('triggers.destroy');
+            Route::post('triggers/{trigger}/evaluate', [TriggerController::class, 'evaluate'])->middleware('throttle:20,1')->name('triggers.evaluate');
+        });
+
+        // Dashboard manajemen & laporan
+        Route::get('management', ManagementController::class)->middleware('can:ant-dashboard.management')->name('management');
+        Route::middleware('can:ant-report.view')->group(function (): void {
+            Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+            Route::get('reports/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
+            Route::get('reports/monthly/export', [ReportController::class, 'export'])->middleware('can:ant-report.export')->name('reports.export');
         });
 
         // Audit log

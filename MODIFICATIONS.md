@@ -16,7 +16,7 @@ panduan saat menggabungkan update dari upstream.
 | `bootstrap/providers.php` | Tambah `Antareja\AntarejaServiceProvider::class` | Mendaftarkan route, view, migration, perintah ANTAREJA |
 | `resources/views/layouts/menu.blade.php` | Sisipkan `@includeIf('antareja::partials.navbar')` di awal navbar | Menu modul ANTAREJA di navigasi utama |
 | `resources/css/app.css` | Tambah `@source` untuk `packages/antareja/resources/views` dan `@import` `packages/antareja/resources/css/antareja.css` | Kelas Tailwind ANTAREJA ikut dikompilasi; token, font, dan komponen design system ANTAREJA dimuat di seluruh aplikasi |
-| `resources/definitions/permissions.yaml` | Tambah 13 grup permission `ant-*` | Permission ANTAREJA tampil di editor role |
+| `resources/definitions/permissions.yaml` | Tambah 16 grup permission `ant-*` | Permission ANTAREJA tampil di editor role |
 | `html/build/*` | Dibangun ulang (`npm run build`) | Hasil kompilasi dari perubahan `app.css` |
 
 ## File baru (tidak bentrok dengan upstream)
@@ -31,19 +31,21 @@ panduan saat menggabungkan update dari upstream.
 | `docs/` | Dokumen analisis & arsitektur ANTAREJA |
 | `.dockerignore`, `MODIFICATIONS.md`, `ANTAREJA.md` | Pendukung |
 
-## Integrasi tanpa mengubah file inti (Fase 1–3)
+## Integrasi tanpa mengubah file inti (Fase 1–4)
 
 | Mekanisme | Dipakai untuk |
 |---|---|
 | Tabel baru `ant_*` dengan foreign key ke `devices`, `ports`, `users`, `locations` | Site/area, detail inventaris, mapping, evidence, audit log |
 | Event Eloquent `Device::created` | Device baru otomatis masuk antrean verifikasi |
 | Plugin hook resmi `DeviceOverviewHook` (plugin `antareja`) | Panel inventaris di halaman device |
-| Scheduler Laravel (`schedule:run` di container app) | `antareja:sync-inventory` & `antareja:ipam-sync` (15 menit), `antareja:quality-probe` (5 menit), `antareja:suggest-mappings` (per jam), `antareja:quality-maintenance` (harian), `antareja:problems` (tiap menit) |
+| Scheduler Laravel (`schedule:run` di container app) | `antareja:sync-inventory` & `antareja:ipam-sync` (15 menit), `antareja:quality-probe` (5 menit), `antareja:suggest-mappings` (per jam), `antareja:quality-maintenance` (harian), `antareja:problems` (tiap menit, termasuk evaluasi trigger), `antareja:sla` (harian) |
 | Tabel `ipv4_addresses`, `ipv6_addresses`, `ipv4_mac`, `wireless_sensors`, `device_outages`, `vlans` (baca saja) | IPAM, Wireless, CCTV |
 | `fping` bawaan image + `Eventlog::log()` | Quality Probe & pencatatan perubahan status kualitas |
 | Tabel `device_relationships` (fitur dependensi bawaan) | Ditulis dari mapping terverifikasi agar alert anak ditekan; dibaca Problem engine untuk korelasi induk/anak |
 | Tabel `alerts` + `alert_rules` (baca; tulis `state=2` saat ack) | Sumber problem dari alert rule; ack ANTAREJA diteruskan ke LibreNMS |
 | `AlertTransport::instance()->deliverAlert()` | Notifikasi eskalasi lewat transport yang dikonfigurasi di LibreNMS (kredensial tetap di LibreNMS) |
+| Tabel `device_outages` (baca) | Downtime untuk SLA & laporan; tidak diduplikasi |
+| Tabel `ports`, `sensors`, `wireless_sensors`, `devices` (baca) | Nilai item trigger expression |
 | `AlertSchedule` + `Device::isUnderMaintenance()` | Jendela maintenance ANTAREJA dibuat sebagai Alert Schedule (mute alerts) dan dipakai untuk menekan problem |
 
 ## Prosedur sinkron upstream

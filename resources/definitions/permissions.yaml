@@ -283,6 +283,10 @@ groups:
         - ant-sla.view
         - ant-sla.update
 
+    ant-trigger:
+        - ant-trigger.view
+        - ant-trigger.update
+
     ant-maintenance:
         - ant-maintenance.view
         - ant-maintenance.update

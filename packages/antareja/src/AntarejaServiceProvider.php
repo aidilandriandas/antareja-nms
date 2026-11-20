@@ -6,6 +6,8 @@ use Antareja\Console\IpamSyncCommand;
 use Antareja\Console\ProblemsCommand;
 use Antareja\Console\QualityMaintenanceCommand;
 use Antareja\Console\QualityProbeCommand;
+use Antareja\Console\SlaCommand;
+use Antareja\Console\TriggersCommand;
 use Antareja\Console\SuggestMappingsCommand;
 use Antareja\Console\SyncInventoryCommand;
 use Antareja\Console\SyncRolesCommand;
@@ -29,7 +31,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.4.0';
+    public const VERSION = '0.5.0';
 
     public function register(): void
     {
@@ -56,6 +58,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $this->commands([
                 SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
                 IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class, ProblemsCommand::class,
+                SlaCommand::class, TriggersCommand::class,
             ]);
         }
 
@@ -89,6 +92,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $schedule->command('antareja:quality-probe')->everyFiveMinutes()->withoutOverlapping(10)->runInBackground();
             $schedule->command('antareja:quality-maintenance')->dailyAt('00:20')->withoutOverlapping()->runInBackground();
             $schedule->command('antareja:problems')->everyMinute()->withoutOverlapping(5)->runInBackground();
+            $schedule->command('antareja:sla')->dailyAt('00:35')->withoutOverlapping()->runInBackground();
         });
     }
 
@@ -123,6 +127,7 @@ class AntarejaServiceProvider extends ServiceProvider
                 'ant-incident' => 'ANTAREJA · Incident Management',
                 'ant-escalation' => 'ANTAREJA · Eskalasi & Notifikasi',
                 'ant-sla' => 'ANTAREJA · SLA Management',
+                'ant-trigger' => 'ANTAREJA · Trigger expression',
                 'ant-maintenance' => 'ANTAREJA · Maintenance',
                 'ant-report' => 'ANTAREJA · Reports',
                 'ant-audit' => 'ANTAREJA · Audit Log',
