@@ -40,6 +40,14 @@ make_env() {
         c_warn "docker/.env sudah ada, tidak ditimpa."
         return
     fi
+    # Volume database dari instalasi lain (nama project sama) memakai password lama: .env baru pasti gagal konek
+    if docker volume inspect antareja_db-data >/dev/null 2>&1; then
+        c_err "Volume database 'antareja_db-data' dari instalasi sebelumnya masih ada, tapi docker/.env belum ada di folder ini."
+        c_err "Password baru tidak akan cocok dengan database lama. Pilih salah satu:"
+        c_err "  - pakai .env lama: salin docker/.env dari folder instalasi sebelumnya ke $ENV_FILE, lalu ulangi"
+        c_err "  - mulai dari nol (DATA HILANG): docker volume ls | grep antareja_  lalu hapus volume tersebut, lalu ulangi"
+        exit 1
+    fi
     cp "$DOCKER_DIR/.env.example" "$ENV_FILE"
     sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=$(gen_secret 32)|" "$ENV_FILE"
     sed -i "s|^SNMP_COMMUNITY_LOCAL=.*|SNMP_COMMUNITY_LOCAL=$(gen_secret 20)|" "$ENV_FILE"
