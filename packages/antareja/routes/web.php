@@ -4,6 +4,8 @@ use Antareja\Http\Controllers\AboutController;
 use Antareja\Http\Controllers\AttachmentController;
 use Antareja\Http\Controllers\AuditLogController;
 use Antareja\Http\Controllers\CctvController;
+use Antareja\Http\Controllers\ChangeController;
+use Antareja\Http\Controllers\ConfigController;
 use Antareja\Http\Controllers\DiscoveryController;
 use Antareja\Http\Controllers\EscalationController;
 use Antareja\Http\Controllers\HomeController;
@@ -20,6 +22,7 @@ use Antareja\Http\Controllers\SiteController;
 use Antareja\Http\Controllers\SlaController;
 use Antareja\Http\Controllers\TriggerController;
 use Antareja\Http\Controllers\WirelessController;
+use Antareja\Http\Controllers\WorkOrderController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web', 'auth'])
@@ -223,6 +226,56 @@ Route::middleware(['web', 'auth'])
             Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
             Route::get('reports/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
             Route::get('reports/monthly/export', [ReportController::class, 'export'])->middleware('can:ant-report.export')->name('reports.export');
+        });
+
+        // Work order
+        Route::middleware('can:ant-workorder.view')->group(function (): void {
+            Route::get('workorders', [WorkOrderController::class, 'index'])->name('workorders.index');
+            Route::get('workorders/{workorder}', [WorkOrderController::class, 'show'])->whereNumber('workorder')->name('workorders.show');
+        });
+        Route::middleware('can:ant-workorder.update')->group(function (): void {
+            Route::get('workorders/create', [WorkOrderController::class, 'create'])->name('workorders.create');
+            Route::post('workorders', [WorkOrderController::class, 'store'])->name('workorders.store');
+            Route::get('workorders/{workorder}/edit', [WorkOrderController::class, 'edit'])->name('workorders.edit');
+            Route::put('workorders/{workorder}', [WorkOrderController::class, 'update'])->name('workorders.update');
+            Route::post('workorders/{workorder}/status', [WorkOrderController::class, 'transition'])->name('workorders.transition');
+            Route::post('workorders/{workorder}/assign', [WorkOrderController::class, 'assign'])->name('workorders.assign');
+            Route::post('workorders/{workorder}/checklist', [WorkOrderController::class, 'checklist'])->name('workorders.checklist');
+            Route::post('workorders/{workorder}/materials', [WorkOrderController::class, 'material'])->name('workorders.material');
+            Route::delete('workorders/{workorder}/materials/{material}', [WorkOrderController::class, 'removeMaterial'])->whereNumber('material')->name('workorders.material.destroy');
+            Route::post('workorders/{workorder}/notes', [WorkOrderController::class, 'note'])->name('workorders.note');
+            Route::post('workorders/{workorder}/attachments', [WorkOrderController::class, 'attach'])->name('workorders.attach');
+        });
+
+        // Change request
+        Route::middleware('can:ant-change.view')->group(function (): void {
+            Route::get('changes', [ChangeController::class, 'index'])->name('changes.index');
+            Route::get('changes/{change}', [ChangeController::class, 'show'])->whereNumber('change')->name('changes.show');
+            // aksi persetujuan dicek per-aksi (ant-change.approve) di controller
+            Route::post('changes/{change}/action', [ChangeController::class, 'action'])->name('changes.action');
+        });
+        Route::middleware('can:ant-change.update')->group(function (): void {
+            Route::get('changes/create', [ChangeController::class, 'create'])->name('changes.create');
+            Route::post('changes', [ChangeController::class, 'store'])->name('changes.store');
+            Route::get('changes/{change}/edit', [ChangeController::class, 'edit'])->name('changes.edit');
+            Route::put('changes/{change}', [ChangeController::class, 'update'])->name('changes.update');
+        });
+
+        // Backup konfigurasi
+        Route::middleware('can:ant-config.view')->group(function (): void {
+            Route::get('config', [ConfigController::class, 'index'])->name('config.index');
+            Route::get('config/device/{device}', [ConfigController::class, 'device'])->name('config.device');
+            Route::get('config/version/{version}/download', [ConfigController::class, 'download'])->name('config.download');
+        });
+        Route::middleware('can:ant-config.update')->group(function (): void {
+            Route::post('config/targets', [ConfigController::class, 'storeTargets'])->name('config.targets.store');
+            Route::put('config/device/{device}', [ConfigController::class, 'updateTarget'])->name('config.targets.update');
+            Route::delete('config/device/{device}', [ConfigController::class, 'destroyTarget'])->name('config.targets.destroy');
+            Route::post('config/device/{device}/collect', [ConfigController::class, 'collect'])->middleware('throttle:10,1')->name('config.collect');
+            Route::post('config/device/{device}/acknowledge', [ConfigController::class, 'acknowledge'])->name('config.acknowledge');
+            Route::post('config/credentials', [ConfigController::class, 'storeCredential'])->name('config.credentials.store');
+            Route::put('config/credentials/{credential}', [ConfigController::class, 'updateCredential'])->name('config.credentials.update');
+            Route::delete('config/credentials/{credential}', [ConfigController::class, 'destroyCredential'])->name('config.credentials.destroy');
         });
 
         // Audit log

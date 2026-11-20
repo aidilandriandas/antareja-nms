@@ -187,3 +187,12 @@ html .panel:has(img.logon-logo) .btn-primary:hover { filter: brightness(.88); }
 .ant-report .ant-report-kv th { width: 34%; }
 .ant-report-muted, .ant-report-empty { color: var(--ant-ink-muted); font-size: 0.8125rem; }
 .ant-report-nowrap { white-space: nowrap; }
+
+/* ---------- Diff & teks konfigurasi ---------- */
+.ant-diff { width: 100%; border-collapse: collapse; font-family: var(--ant-font-mono, "IBM Plex Mono", monospace); font-size: 12px; line-height: 1.5; }
+.ant-diff td { padding: 0 8px; vertical-align: top; white-space: pre; }
+.ant-diff__ln { width: 1%; text-align: right; color: var(--ant-ink-muted); user-select: none; border-right: 1px solid var(--ant-border); }
+.ant-diff__add { background: color-mix(in srgb, var(--ant-ok) 14%, transparent); }
+.ant-diff__del { background: color-mix(in srgb, var(--ant-crit) 14%, transparent); }
+.ant-diff__gap td { text-align: center; color: var(--ant-ink-muted); background: var(--ant-surface-sunken, transparent); }
+.ant-config-text { margin: 0; border: 0; border-radius: 0; max-height: 600px; overflow: auto; font-size: 12px; background: transparent; color: inherit; }

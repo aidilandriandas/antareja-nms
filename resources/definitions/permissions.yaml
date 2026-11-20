@@ -287,6 +287,20 @@ groups:
         - ant-trigger.view
         - ant-trigger.update
 
+    ant-workorder:
+        - ant-workorder.view
+        - ant-workorder.update
+        - ant-workorder.verify
+
+    ant-change:
+        - ant-change.view
+        - ant-change.update
+        - ant-change.approve
+
+    ant-config:
+        - ant-config.view
+        - ant-config.update
+
     ant-maintenance:
         - ant-maintenance.view
         - ant-maintenance.update

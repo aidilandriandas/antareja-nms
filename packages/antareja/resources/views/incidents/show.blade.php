@@ -22,6 +22,12 @@
     </span>
 @endsection
 
+@section('actions')
+    @can('ant-workorder.update')
+        @if($incident->isActive())<a href="{{ route('antareja.workorders.create', ['incident' => $incident->id]) }}" class="btn btn-default"><i class="fa fa-clipboard-list"></i> Buat work order</a>@endif
+    @endcan
+@endsection
+
 @section('page')
 <div class="row">
     <div class="col-lg-7">

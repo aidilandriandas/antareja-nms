@@ -17,6 +17,7 @@ class ProblemSource extends Model
         'ipam' => 'IPAM',
         'librenms_alert' => 'Alert rule poller',
         'trigger' => 'Trigger expression',
+        'config' => 'Backup konfigurasi',
     ];
 
     protected $table = 'ant_problem_sources';
@@ -44,6 +45,7 @@ class ProblemSource extends Model
             'ipam' => route('antareja.ipam.index', ['q' => $this->source_ref]),
             'librenms_alert' => url('alerts'),
             'trigger' => route('antareja.triggers.show', $this->source_ref),
+            'config' => route('antareja.config.device', $this->source_ref),
             default => null,
         };
     }

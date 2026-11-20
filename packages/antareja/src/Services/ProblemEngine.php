@@ -205,6 +205,21 @@ class ProblemEngine
                     $t->expression($item) . " — nilai {$value}", "{$t->name}: {$value}", $t->state_changed_at);
             });
 
+        // 7. Perubahan konfigurasi tanpa change request (dari backup konfigurasi), sampai di-acknowledge
+        \Antareja\Models\ConfigVersion::with('device')->where('unauthorized', true)->whereNull('acknowledged_at')
+            ->orderBy('collected_at')->get()->groupBy('device_id')
+            ->each(function ($versions, $deviceId) use (&$obs, $skip, $sites): void {
+                if ($skip($deviceId)) {
+                    return;
+                }
+                $v = $versions->last();
+                $name = $v->device?->displayName() ?? "Device #{$deviceId}";
+                $obs[] = $this->o('config', $deviceId, "config:{$deviceId}", 'config_change', 'average',
+                    "Konfigurasi {$name} berubah tanpa change request", (int) $deviceId, null, $sites[$deviceId] ?? null,
+                    $versions->count() . " versi belum diverifikasi; terakhir +{$v->lines_added}/-{$v->lines_removed} baris",
+                    "{$name}: versi {$v->collected_at->format('d M H:i')}", $versions->first()->collected_at);
+            });
+
         return $obs;
     }
 

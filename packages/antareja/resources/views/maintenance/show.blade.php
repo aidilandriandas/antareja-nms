@@ -13,6 +13,7 @@
 @section('actions')
     @can('ant-maintenance.update')
         @if(! in_array($window->status, ['completed', 'cancelled']))
+            @can('ant-workorder.update')<a href="{{ route('antareja.workorders.create', ['maintenance' => $window->id]) }}" class="btn btn-default"><i class="fa fa-clipboard-list"></i> Buat work order</a>@endcan
             <a href="{{ route('antareja.maintenance.edit', $window) }}" class="btn btn-default"><i class="fa fa-pencil"></i> Edit</a>
             <form method="post" action="{{ route('antareja.maintenance.cancel', $window) }}" onsubmit="return confirm('Batalkan maintenance ini?')">@csrf<button class="btn btn-default">Batalkan</button></form>
         @endif

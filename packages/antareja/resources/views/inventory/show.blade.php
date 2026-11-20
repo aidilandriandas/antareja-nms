@@ -21,6 +21,12 @@
     @can('ant-maintenance.update')
         <a href="{{ route('antareja.maintenance.create', ['device' => $device->device_id]) }}" class="btn btn-default"><i class="fa fa-tools"></i> Jadwalkan maintenance</a>
     @endcan
+    @can('ant-workorder.update')
+        <a href="{{ route('antareja.workorders.create', ['device' => $device->device_id]) }}" class="btn btn-default"><i class="fa fa-clipboard-list"></i> Work order</a>
+    @endcan
+    @can('ant-config.view')
+        <a href="{{ route('antareja.config.device', $device->device_id) }}" class="btn btn-default"><i class="fa fa-file-code"></i> Konfigurasi</a>
+    @endcan
     @can('ant-inventory.update')
         <a href="{{ route('antareja.inventory.edit', $device) }}" class="btn btn-primary"><i class="fa fa-pencil"></i> Edit inventaris</a>
     @endcan

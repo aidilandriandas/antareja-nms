@@ -27,6 +27,7 @@ class Problem extends Model
         'ip_conflict' => 'Konflik IP',
         'alert' => 'Alert rule',
         'trigger' => 'Trigger expression',
+        'config_change' => 'Perubahan konfigurasi',
     ];
 
     public const SUPPRESSION = [
