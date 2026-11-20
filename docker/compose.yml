@@ -22,8 +22,8 @@ x-app-env: &app-env
   MAX_INPUT_VARS: "1000"
   UPLOAD_MAX_SIZE: 16M
   OPCACHE_MEM_SIZE: "128"
-  REAL_IP_FROM: 0.0.0.0/0
-  REAL_IP_HEADER: X-Forwarded-For
+  # Jangan pakai REAL_IP_FROM di web server internal app: alamat Nginx ANTAREJA harus tetap terlihat agar Laravel
+  # mempercayainya (APP_TRUSTED_PROXIES) dan membuat URL https://. IP asli pengguna tetap terbaca dari X-Forwarded-For.
   LOG_IP_VAR: http_x_forwarded_for
   LISTEN_IPV6: ${LISTEN_IPV6:-false}
   # Percayai header X-Forwarded-* hanya dari jaringan internal Docker (Nginx reverse proxy)
