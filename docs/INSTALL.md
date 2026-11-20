@@ -44,9 +44,20 @@ git clone <URL-repo-antareja-nms-Anda> /opt/antareja && cd /opt/antareja
 ```
 
 Skrip akan: membuat `docker/.env` dengan password acak, membuat sertifikat TLS self-signed,
-membangun image, menjalankan semua container, dan meminta username/password admin.
+membangun image, menjalankan semua container, lalu menampilkan **alamat Setup Awal dan kode setup**:
 
-Buka `https://<IP-VM>/` lalu login. Browser akan memperingatkan sertifikat self-signed;
+```
+  Buka di browser : https://192.168.20.152/setup
+  Kode setup      : TQQQ-BBXD-QDRK
+```
+
+Buka alamat itu, isi kode setup, nama, username, dan password admin pertama (minimal 10 karakter, huruf + angka),
+lalu klik **Buat admin & masuk**. Kode setup hanya bisa dibaca dari server (`./antareja.sh setup-token`) agar orang lain
+di jaringan tidak bisa membuat admin lebih dulu; kode otomatis tidak berlaku setelah admin pertama dibuat.
+Wizard instalasi bawaan LibreNMS tidak dipakai — database & konfigurasi sudah disiapkan container.
+Tanpa browser: `./antareja.sh admin`.
+
+Selanjutnya buka `https://<IP-VM>/` lalu login. Browser akan memperingatkan sertifikat self-signed;
 ganti `docker/certs/antareja.crt` dan `antareja.key` dengan sertifikat dari CA perusahaan bila ada,
 lalu `./antareja.sh restart`.
 

@@ -19,6 +19,8 @@ panduan saat menggabungkan update dari upstream.
 | `resources/views/layouts/menu.blade.php` | Sisipkan `@includeIf('antareja::partials.navbar')` di awal navbar | Menu modul ANTAREJA di navigasi utama |
 | `resources/css/app.css` | Tambah `@source` untuk `packages/antareja/resources/views` dan `@import` `packages/antareja/resources/css/antareja.css` | Kelas Tailwind ANTAREJA ikut dikompilasi; token, font, dan komponen design system ANTAREJA dimuat di seluruh aplikasi |
 | `resources/definitions/permissions.yaml` | Tambah 22 grup permission `ant-*` | Permission ANTAREJA tampil di editor role |
+| `app/Http/Middleware/CheckInstalled.php` | Bila `ANTAREJA_MANAGED=1` (instalasi Docker), wizard `/install` LibreNMS dilewati dan diarahkan ke Setup Awal ANTAREJA (`/setup`) | Database & `.env` disiapkan container; admin pertama dibuat di halaman ANTAREJA yang dijaga kode setup |
+| `resources/views/auth/login.blade.php` | Memakai layout `antareja::layouts.auth` (field form tetap: `username`, `password`, `remember`, tombol socialite, `login_message`) | Halaman login bergaya ANTAREJA. Saat sinkron upstream: bandingkan field form dengan `login-form.blade.php` upstream |
 | `html/build/*` | Dibangun ulang (`npm run build`) | Hasil kompilasi dari perubahan `app.css` |
 
 ## File baru (tidak bentrok dengan upstream)

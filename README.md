@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  Versi 0.6.1 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
+  Versi 0.6.2 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
 </p>
 
 ---
@@ -223,11 +223,13 @@ Ganti `antareja.local` dengan nama DNS yang akan dipakai pengguna (atau biarkan 
 1. membuat `docker/.env` dengan password database acak,
 2. membuat sertifikat HTTPS self-signed (sudah mencakup IP VM),
 3. membangun image dan menjalankan semua container (pertama kali ±10–20 menit),
-4. menanyakan **username dan password admin**.
+4. menampilkan **alamat Setup Awal (`https://<IP-VM>/setup`) dan kode setup**.
 
 ### 6.5 Buka aplikasi
 
-Buka `https://<IP-VM>/`. Browser akan memperingatkan sertifikat self-signed — lanjutkan, lalu login sebagai admin.
+Buka `https://<IP-VM>/setup`. Browser akan memperingatkan sertifikat self-signed — klik **Advanced → Proceed**. Isi kode setup, nama, username, dan password admin pertama, lalu klik **Buat admin & masuk**. Kode setup bisa dilihat lagi kapan saja dengan `./antareja.sh setup-token` (hanya berlaku sampai admin pertama dibuat).
+
+Selalu buka ANTAREJA lewat `https://` — semua tautan dan form dibuat dengan `https://` sehingga login tidak memicu peringatan "informasi tidak aman".
 Cek kesehatan sistem:
 
 ```bash
@@ -288,6 +290,7 @@ Hak akses bisa disesuaikan per permission di *ANTAREJA → User Management → R
 | `./antareja.sh restore <file>` | Pulihkan dari backup |
 | `./antareja.sh update` | Backup → git pull → build → restart → cek kesehatan |
 | `./antareja.sh admin` | Buat user admin baru |
+| `./antareja.sh setup-token` | Tampilkan alamat & kode Setup Awal (sebelum admin pertama dibuat) |
 | `./antareja.sh lnms <perintah>` | Jalankan perintah LibreNMS/ANTAREJA (mis. `device:add`, `antareja:problems`) |
 
 **Backup harian otomatis:**

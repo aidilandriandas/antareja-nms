@@ -45,6 +45,12 @@ class CheckInstalled
         $installed = ! config('librenms.install') && file_exists(base_path('.env'));
         $is_install_route = $request->is('install*');
 
+        // ANTAREJA NMS (Docker): database, migrasi & .env disiapkan otomatis oleh container. Wizard instalasi
+        // LibreNMS tidak dipakai; admin pertama dibuat lewat Setup Awal ANTAREJA (/setup).
+        if (config('antareja.managed')) {
+            return $is_install_route ? redirect()->route('antareja.setup') : $next($request);
+        }
+
         // further middleware will fail without an app key, init one
         if (empty(config('app.key'))) {
             config(['app.key' => EnvHelper::init()]);

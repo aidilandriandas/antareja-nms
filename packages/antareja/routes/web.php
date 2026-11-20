@@ -24,11 +24,18 @@ use Antareja\Http\Controllers\ProblemController;
 use Antareja\Http\Controllers\QualityController;
 use Antareja\Http\Controllers\ReportController;
 use Antareja\Http\Controllers\SiteController;
+use Antareja\Http\Controllers\SetupController;
 use Antareja\Http\Controllers\SlaController;
 use Antareja\Http\Controllers\TriggerController;
 use Antareja\Http\Controllers\WirelessController;
 use Antareja\Http\Controllers\WorkOrderController;
 use Illuminate\Support\Facades\Route;
+
+// Setup Awal: membuat admin pertama (hanya selama belum ada user; dijaga kode setup dari server)
+Route::middleware(['web', 'guest'])->group(function (): void {
+    Route::get('setup', [SetupController::class, 'show'])->name('antareja.setup');
+    Route::post('setup', [SetupController::class, 'store'])->middleware('throttle:10,1')->name('antareja.setup.store');
+});
 
 Route::middleware(['web', 'auth'])
     ->prefix('antareja')

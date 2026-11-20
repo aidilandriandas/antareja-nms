@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ANTAREJA NMS — skrip operasional
-# Pemakaian: ./antareja.sh {install|start|stop|restart|status|logs|update|backup|restore|health|admin|lnms}
+# Pemakaian: ./antareja.sh {install|start|stop|restart|status|logs|update|backup|restore|health|admin|setup-token|lnms}
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -89,13 +89,25 @@ cmd_install() {
     "${COMPOSE[@]}" build app
     "${COMPOSE[@]}" up -d
     wait_healthy 600
-    if [[ "${ANTAREJA_SKIP_ADMIN:-0}" != "1" ]]; then
-        cmd_admin
-        # Restart sekali agar mode first-run wizard LibreNMS tidak aktif lagi
-        "${COMPOSE[@]}" restart app dispatcher >/dev/null
-        wait_healthy 300
+    c_ok "Instalasi selesai."
+    cmd_setup_token
+}
+
+# Kode untuk halaman Setup Awal (/setup) — membuat admin pertama lewat browser
+cmd_setup_token() {
+    local token ip
+    token="$(lnms antareja:setup-token 2>/dev/null | tail -n1 | tr -d '\r')"
+    ip="$(hostname -I 2>/dev/null | awk '{print $1}')"
+    if [[ "$token" =~ ^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$ ]]; then
+        echo
+        echo "  Buka di browser : https://${ip:-$(env_get SERVER_NAME)}/setup"
+        echo "  Kode setup      : $token"
+        echo
+        echo "  (Peringatan sertifikat self-signed itu wajar: klik Advanced → Proceed.)"
+        echo "  Alternatif tanpa browser: ./antareja.sh admin"
+    else
+        echo "$token"
     fi
-    c_ok "Instalasi selesai. Buka: https://$(env_get SERVER_NAME)/  (atau https://<IP-VM>/)"
 }
 
 cmd_admin() {
@@ -213,6 +225,7 @@ ANTAREJA NMS — skrip operasional
   restore <file>     Pulihkan dari file backup
   health             Cek kesehatan semua komponen
   admin              Buat user admin baru
+  setup-token        Tampilkan alamat & kode Setup Awal (selama admin pertama belum dibuat)
   lnms <args>        Jalankan perintah lnms (mis. ./antareja.sh lnms device:add 10.0.0.1)
 EOF
 }
@@ -231,6 +244,7 @@ main() {
         restore) cmd_restore "$@" ;;
         health) cmd_health ;;
         admin) require_env; cmd_admin ;;
+        setup-token) require_env; cmd_setup_token ;;
         lnms) require_env; lnms "$@" ;;
         *) usage; [[ -z "$cmd" ]] && exit 0 || exit 1 ;;
     esac

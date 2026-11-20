@@ -29,6 +29,7 @@ x-app-env: &app-env
   # Percayai header X-Forwarded-* hanya dari jaringan internal Docker (Nginx reverse proxy)
   APP_TRUSTED_PROXIES: ${DOCKER_SUBNET:-172.30.250.0/24}
   ANTAREJA_PUBLIC_URL: https://${SERVER_NAME}
+  ANTAREJA_MANAGED: "1"
   # Asisten AI opsional — kunci hanya di server, tidak pernah dikirim ke browser
   ANTAREJA_AI_KEY: ${ANTAREJA_AI_KEY:-}
   ANTAREJA_AI_MODEL: ${ANTAREJA_AI_MODEL:-claude-opus-5-5}
@@ -113,7 +114,7 @@ services:
       - rrd-data:/data/rrd
     networks: [backend]
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8000/login || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8000/up || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 10

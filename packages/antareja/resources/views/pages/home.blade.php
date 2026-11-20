@@ -12,6 +12,9 @@
 
 @section('content')
 <div class="container-fluid antareja-page">
+    @if(session('antareja_success'))
+        <div class="tw:mt-3"><x-antareja::alert tone="ok">{{ session('antareja_success') }}</x-antareja::alert></div>
+    @endif
     <div class="tw:flex tw:flex-wrap tw:items-end tw:justify-between tw:gap-4 tw:mt-2 tw:mb-6">
         <div>
             <h1 class="tw:text-3xl tw:font-bold tw:m-0">ANTAREJA NMS</h1>

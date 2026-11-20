@@ -10,11 +10,13 @@ use Antareja\Console\IpamSyncCommand;
 use Antareja\Console\ProblemsCommand;
 use Antareja\Console\QualityMaintenanceCommand;
 use Antareja\Console\QualityProbeCommand;
+use Antareja\Console\SetupTokenCommand;
 use Antareja\Console\SlaCommand;
 use Antareja\Console\TriggersCommand;
 use Antareja\Console\SuggestMappingsCommand;
 use Antareja\Console\SyncInventoryCommand;
 use Antareja\Console\SyncRolesCommand;
+use Antareja\Http\Middleware\FirstRunSetup;
 use Antareja\Listeners\AuthAuditSubscriber;
 use Antareja\Plugins\DeviceOverview;
 use Antareja\Services\AttachmentService;
@@ -28,6 +30,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use LibreNMS\Interfaces\Plugins\Hooks\DeviceOverviewHook;
@@ -35,7 +38,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.6.1';
+    public const VERSION = '0.6.2';
 
     public function register(): void
     {
@@ -53,6 +56,14 @@ class AntarejaServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+
+        // Di balik Nginx ANTAREJA (TLS) semua tautan & action form wajib https:// — jangan bergantung pada deteksi
+        // header proxy saja; bila gagal, browser memperingatkan "informasi tidak aman" dan login gagal.
+        if (str_starts_with((string) config('antareja.public_url'), 'https://') && ! $this->app->runningInConsole()) {
+            URL::forceScheme('https');
+            $this->app['request']->server->set('HTTPS', 'on');
+        }
+        $this->app['router']->pushMiddlewareToGroup('web', FirstRunSetup::class);
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'antareja');
         // Komponen design system: <x-antareja::status>, <x-antareja::stat>, <x-antareja::progress>, <x-antareja::alert>
         Blade::anonymousComponentPath(__DIR__ . '/../resources/views/components', 'antareja');
@@ -62,7 +73,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $this->commands([
                 SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
                 IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class, ProblemsCommand::class,
-                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class,
+                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class, SetupTokenCommand::class,
             ]);
         }
 

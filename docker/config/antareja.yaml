@@ -3,3 +3,4 @@ project_name: 'ANTAREJA NMS'
 # Logo resmi ANTAREJA (lingkaran merah); wordmark "ANTAREJA" ditambahkan lewat CSS di navbar
 title_image: 'images/antareja/antareja-mark-256.png'
 favicon: 'images/antareja/favicon-32.png'
+login_message: 'Akses atau penggunaan tanpa izin dilarang dan dapat dikenai sanksi pidana maupun perdata.'

@@ -5,6 +5,8 @@ return [
     'full_name' => 'Mining ICT Infrastructure Management & Unified Network Monitoring Platform',
     // Alamat ANTAREJA yang dibuka pengguna; dipakai untuk tautan di notifikasi Telegram/email
     'public_url' => env('ANTAREJA_PUBLIC_URL'),
+    // Dipasang lewat Docker (antareja.sh): wizard instalasi LibreNMS diganti Setup Awal ANTAREJA
+    'managed' => (bool) env('ANTAREJA_MANAGED', false),
     // Asisten AI opsional (Claude API). Tanpa kunci = fitur AI nonaktif; deteksi anomali tetap jalan offline.
     'ai' => [
         'key' => env('ANTAREJA_AI_KEY'),
