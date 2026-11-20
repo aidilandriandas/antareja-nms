@@ -27,7 +27,7 @@ backup_dir() {
 }
 
 check_prereq() {
-    command -v docker >/dev/null || die "Docker belum terpasang (lihat docker/README.md)."
+    command -v docker >/dev/null || die "Docker belum terpasang (lihat docs/INSTALL.md)."
     docker compose version >/dev/null 2>&1 || die "Docker Compose v2 belum terpasang."
     docker info >/dev/null 2>&1 || die "Docker daemon tidak berjalan / user tidak punya akses ke Docker."
     command -v openssl >/dev/null || die "openssl belum terpasang (apt install openssl)."

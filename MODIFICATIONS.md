@@ -14,6 +14,7 @@ panduan saat menggabungkan update dari upstream.
 |---|---|---|
 | `composer.json` | Tambah autoload PSR-4 `"Antareja\\": "packages/antareja/src/"` | Memuat kode paket ANTAREJA |
 | `composer.json`, `composer.lock` | Tambah `anthropic-ai/sdk` (^1.11; ikut terkunci: `open-telemetry/api`, `open-telemetry/context`, `standard-webhooks/standard-webhooks`). Tidak ada paket upstream yang berubah versi | Asisten AI opsional (Claude API). Saat sinkron upstream: ambil `composer.lock` upstream lalu jalankan ulang `composer require anthropic-ai/sdk:^1.11 --no-install` |
+| `README.md` → `README-LibreNMS.md` | README asli LibreNMS dipindah utuh (termasuk ketentuan lisensi); `README.md` baru berisi panduan ANTAREJA berbahasa Indonesia | Halaman depan repo menjelaskan ANTAREJA. Saat sinkron upstream: salin README upstream ke `README-LibreNMS.md` |
 | `bootstrap/providers.php` | Tambah `Antareja\AntarejaServiceProvider::class` | Mendaftarkan route, view, migration, perintah ANTAREJA |
 | `resources/views/layouts/menu.blade.php` | Sisipkan `@includeIf('antareja::partials.navbar')` di awal navbar | Menu modul ANTAREJA di navigasi utama |
 | `resources/css/app.css` | Tambah `@source` untuk `packages/antareja/resources/views` dan `@import` `packages/antareja/resources/css/antareja.css` | Kelas Tailwind ANTAREJA ikut dikompilasi; token, font, dan komponen design system ANTAREJA dimuat di seluruh aplikasi |

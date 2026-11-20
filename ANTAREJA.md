@@ -44,4 +44,4 @@ docs/                Dokumen ANTAREJA
 | ICT Admin | `admin` | Semua akses |
 | Management | `management` | Dashboard eksekutif, laporan, SLA (baca saja) |
 
-README.md asli LibreNMS dan LICENSE.txt dipertahankan sesuai kewajiban lisensi.
+README asli LibreNMS (dipindah utuh ke `README-LibreNMS.md`) dan `LICENSE.txt` dipertahankan sesuai kewajiban lisensi. Panduan utama: `README.md`.

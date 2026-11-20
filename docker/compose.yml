@@ -1,5 +1,5 @@
 # ANTAREJA NMS — Docker Compose (satu VM Ubuntu Server LTS / Proxmox)
-# Jalankan lewat skrip: ./antareja.sh start   (lihat docker/README.md)
+# Jalankan lewat skrip: ./antareja.sh start   (lihat docs/INSTALL.md)
 name: antareja
 
 x-app-env: &app-env
