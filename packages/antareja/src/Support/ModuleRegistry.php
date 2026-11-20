@@ -72,6 +72,8 @@ class ModuleRegistry
                 'Utilisasi uplink (p95 harian dari histori RRD), storage NVR/server, pool IP, dan prakiraan kapan menyentuh ambang.', 'ant-capacity.view'),
             $this->module('fiber', 'Fiber Optic', 'grip-lines', self::NATIVE, 'antareja/fiber', 5,
                 'Kabel, core (warna TIA-598), ODF, joint & splice, uji OTDR, penelusuran jalur end-to-end, lokasi gangguan dari jarak OTDR.', 'ant-fiber.view'),
+            $this->module('assistant', 'Asisten & Anomali', 'magic', self::NATIVE, 'antareja/assistant', 5,
+                'Deteksi anomali statistik offline (latency, loss, traffic, flapping) dan asisten AI opsional untuk draf serah terima shift & analisis incident — tanpa eksekusi perubahan.', 'ant-ai.use'),
             $this->module('reports', 'Reports', 'file-alt', self::NATIVE, 'antareja/reports', 4,
                 'Laporan bulanan per site: SLA, availability, incident, maintenance, kualitas, utilisasi IP — cetak PDF, Excel, CSV.', 'ant-report.view'),
             $this->module('users', 'User Management', 'users', self::NATIVE, 'users', 0,

@@ -65,7 +65,38 @@ lalu `./antareja.sh restart`.
 4. Buat user dan beri role `ict-network`, `ict-cctv-support`, `management`, atau `admin`
    (menu **ANTAREJA → User Management**).
 
-## 5. Operasional
+## 5. Fitur opsional
+
+### Asisten AI (Claude API)
+Butuh internet dari VM ke `api.anthropic.com`. Tanpa kunci, fitur AI nonaktif; deteksi anomali tetap berjalan offline.
+
+1. Buat API key di console Anthropic (akun organisasi Anda).
+2. Isi di `docker/.env`:
+   ```
+   ANTAREJA_AI_KEY=<api key>
+   ANTAREJA_AI_MODEL=claude-opus-5-5
+   ```
+   Opsional: `ANTAREJA_AI_BASE_URL` bila lewat gateway API perusahaan, `ANTAREJA_AI_REDACT=false` untuk
+   tidak menyamarkan alamat IP/MAC (bawaan: disamarkan).
+3. Terapkan:
+   ```bash
+   ./antareja.sh restart
+   ```
+
+Kunci hanya disimpan di server dan tidak pernah dikirim ke browser. Lihat `docs/FASE-5-Lanjutan.md` §5 untuk data apa saja
+yang dikirim.
+
+### Build lewat proxy / tanpa akses GitHub
+Build image mengunduh beberapa paket PHP tambahan (Composer). Bila VM keluar internet lewat proxy:
+```
+BUILD_HTTPS_PROXY=http://proxy.kantor:3128
+DOCKER_BUILD_NETWORK=default
+```
+Proxy yang memeriksa TLS: simpan sertifikat CA proxy di `docker/build-ca.crt`. Untuk VM tanpa akses GitHub,
+salin folder cache Composer (`files/`) dari mesin lain yang punya akses ke `docker/composer-cache/`,
+atau bangun image di mesin lain lalu pindahkan dengan `docker save` / `docker load`.
+
+## 6. Operasional
 
 | Perintah | Fungsi |
 |---|---|
@@ -84,7 +115,7 @@ Jadwalkan backup harian dengan cron:
 
 Salin isi `docker/backups/` ke NAS/share di luar VM secara berkala.
 
-## 6. Catatan
+## 7. Catatan
 
 - `docker/.env` berisi password database: jangan dibagikan atau di-commit.
 - IPv6 nonaktif secara default (`LISTEN_IPV6=false`). Ubah di `docker/.env` bila diperlukan.

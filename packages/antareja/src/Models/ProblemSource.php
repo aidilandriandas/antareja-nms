@@ -18,6 +18,7 @@ class ProblemSource extends Model
         'librenms_alert' => 'Alert rule poller',
         'trigger' => 'Trigger expression',
         'config' => 'Backup konfigurasi',
+        'anomaly' => 'Deteksi anomali',
     ];
 
     protected $table = 'ant_problem_sources';
@@ -46,6 +47,7 @@ class ProblemSource extends Model
             'librenms_alert' => url('alerts'),
             'trigger' => route('antareja.triggers.show', $this->source_ref),
             'config' => route('antareja.config.device', $this->source_ref),
+            'anomaly' => route('antareja.anomalies.index'),
             default => null,
         };
     }

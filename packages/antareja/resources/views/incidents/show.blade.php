@@ -122,6 +122,23 @@
     </div>
 
     <div class="col-lg-5">
+        @can('ant-ai.use')
+            @php($aiReports = \Antareja\Models\AiReport::where('kind', 'incident')->where('subject_id', $incident->id)->latest('id')->limit(5)->get())
+            <form method="post" action="{{ route('antareja.assistant.incident', $incident) }}" class="panel panel-default">
+                @csrf
+                <div class="panel-heading"><strong>Asisten AI</strong> <span class="tw:text-xs ant-muted">draf, bukan keputusan</span></div>
+                <div class="panel-body">
+                    <p class="tw:text-xs ant-muted tw:mt-0">Ringkasan kronologi, dugaan penyebab beserta buktinya, dan langkah pengecekan berikutnya dari data ANTAREJA. Root cause tetap ditulis engineer.</p>
+                    <div class="tw:flex tw:gap-2">
+                        <button name="preview" value="1" class="btn btn-default btn-sm">Lihat data</button>
+                        <button class="btn btn-default btn-sm" @disabled(! app(\Antareja\Services\AiAssistant::class)->enabled()) title="{{ app(\Antareja\Services\AiAssistant::class)->unavailableReason() }}"><i class="fa fa-magic"></i> Buat draf analisis</button>
+                    </div>
+                    @foreach($aiReports as $r)
+                        <div class="tw:text-sm tw:mt-2"><a href="{{ route('antareja.assistant.show', $r) }}">{{ $r->title }}</a> <span class="tw:text-xs ant-muted">{{ $r->created_at->format('d M H:i') }}</span></div>
+                    @endforeach
+                </div>
+            </form>
+        @endcan
         @can('ant-incident.update')
             <form method="post" action="{{ route('antareja.incidents.assign', $incident) }}" class="panel panel-default">
                 @csrf

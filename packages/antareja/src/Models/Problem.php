@@ -28,6 +28,7 @@ class Problem extends Model
         'alert' => 'Alert rule',
         'trigger' => 'Trigger expression',
         'config_change' => 'Perubahan konfigurasi',
+        'anomaly' => 'Anomali statistik',
     ];
 
     public const SUPPRESSION = [

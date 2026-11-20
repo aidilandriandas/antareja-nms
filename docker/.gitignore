@@ -2,3 +2,5 @@
 .env
 certs/
 backups/
+build-ca.crt
+composer-cache/

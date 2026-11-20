@@ -2,6 +2,7 @@
 
 namespace Antareja;
 
+use Antareja\Console\AnomaliesCommand;
 use Antareja\Console\CapacityCommand;
 use Antareja\Console\ConfigBackupCommand;
 use Antareja\Console\IpamSyncCommand;
@@ -60,7 +61,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $this->commands([
                 SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
                 IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class, ProblemsCommand::class,
-                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class,
+                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class,
             ]);
         }
 
@@ -97,6 +98,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $schedule->command('antareja:sla')->dailyAt('00:35')->withoutOverlapping()->runInBackground();
             $schedule->command('antareja:config-backup')->hourlyAt(41)->withoutOverlapping(120)->runInBackground();
             $schedule->command('antareja:capacity')->cron('23 */6 * * *')->withoutOverlapping(120)->runInBackground();
+            $schedule->command('antareja:anomalies')->cron('*/15 * * * *')->withoutOverlapping(14)->runInBackground();
         });
     }
 
@@ -137,6 +139,7 @@ class AntarejaServiceProvider extends ServiceProvider
                 'ant-config' => 'ANTAREJA · Backup Konfigurasi',
                 'ant-capacity' => 'ANTAREJA · Capacity Planning',
                 'ant-fiber' => 'ANTAREJA · Fiber Optic',
+                'ant-ai' => 'ANTAREJA · Asisten AI',
                 'ant-maintenance' => 'ANTAREJA · Maintenance',
                 'ant-report' => 'ANTAREJA · Reports',
                 'ant-audit' => 'ANTAREJA · Audit Log',
@@ -144,7 +147,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $actions = [
                 'technical' => 'Technical dashboard', 'management' => 'Management dashboard',
                 'view' => 'View', 'update' => 'Create / edit', 'delete' => 'Delete', 'create' => 'Create',
-                'approve' => 'Approve', 'verify' => 'Verify', 'close' => 'Close', 'export' => 'Export', 'acknowledge' => 'Acknowledge',
+                'approve' => 'Approve', 'use' => 'Use', 'verify' => 'Verify', 'close' => 'Close', 'export' => 'Export', 'acknowledge' => 'Acknowledge',
             ];
 
             // Pastikan file terjemahan asli sudah dimuat dulu agar tidak tertimpa.

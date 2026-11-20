@@ -220,6 +220,16 @@ class ProblemEngine
                     "{$name}: versi {$v->collected_at->format('d M H:i')}", $versions->first()->collected_at);
             });
 
+        // 8. Anomali statistik aktif (informasi; flapping = warning)
+        \Antareja\Models\Anomaly::where('status', 'open')->get()->each(function ($a) use (&$obs, $skip, $sites): void {
+            if ($a->device_id && $skip($a->device_id)) {
+                return;
+            }
+            $obs[] = $this->o('anomaly', $a->id, "anomaly:{$a->kind}:{$a->ref}", 'anomaly', $a->kind === 'flapping' ? 'warning' : 'information',
+                (\Antareja\Models\Anomaly::KINDS[$a->kind] ?? 'Anomali') . ': ' . $a->label, $a->device_id, null,
+                $a->device_id ? ($sites[$a->device_id] ?? null) : null, $a->score !== null ? 'skor ' . $a->score : null, $a->label, $a->detected_at);
+        });
+
         return $obs;
     }
 

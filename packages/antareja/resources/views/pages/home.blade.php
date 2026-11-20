@@ -20,7 +20,7 @@
             </p>
         </div>
         <div class="tw:text-sm ant-muted">
-            Versi {{ $version }} · Fase 4 (SLA &amp; Laporan)
+            Versi {{ $version }} · Fase 5 (Lanjutan)
         </div>
     </div>
 
@@ -126,7 +126,7 @@
         <li><strong>Fase 2 — IPAM &amp; Kualitas:</strong> IPAM, Quality Probe + grafik smoke, Wireless &amp; CCTV. <em>(selesai)</em></li>
         <li><strong>Fase 3 — Problem &amp; Incident:</strong> korelasi event, incident, eskalasi, kalender maintenance. <em>(selesai)</em></li>
         <li><strong>Fase 4 — SLA &amp; Laporan:</strong> service tree, trigger expression, SLA bulanan, dashboard manajemen, export. <em>(selesai)</em></li>
-        <li><strong>Fase 5 — Lanjutan:</strong> work order, change &amp; config tracking, capacity, fiber optic, AI.</li>
+        <li><strong>Fase 5 — Lanjutan:</strong> work order, change request &amp; backup konfigurasi, capacity planning, fiber optic, deteksi anomali &amp; asisten AI. <em>(selesai)</em></li>
     </ol>
 </div>
 @endsection

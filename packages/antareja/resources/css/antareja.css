@@ -208,3 +208,10 @@ html .panel:has(img.logon-logo) .btn-primary:hover { filter: brightness(.88); }
 .ant-fiber-path__node--joint { border-radius: 999px; }
 .ant-fiber-path__node--cable { border: 0; background: transparent; }
 .ant-fiber-path__node--fault { border-color: var(--ant-crit); background: var(--ant-crit); }
+
+/* ---------- Teks markdown dari asisten AI ---------- */
+.ant-md h1, .ant-md h2, .ant-md h3 { font-size: 1rem; font-weight: 700; margin: 1rem 0 0.35rem; }
+.ant-md h1:first-child, .ant-md h2:first-child, .ant-md h3:first-child { margin-top: 0; }
+.ant-md ul, .ant-md ol { padding-left: 1.25rem; margin: 0 0 0.5rem; }
+.ant-md p { margin: 0 0 0.5rem; }
+.ant-md code { font-family: var(--ant-font-mono); font-size: 0.85em; }

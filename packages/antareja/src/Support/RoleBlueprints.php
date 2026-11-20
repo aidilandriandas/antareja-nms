@@ -33,6 +33,7 @@ class RoleBlueprints
         'ant-config' => ['ant-config.view', 'ant-config.update'],
         'ant-capacity' => ['ant-capacity.view', 'ant-capacity.update'],
         'ant-fiber' => ['ant-fiber.view', 'ant-fiber.update'],
+        'ant-ai' => ['ant-ai.use'],
         'ant-maintenance' => ['ant-maintenance.view', 'ant-maintenance.update', 'ant-maintenance.approve'],
         'ant-report' => ['ant-report.view', 'ant-report.export'],
         'ant-audit' => ['ant-audit.view'],
@@ -80,6 +81,7 @@ class RoleBlueprints
             'ant-config.view', 'ant-config.update',
             'ant-capacity.view', 'ant-capacity.update',
             'ant-fiber.view', 'ant-fiber.update',
+            'ant-ai.use',
             'ant-maintenance.view', 'ant-maintenance.update',
             'ant-report.view', 'ant-report.export',
         ],
@@ -112,6 +114,7 @@ class RoleBlueprints
             'ant-change.view', 'ant-change.update',
             'ant-capacity.view',
             'ant-fiber.view', 'ant-fiber.update',
+            'ant-ai.use',
             'ant-report.view', 'ant-report.export',
         ],
         'management' => [

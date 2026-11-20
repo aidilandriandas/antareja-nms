@@ -13,10 +13,11 @@ panduan saat menggabungkan update dari upstream.
 | File | Perubahan | Alasan |
 |---|---|---|
 | `composer.json` | Tambah autoload PSR-4 `"Antareja\\": "packages/antareja/src/"` | Memuat kode paket ANTAREJA |
+| `composer.json`, `composer.lock` | Tambah `anthropic-ai/sdk` (^1.11; ikut terkunci: `open-telemetry/api`, `open-telemetry/context`, `standard-webhooks/standard-webhooks`). Tidak ada paket upstream yang berubah versi | Asisten AI opsional (Claude API). Saat sinkron upstream: ambil `composer.lock` upstream lalu jalankan ulang `composer require anthropic-ai/sdk:^1.11 --no-install` |
 | `bootstrap/providers.php` | Tambah `Antareja\AntarejaServiceProvider::class` | Mendaftarkan route, view, migration, perintah ANTAREJA |
 | `resources/views/layouts/menu.blade.php` | Sisipkan `@includeIf('antareja::partials.navbar')` di awal navbar | Menu modul ANTAREJA di navigasi utama |
 | `resources/css/app.css` | Tambah `@source` untuk `packages/antareja/resources/views` dan `@import` `packages/antareja/resources/css/antareja.css` | Kelas Tailwind ANTAREJA ikut dikompilasi; token, font, dan komponen design system ANTAREJA dimuat di seluruh aplikasi |
-| `resources/definitions/permissions.yaml` | Tambah 16 grup permission `ant-*` | Permission ANTAREJA tampil di editor role |
+| `resources/definitions/permissions.yaml` | Tambah 22 grup permission `ant-*` | Permission ANTAREJA tampil di editor role |
 | `html/build/*` | Dibangun ulang (`npm run build`) | Hasil kompilasi dari perubahan `app.css` |
 
 ## File baru (tidak bentrok dengan upstream)
@@ -47,6 +48,19 @@ panduan saat menggabungkan update dari upstream.
 | Tabel `device_outages` (baca) | Downtime untuk SLA & laporan; tidak diduplikasi |
 | Tabel `ports`, `sensors`, `wireless_sensors`, `devices` (baca) | Nilai item trigger expression |
 | `AlertSchedule` + `Device::isUnderMaintenance()` | Jendela maintenance ANTAREJA dibuat sebagai Alert Schedule (mute alerts) dan dipakai untuk menekan problem |
+
+## Dependensi tidak langsung yang dipakai
+
+| Paket | Dipakai untuk | Catatan |
+|---|---|---|
+| `phpseclib/phpseclib` (v4, ikut LibreNMS lewat paket lain) | SSH backup konfigurasi | Kode memeriksa namespace `phpseclib4` lalu `phpseclib3`; bila hilang dari upstream, backup konfigurasi menampilkan pesan jelas |
+| `rrdtool` + rrdcached (bawaan image) | Capacity planning & deteksi anomali traffic | Hanya membaca (`rrdtool fetch`) |
+| `league/commonmark` (lewat Laravel `Str::markdown`) | Menampilkan draf AI | HTML mentah dibuang, tautan tidak aman diblokir |
+
+## Docker build
+
+`docker/Dockerfile` menjalankan `composer install --no-dev` di atas vendor image resmi (hanya paket yang belum ada yang diunduh).
+Mendukung proxy build (`BUILD_HTTPS_PROXY`), CA proxy (`docker/build-ca.crt`) dan cache Composer offline (`docker/composer-cache/`).
 
 ## Prosedur sinkron upstream
 

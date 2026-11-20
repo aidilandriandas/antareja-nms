@@ -12,7 +12,7 @@ class IncidentNote extends Model
 
     public const TYPES = [
         'note' => 'Work note', 'status' => 'Status', 'assignment' => 'Penugasan', 'escalation' => 'Eskalasi',
-        'link' => 'Problem terkait', 'system' => 'Sistem',
+        'link' => 'Problem terkait', 'system' => 'Sistem', 'ai' => 'Draf AI',
     ];
 
     protected $table = 'ant_incident_notes';

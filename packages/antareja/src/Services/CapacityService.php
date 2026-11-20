@@ -21,7 +21,8 @@ use Illuminate\Support\Facades\DB;
  */
 class CapacityService
 {
-    private const RECENT_DAYS = 7;
+    // RRA 5 menit LibreNMS = 7 hari; 6 hari agar rrdtool tidak beralih ke resolusi 30 menit
+    private const RECENT_DAYS = 6;
 
     private const FORECAST_WINDOW = 60;
 

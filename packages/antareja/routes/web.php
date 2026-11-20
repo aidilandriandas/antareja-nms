@@ -1,6 +1,8 @@
 <?php
 
 use Antareja\Http\Controllers\AboutController;
+use Antareja\Http\Controllers\AnomalyController;
+use Antareja\Http\Controllers\AssistantController;
 use Antareja\Http\Controllers\AttachmentController;
 use Antareja\Http\Controllers\AuditLogController;
 use Antareja\Http\Controllers\CapacityController;
@@ -315,6 +317,15 @@ Route::middleware(['web', 'auth'])
             Route::put('fiber/joints/{joint}', [FiberController::class, 'updateJoint'])->name('fiber.joints.update');
             Route::post('fiber/joints/{joint}/splices', [FiberController::class, 'storeSplice'])->name('fiber.splices.store');
             Route::delete('fiber/splices/{splice}', [FiberController::class, 'destroySplice'])->name('fiber.splices.destroy');
+        });
+
+        // Asisten AI (opsional) & anomali
+        Route::get('anomalies', [AnomalyController::class, 'index'])->middleware('can:ant-problem.view')->name('anomalies.index');
+        Route::middleware('can:ant-ai.use')->group(function (): void {
+            Route::get('assistant', [AssistantController::class, 'index'])->name('assistant.index');
+            Route::get('assistant/reports/{report}', [AssistantController::class, 'show'])->name('assistant.show');
+            Route::post('assistant/shift', [AssistantController::class, 'shift'])->middleware('throttle:10,1')->name('assistant.shift');
+            Route::post('assistant/incidents/{incident}', [AssistantController::class, 'incident'])->middleware(['can:ant-incident.view', 'throttle:10,1'])->name('assistant.incident');
         });
 
         // Audit log

@@ -29,6 +29,10 @@ x-app-env: &app-env
   # Percayai header X-Forwarded-* hanya dari jaringan internal Docker (Nginx reverse proxy)
   APP_TRUSTED_PROXIES: ${DOCKER_SUBNET:-172.30.250.0/24}
   ANTAREJA_PUBLIC_URL: https://${SERVER_NAME}
+  # Asisten AI opsional — kunci hanya di server, tidak pernah dikirim ke browser
+  ANTAREJA_AI_KEY: ${ANTAREJA_AI_KEY:-}
+  ANTAREJA_AI_MODEL: ${ANTAREJA_AI_MODEL:-claude-opus-5-5}
+  ANTAREJA_AI_BASE_URL: ${ANTAREJA_AI_BASE_URL:-}
 
 services:
   db:
@@ -86,8 +90,12 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      # Proxy keluar saat build (opsional, mis. jaringan kantor tambang); kosong = langsung
+      network: ${DOCKER_BUILD_NETWORK:-default}
       args:
         LIBRENMS_VERSION: ${LIBRENMS_VERSION}
+        HTTPS_PROXY: ${BUILD_HTTPS_PROXY:-}
+        HTTP_PROXY: ${BUILD_HTTP_PROXY:-}
     restart: unless-stopped
     hostname: antareja
     cap_add: [NET_ADMIN, NET_RAW]

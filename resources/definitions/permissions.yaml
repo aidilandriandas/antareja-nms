@@ -309,6 +309,9 @@ groups:
         - ant-fiber.view
         - ant-fiber.update
 
+    ant-ai:
+        - ant-ai.use
+
     ant-maintenance:
         - ant-maintenance.view
         - ant-maintenance.update
