@@ -63,6 +63,8 @@ Route::middleware(['web', 'auth'])
         Route::get('topology/data', [TopologyController::class, 'data'])->name('topology.data');
         Route::post('topology/positions', [TopologyController::class, 'savePositions'])->name('topology.positions');
         Route::post('topology/positions/reset', [TopologyController::class, 'resetPositions'])->name('topology.positions.reset');
+        Route::post('topology/links', [TopologyController::class, 'storeLink'])->middleware('throttle:60,1')->name('topology.links.store');
+        Route::delete('topology/links/{link}', [TopologyController::class, 'destroyLink'])->whereNumber('link')->name('topology.links.destroy');
         Route::get('noc', [NocController::class, 'index'])->name('noc');
         Route::get('noc/data', [NocController::class, 'data'])->name('noc.data');
 

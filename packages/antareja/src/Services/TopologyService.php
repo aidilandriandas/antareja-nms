@@ -69,14 +69,14 @@ class TopologyService
 
         // --- sambungan
         $pairs = [];
-        $add = function (int $a, int $b, ?int $aPort, ?int $bPort, string $source) use (&$pairs, $ids) {
+        $add = function (int $a, int $b, ?int $aPort, ?int $bPort, string $source, ?int $linkId = null, ?string $type = null) use (&$pairs, $ids) {
             if ($a === $b || ! $ids->contains($a) || ! $ids->contains($b)) {
                 return;
             }
             $key = min($a, $b) . '-' . max($a, $b);
             $rank = ['verified' => 3, 'suggested' => 1, 'lldp' => 2][$source];
             if (! isset($pairs[$key]) || $pairs[$key]['rank'] < $rank) {
-                $pairs[$key] = ['from' => $a, 'to' => $b, 'a_port' => $aPort, 'b_port' => $bPort, 'source' => $source, 'rank' => $rank];
+                $pairs[$key] = ['from' => $a, 'to' => $b, 'a_port' => $aPort, 'b_port' => $bPort, 'source' => $source, 'rank' => $rank, 'link_id' => $linkId, 'type' => $type];
             } elseif ($pairs[$key]['a_port'] === null && $aPort !== null) {
                 $pairs[$key]['a_port'] = $aPort;
                 $pairs[$key]['b_port'] ??= $bPort;
@@ -85,8 +85,8 @@ class TopologyService
 
         DB::table('ant_device_links')->whereIn('status', ['verified', 'suggested'])
             ->whereIn('a_device_id', $ids)->whereIn('b_device_id', $ids)
-            ->get(['a_device_id', 'b_device_id', 'a_port_id', 'b_port_id', 'status'])
-            ->each(fn ($l) => $add((int) $l->a_device_id, (int) $l->b_device_id, $l->a_port_id, $l->b_port_id, $l->status));
+            ->get(['id', 'a_device_id', 'b_device_id', 'a_port_id', 'b_port_id', 'status', 'link_type'])
+            ->each(fn ($l) => $add((int) $l->a_device_id, (int) $l->b_device_id, $l->a_port_id, $l->b_port_id, $l->status, (int) $l->id, $l->link_type));
 
         DB::table('links')->where('active', 1)->where('remote_device_id', '>', 0)
             ->whereIn('local_device_id', $ids)->whereIn('remote_device_id', $ids)
@@ -118,6 +118,8 @@ class TopologyService
                 'from' => $p['from'],
                 'to' => $p['to'],
                 'source' => $p['source'],
+                'link_id' => $p['link_id'] ?? null,
+                'type' => isset($p['type']) ? Catalog::label(Catalog::LINK_TYPES, $p['type']) : null,
                 'state' => $state,
                 'util' => $util,
                 'bps' => $bps,

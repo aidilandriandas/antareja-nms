@@ -180,6 +180,10 @@ window.AntTopology = (function () {
             positions: function () { return network ? network.getPositions() : {}; },
             focus: function (id) { if (network) { network.selectNodes([id]); network.focus(id, { scale: 1.2, animation: { duration: 500 } }); } },
             fit: function () { if (network) network.fit({ animation: { duration: 400 } }); },
+            select: function (ids) { if (network) { if (ids.length) network.selectNodes(ids); else network.unselectAll(); } },
+            node: function (id) { var n = nodes.get(id); return n ? n.raw : null; },
+            domPos: function (id) { if (!network) return null; var p = network.getPositions([id])[id]; return p ? network.canvasToDOM(p) : null; },
+            ids: function () { return nodes.getIds(); },
             find: function (q) {
                 q = q.toLowerCase();
                 var hit = nodes.get({ filter: function (n) { return n.raw.label.toLowerCase().indexOf(q) >= 0 || n.raw.ip.toLowerCase().indexOf(q) >= 0; } })[0];
