@@ -7,6 +7,7 @@ use Antareja\Http\Controllers\AttachmentController;
 use Antareja\Http\Controllers\AuditLogController;
 use Antareja\Http\Controllers\BackupController;
 use Antareja\Http\Controllers\DeviceAddController;
+use Antareja\Http\Controllers\DeviceTestController;
 use Antareja\Http\Controllers\GroupController;
 use Antareja\Http\Controllers\NocController;
 use Antareja\Http\Controllers\TopologyController;
@@ -52,6 +53,9 @@ Route::middleware(['web', 'auth'])
         // Tambah perangkat (nama, grup, site, massal) — hak "device.create" dicek di controller
         Route::get('devices/add', [DeviceAddController::class, 'create'])->name('devices.add');
         Route::post('devices', [DeviceAddController::class, 'store'])->middleware('throttle:20,1')->name('devices.store');
+        Route::post('devices/test', [DeviceTestController::class, 'form'])->middleware('throttle:20,1')->name('devices.test');
+        Route::post('devices/{device}/test', [DeviceTestController::class, 'device'])->middleware('throttle:20,1')->name('devices.test-existing');
+        Route::post('devices/{device}/enable-snmp', [DeviceTestController::class, 'enableSnmp'])->middleware('throttle:10,1')->name('devices.enable-snmp');
 
         // Grup perangkat
         Route::get('groups', [GroupController::class, 'index'])->name('groups.index');

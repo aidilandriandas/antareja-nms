@@ -247,3 +247,20 @@ html body label.ant-topo__live { display: inline-flex; align-items: center; gap:
 .ant-live-dot[hidden] { display: none; }
 @keyframes ant-live { 50% { opacity: .35; } }
 @media (prefers-reduced-motion: reduce) { .ant-live-dot { animation: none; } }
+
+/* Uji koneksi */
+.ant-ct__head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; font-weight: 600; font-size: 14px; border-bottom: 1px solid var(--ant-border); }
+.ant-ct__head .ant-data { margin-left: auto; font-weight: 400; color: var(--ant-ink-muted); }
+.ant-ct__head--ok { background: var(--ant-ok-tint); color: var(--ant-ok); }
+.ant-ct__head--crit { background: var(--ant-crit-tint); color: var(--ant-crit); }
+.ant-ct { list-style: none; margin: 0; padding: 4px 14px; }
+.ant-ct__row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 0; }
+.ant-ct__row + .ant-ct__row { border-top: 1px solid var(--ant-border); }
+.ant-ct__row .ant-badge { margin-top: 1px; flex: none; min-width: 58px; justify-content: center; }
+.ant-ct__row div { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 13.5px; }
+html body .ant-ct__row small { color: var(--ant-ink-muted); font-size: 12.5px; }
+.ant-ct__try { font: 400 11.5px/1.45 var(--ant-font-mono); color: var(--ant-ink-muted); overflow-wrap: anywhere; }
+.ant-ct__fix { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; margin: 4px 14px 12px; padding: 10px 12px; border-radius: 8px; background: var(--ant-info-tint); font-size: 13px; }
+.ant-ct__hints { margin: 0 14px 14px; padding: 10px 12px; border-radius: 8px; background: var(--ant-warn-tint); font-size: 13px; }
+.ant-ct__hints ul { margin: 6px 0 0; padding-left: 18px; }
+.ant-ct__hints li + li { margin-top: 4px; }

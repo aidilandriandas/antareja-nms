@@ -14,6 +14,7 @@
 @section('subheading', trim(($device->overwrite_ip ?: $device->ip) . ' · ' . $device->os . ' · ' . $detail->categoryLabel(), ' ·'))
 
 @section('actions')
+    <button type="button" class="btn btn-default" id="ant-ct-open"><i class="fa-solid fa-stethoscope"></i> Uji koneksi</button>
     <a href="{{ url('device/' . $device->device_id) }}" class="btn btn-default"><i class="fa fa-chart-line"></i> Monitoring</a>
     @can('ant-incident.create')
         <a href="{{ route('antareja.incidents.create', ['device' => $device->device_id]) }}" class="btn btn-default"><i class="fa fa-fire-extinguisher"></i> Buat incident</a>
@@ -33,6 +34,36 @@
 @endsection
 
 @section('page')
+    <section class="panel panel-default" id="ant-ct-panel" hidden>
+        <div class="panel-heading tw:flex tw:items-center tw:justify-between">
+            <strong><i class="fa-solid fa-stethoscope"></i> Uji koneksi ke {{ $device->overwrite_ip ?: $device->hostname }}</strong>
+            @if($device->snmp_disable)<span class="ant-badge ant-badge--sm ant-badge--warn">Terdaftar: ping saja</span>@else<span class="ant-badge ant-badge--sm ant-badge--info">Terdaftar: SNMP {{ $device->snmpver }}</span>@endif
+        </div>
+        <div class="panel-body tw:pb-0">
+            <form class="row" id="ant-ct-form">
+                <div class="form-group col-sm-3">
+                    <label for="ct-mode">Uji dengan</label>
+                    <select id="ct-mode" class="form-control input-sm">
+                        <option value="v2c" @selected($device->snmp_disable || $device->snmpver !== 'v3')>Ping + SNMP v2c</option>
+                        <option value="v3" @selected(! $device->snmp_disable && $device->snmpver === 'v3')>Ping + SNMP v3</option>
+                        <option value="ping">Ping saja</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-5" data-ct="v2c">
+                    <label for="ct-community">Community</label>
+                    <input id="ct-community" type="password" class="form-control input-sm" autocomplete="off" placeholder="kosong = pakai yang tersimpan / Pengaturan Sistem">
+                </div>
+                <div class="form-group col-sm-5" data-ct="v3" hidden>
+                    <label>SNMP v3</label>
+                    <p class="form-control-static tw:text-sm ant-muted">Memakai user & password v3 yang tersimpan di perangkat.</p>
+                </div>
+                <div class="form-group col-sm-4 tw:flex tw:items-end">
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-play"></i> Jalankan uji</button>
+                </div>
+            </form>
+        </div>
+        <div id="ant-ct-result" hidden></div>
+    </section>
 <div class="row">
     <div class="col-lg-7">
         @if($status !== 'verified')
@@ -178,4 +209,19 @@
         @endcan
     </div>
 </div>
+@include('antareja::devices.test-script')
+<script>
+(function () {
+    var panel = document.getElementById('ant-ct-panel'), mode = document.getElementById('ct-mode');
+    function payload() { return { mode: mode.value, community: document.getElementById('ct-community').value || null }; }
+    function sync() { panel.querySelectorAll('[data-ct]').forEach(function (e) { e.hidden = e.dataset.ct !== mode.value; }); }
+    mode.addEventListener('change', sync); sync();
+    function go() {
+        AntConnTest.run('{{ route('antareja.devices.test-existing', $device->device_id) }}', payload(), document.getElementById('ant-ct-result'),
+            { enableUrl: '{{ route('antareja.devices.enable-snmp', $device->device_id) }}' });
+    }
+    document.getElementById('ant-ct-open').addEventListener('click', function () { panel.hidden = false; panel.scrollIntoView({ block: 'start', behavior: 'smooth' }); go(); });
+    document.getElementById('ant-ct-form').addEventListener('submit', function (e) { e.preventDefault(); go(); });
+})();
+</script>
 @endsection

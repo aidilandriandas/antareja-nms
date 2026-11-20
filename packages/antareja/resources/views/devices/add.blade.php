@@ -149,12 +149,19 @@
                 <div class="panel-footer tw:flex tw:items-center tw:justify-between tw:gap-3">
                     <span class="ant-muted tw:text-sm" data-pane="single" @if($tab !== 'single') hidden @endif>Perangkat diuji (ping & SNMP) sebelum disimpan.</span>
                     <span class="ant-muted tw:text-sm" data-pane="bulk" @if($tab !== 'bulk') hidden @endif>Tiap perangkat diuji satu per satu; bisa memakan waktu ± 5 detik per perangkat.</span>
+                    <span class="tw:flex tw:gap-2">
+                    <button type="button" class="btn btn-default" id="ant-test-btn" data-pane="single" @if($tab !== 'single') hidden @endif><i class="fa-solid fa-stethoscope"></i> Uji koneksi</button>
                     <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> <span data-pane="single" @if($tab !== 'single') hidden @endif>Tambah perangkat</span><span data-pane="bulk" @if($tab !== 'bulk') hidden @endif>Tambah semua</span></button>
+                    </span>
                 </div>
             </section>
         </div>
 
         <div class="col-lg-5">
+            <section class="panel panel-default" id="ant-test-wrap" hidden>
+                <div class="panel-heading"><strong><i class="fa-solid fa-stethoscope"></i> Hasil uji koneksi</strong></div>
+                <div id="ant-test-result"></div>
+            </section>
             @if($results)
                 <section class="panel panel-default">
                     <div class="panel-heading"><strong>Hasil penambahan</strong></div>
@@ -187,9 +194,17 @@
     </div>
 </form>
 
+@include('antareja::devices.test-script')
 <script>
 (function () {
     var form = document.getElementById('ant-addform');
+    document.getElementById('ant-test-btn').addEventListener('click', function () {
+        var f = new FormData(form), payload = {};
+        ['hostname', 'mode', 'community', 'v3_user', 'v3_auth_pass', 'v3_auth_algo', 'v3_priv_pass', 'v3_priv_algo'].forEach(function (k) { payload[k] = f.get(k) || null; });
+        var wrap = document.getElementById('ant-test-wrap'); wrap.hidden = false;
+        AntConnTest.run('{{ route('antareja.devices.test') }}', payload, document.getElementById('ant-test-result'));
+        wrap.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
     form.querySelectorAll('.ant-seg [data-tab]').forEach(function (btn) {
         btn.addEventListener('click', function () {
             var tab = btn.dataset.tab;
