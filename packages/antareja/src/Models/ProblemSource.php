@@ -19,6 +19,7 @@ class ProblemSource extends Model
         'trigger' => 'Trigger expression',
         'config' => 'Backup konfigurasi',
         'anomaly' => 'Deteksi anomali',
+        'cctv' => 'Kesehatan gambar CCTV',
     ];
 
     protected $table = 'ant_problem_sources';
@@ -48,6 +49,7 @@ class ProblemSource extends Model
             'trigger' => route('antareja.triggers.show', $this->source_ref),
             'config' => route('antareja.config.device', $this->source_ref),
             'anomaly' => route('antareja.anomalies.index'),
+            'cctv' => route('antareja.cctv.streams.show', $this->source_ref),
             default => null,
         };
     }

@@ -58,6 +58,12 @@ panduan saat menggabungkan update dari upstream.
 | `rrdtool` + rrdcached (bawaan image) | Capacity planning & deteksi anomali traffic | Hanya membaca (`rrdtool fetch`) |
 | `league/commonmark` (lewat Laravel `Str::markdown`) | Menampilkan draf AI | HTML mentah dibuang, tautan tidak aman diblokir |
 
+## Layanan Docker tambahan
+
+| Layanan | Fungsi | Catatan |
+|---|---|---|
+| `go2rtc` (`alexxit/go2rtc`, MIT) | Gateway video live view & snapshot CCTV | Hanya jaringan internal; config dasar read-only, runtime di tmpfs (stream berkredensial tidak ke disk). Nginx meneruskan hanya `/antareja/live/ws` (setelah `auth_request` ke ANTAREJA) dan file pemutar `video-rtc.js`/`video-stream.js` |
+
 ## Docker build
 
 `docker/Dockerfile` menjalankan `composer install --no-dev` di atas vendor image resmi (hanya paket yang belum ada yang diunduh).

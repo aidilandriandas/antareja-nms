@@ -7,6 +7,7 @@ use Antareja\Http\Controllers\AttachmentController;
 use Antareja\Http\Controllers\AuditLogController;
 use Antareja\Http\Controllers\CapacityController;
 use Antareja\Http\Controllers\CctvController;
+use Antareja\Http\Controllers\CctvLiveController;
 use Antareja\Http\Controllers\ChangeController;
 use Antareja\Http\Controllers\ConfigController;
 use Antareja\Http\Controllers\DiscoveryController;
@@ -137,6 +138,25 @@ Route::middleware(['web', 'auth'])
         // Wireless & CCTV
         Route::get('wireless', [WirelessController::class, 'index'])->middleware('can:ant-inventory.view')->name('wireless.index');
         Route::get('cctv', [CctvController::class, 'index'])->middleware('can:ant-cctv.view')->name('cctv.index');
+
+        // Live view & snapshot CCTV (video lewat gateway internal; kredensial NVR tidak pernah ke browser)
+        Route::middleware('can:ant-cctv.live')->group(function (): void {
+            Route::get('cctv/live', [CctvLiveController::class, 'grid'])->name('cctv.live');
+            Route::get('cctv/streams/{stream}/snapshot.jpg', [CctvLiveController::class, 'snapshot'])->middleware('throttle:240,1')->name('cctv.snapshot');
+            Route::post('cctv/streams/{stream}/player', [CctvLiveController::class, 'player'])->middleware('throttle:30,1')->name('cctv.player');
+            Route::get('cctv/streams/{stream}', [CctvLiveController::class, 'showStream'])->whereNumber('stream')->name('cctv.streams.show');
+            Route::get('cctv/streams/{stream}/image/{which}', [CctvLiveController::class, 'image'])->name('cctv.streams.image');
+        });
+        Route::middleware('can:ant-cctv.update')->group(function (): void {
+            Route::get('cctv/streams', [CctvLiveController::class, 'streams'])->name('cctv.streams');
+            Route::post('cctv/streams', [CctvLiveController::class, 'storeStream'])->name('cctv.streams.store');
+            Route::put('cctv/streams/{stream}', [CctvLiveController::class, 'updateStream'])->name('cctv.streams.update');
+            Route::delete('cctv/streams/{stream}', [CctvLiveController::class, 'destroyStream'])->name('cctv.streams.destroy');
+            Route::post('cctv/streams/{stream}/check', [CctvLiveController::class, 'check'])->middleware('throttle:20,1')->name('cctv.streams.check');
+            Route::post('cctv/streams/{stream}/reference', [CctvLiveController::class, 'reference'])->name('cctv.streams.reference');
+            Route::post('cctv/video-credentials', [CctvLiveController::class, 'storeCredential'])->name('cctv.credentials.store');
+            Route::delete('cctv/video-credentials/{credential}', [CctvLiveController::class, 'destroyCredential'])->name('cctv.credentials.destroy');
+        });
 
         // Event & Alert Center (problem)
         Route::middleware('can:ant-problem.view')->group(function (): void {
@@ -331,3 +351,6 @@ Route::middleware(['web', 'auth'])
         // Audit log
         Route::get('audit', [AuditLogController::class, 'index'])->middleware('can:ant-audit.view')->name('audit.index');
     });
+
+// Dipanggil Nginx (auth_request) sebelum meneruskan WebSocket video; mengembalikan 204/401/403, bukan redirect login.
+Route::middleware('web')->get('antareja/cctv/live-auth', [CctvLiveController::class, 'liveAuth'])->name('antareja.cctv.live-auth');

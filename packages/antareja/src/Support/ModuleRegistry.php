@@ -47,7 +47,7 @@ class ModuleRegistry
             $this->module('wireless-monitoring', 'Wireless Monitoring', 'wifi', self::NATIVE, 'antareja/wireless', 2,
                 'AP, controller, PTP, PTMP: status, client, RSSI, SNR, frekuensi, rate, CCQ, pasangan link. Metrik sesuai dukungan vendor.', 'ant-inventory.view'),
             $this->module('cctv', 'CCTV Infrastructure', 'video', self::NATIVE, 'antareja/cctv', 2,
-                'Kamera & NVR: status, IP, MAC, port switch, NVR perekam, lokasi, PIC, riwayat gangguan 30 hari.', 'ant-cctv.view'),
+                'Kamera & NVR: status, IP, MAC, port switch, NVR perekam, lokasi, PIC, riwayat gangguan; live view & snapshot dari NVR Hikvision; cek kesehatan gambar (gelap, beku, buram, bergeser).', 'ant-cctv.view'),
             $this->module('network-quality', 'Network Quality', 'signal', self::NATIVE, 'antareja/quality', 2,
                 'Quality Probe (20 ping / 5 menit): latency, packet loss, jitter, grafik smoke 3 jam–30 hari, ambang status.', 'ant-quality.view'),
             $this->module('alert-center', 'Event & Alert Center', 'bell', self::NATIVE, 'antareja/problems', 3,

@@ -1,6 +1,6 @@
 # ANTAREJA NMS — Fase 5: Work Order, Change, Konfigurasi, Capacity, Fiber, Anomali & AI
 
-Versi 0.6.0. Fitur, aturan, keamanan, dan batasan.
+Versi 0.6.1. Fitur, aturan, keamanan, dan batasan.
 
 ## 1. Ringkasan
 
@@ -102,6 +102,46 @@ Batasan & keamanan:
 - Kunci API hanya di server. Draf dirender sebagai Markdown aman (HTML dibuang, tautan berbahaya diblokir).
 - Tanpa internet / tanpa kunci: tombol nonaktif dengan penjelasan; semua fitur lain tetap berjalan.
 
+## 7a. Live view & kesehatan gambar CCTV (Hikvision)
+
+| Halaman | Isi |
+|---|---|
+| `/antareja/cctv/live` | Grid snapshot semua kamera (2/3/4/6 kolom, filter site), diperbarui tiap 5 detik; klik untuk video langsung |
+| `/antareja/cctv/streams` | Sumber stream per kamera (channel NVR atau langsung ke kamera) & kredensial |
+| `/antareja/cctv/streams/{id}` | Snapshot terakhir, gambar acuan, metrik, cek sekarang |
+
+**Cara kerja.** Container `go2rtc` (gateway video, hanya di jaringan Docker internal) menarik RTSP dari NVR
+dengan format Hikvision `rtsp://<NVR>:554/Streaming/Channels/<channel>02` (sub-stream; `…01` untuk main stream).
+Browser menerima video lewat WebSocket (MSE) di port 443 yang sama; MJPEG dipakai otomatis bila browser tidak bisa memutar
+codec kamera (mis. H.265). Video hanya ditarik saat ada yang menonton; snapshot di-cache 4 detik agar NVR tidak dibanjiri.
+
+**Keamanan.**
+- Pakai user NVR dengan hak *Live View* saja. Password terenkripsi; URL RTSP berkredensial hanya ada di server dan di memori
+  gateway (tidak pernah ditulis ke disk, tidak pernah ke browser).
+- Setiap koneksi video diperiksa Nginx ke ANTAREJA (`auth_request`): harus login, punya `ant-cctv.live`, dan nama stream harus
+  milik kamera yang boleh dilihat. API gateway tidak bisa diakses dari luar.
+- Membuka live view tercatat di audit log (siapa, kamera mana, kapan).
+
+**Cek kesehatan gambar** (tiap 15 menit, offline, tanpa AI) — kamera bisa "online" padahal gambarnya tidak berguna:
+
+| Status | Aturan |
+|---|---|
+| Layar polos / tertutup | kontras < 4 (lensa tertutup, kabel video, "No Video") |
+| Gambar gelap | kecerahan < 20/255 dan kontras < 12 (IR / lampu mati) |
+| Video beku | 3 snapshot berturut-turut identik (jam OSD ikut berhenti) |
+| Buram | ketajaman < 35% gambar acuan (debu, lumpur, embun, fokus) |
+| Arah berubah / terhalang | bentuk gambar berbeda jauh dari acuan (selisih > 28), saat terang gambar sebanding |
+| Video tidak bisa diambil | user/password, channel, atau port RTSP salah |
+
+Ambil **gambar acuan** saat kamera normal (sebaiknya siang hari). Masalah gambar masuk Event & Alert Center
+(polos/beku/tidak bisa diambil = *average*, lainnya = *warning*); kamera yang sedang down tidak dicek.
+
+**Firewall:** server ANTAREJA → NVR TCP 554 (RTSP).
+
+Diuji dengan NVR tiruan (RTSP + auth + path Hikvision): 22 skenario — snapshot JPEG, video live berjalan (MSE), penolakan
+WebSocket tanpa login / nama stream palsu / role tanpa hak, kredensial tidak tampil di halaman, audit live view,
+deteksi normal/beku/polos/bergeser, pesan password salah. Format RTSP perlu dicoba sekali di NVR Anda sebelum dipakai massal.
+
 ## 8. Hak akses
 
 | Permission | ICT Network | ICT CCTV/Support | ICT Admin | Management |
@@ -112,6 +152,7 @@ Batasan & keamanan:
 | `ant-capacity.view` / `.update` | ✓ / ✓ | ✓ / — | ✓ | ✓ / — |
 | `ant-fiber.view` / `.update` | ✓ / ✓ | ✓ / ✓ | ✓ | ✓ / — |
 | `ant-ai.use` | ✓ | ✓ | ✓ | — |
+| `ant-cctv.live` (live view & snapshot) | ✓ | ✓ | ✓ | — |
 
 ## 9. Perintah
 
@@ -120,6 +161,7 @@ Batasan & keamanan:
 ./antareja.sh lnms antareja:config-backup --device=12        # satu perangkat
 ./antareja.sh lnms antareja:capacity                         # perbarui kapasitas & prakiraan
 ./antareja.sh lnms antareja:anomalies                        # deteksi anomali sekarang
+./antareja.sh lnms antareja:cctv-health                      # cek kesehatan gambar CCTV sekarang
 ```
 
 ## 10. Batasan

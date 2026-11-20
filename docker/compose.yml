@@ -155,11 +155,28 @@ services:
       - rrd-data:/data/rrd
     networks: [backend]
 
+  # Gateway video internal untuk live view & snapshot CCTV (tidak ada port yang dibuka ke luar)
+  go2rtc:
+    image: alexxit/go2rtc:${GO2RTC_VERSION:-1.9.9}
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+    # Konfigurasi dasar dibaca dari file read-only lalu disalin ke /config di memori (tmpfs):
+    # stream yang didaftarkan ANTAREJA (berisi kredensial NVR) tidak pernah tertulis ke disk.
+    command: ["sh", "-c", "cp /etc/antareja/go2rtc.yaml /config/go2rtc.yaml && exec go2rtc -config /config/go2rtc.yaml"]
+    tmpfs:
+      - /config:size=8m,mode=0700
+    volumes:
+      - ./go2rtc/go2rtc.yaml:/etc/antareja/go2rtc.yaml:ro
+    networks: [backend]
+
   nginx:
     image: nginx:1.30.7-alpine
     restart: unless-stopped
     depends_on:
       app:
+        condition: service_started
+      go2rtc:
         condition: service_started
     environment:
       TZ: ${TZ}

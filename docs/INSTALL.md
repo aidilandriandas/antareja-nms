@@ -124,4 +124,4 @@ Salin isi `docker/backups/` ke NAS/share di luar VM secara berkala.
 - Saat membuat user, LibreNMS mencoba mengecek password ke `api.pwnedpasswords.com`. Di jaringan
   tanpa internet pengecekan ini gagal (tercatat di log) tetapi user tetap dibuat.
 - Image pihak ketiga yang dipakai: `librenms/librenms:26.10.2`, `mariadb:11.4.13`, `redis:8.6.8-alpine`,
-  `crazymax/rrdcached:1.9.0-r4`, `nginx:1.30.7-alpine`.
+  `crazymax/rrdcached:1.9.0-r4`, `nginx:1.30.7-alpine`, `alexxit/go2rtc:1.9.9` (gateway video CCTV).

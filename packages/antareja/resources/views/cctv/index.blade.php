@@ -5,6 +5,11 @@
 @section('heading', 'CCTV Infrastructure')
 @section('subheading', 'Kamera dan NVR: status, port switch, NVR perekam, lokasi, PIC, dan riwayat gangguan 30 hari.')
 
+@section('actions')
+    @can('ant-cctv.live')<a href="{{ route('antareja.cctv.live') }}" class="btn btn-primary"><i class="fa fa-video"></i> Live view</a>@endcan
+    @can('ant-cctv.update')<a href="{{ route('antareja.cctv.streams') }}" class="btn btn-default"><i class="fa fa-cog"></i> Sumber stream</a>@endcan
+@endsection
+
 @section('page')
     <div class="tw:grid tw:grid-cols-2 tw:md:grid-cols-3 tw:xl:grid-cols-6 tw:gap-3 tw:mb-4">
         @include('antareja::partials.stat', ['label' => 'Kamera', 'value' => $totals['cameras'], 'href' => route('antareja.cctv.index')])

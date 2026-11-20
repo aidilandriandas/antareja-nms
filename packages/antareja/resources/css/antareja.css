@@ -215,3 +215,22 @@ html .panel:has(img.logon-logo) .btn-primary:hover { filter: brightness(.88); }
 .ant-md ul, .ant-md ol { padding-left: 1.25rem; margin: 0 0 0.5rem; }
 .ant-md p { margin: 0 0 0.5rem; }
 .ant-md code { font-family: var(--ant-font-mono); font-size: 0.85em; }
+
+/* ---------- Live view CCTV ---------- */
+.ant-cctv-grid { display: grid; grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 900px) { .ant-cctv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .ant-cctv-grid { grid-template-columns: 1fr; } }
+.ant-cctv-tile { margin: 0; background: var(--ant-surface-raised, var(--ant-surface)); border: 1px solid var(--ant-border); border-radius: 6px; overflow: hidden; }
+.ant-cctv-tile__view { position: relative; display: block; width: 100%; padding: 0; border: 0; background: #111; cursor: pointer; aspect-ratio: 16 / 9; }
+.ant-cctv-tile__view:disabled { cursor: not-allowed; }
+.ant-cctv-tile__view img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ant-cctv-tile__view:focus-visible { outline: 3px solid var(--ant-info); outline-offset: -3px; }
+.ant-cctv-tile__overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.6); color: #fff; font-weight: 600; }
+.ant-cctv-tile__cap { display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 12px; }
+.ant-cctv-tile__cap > span:first-child { flex: 1; min-width: 0; }
+.ant-live-dialog { width: min(1100px, 96vw); padding: 0; border: 1px solid var(--ant-border); border-radius: 8px; background: var(--ant-surface); color: inherit; }
+.ant-live-dialog::backdrop { background: rgba(0,0,0,.7); }
+.ant-live-dialog__head { display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-bottom: 1px solid var(--ant-border); }
+.ant-live-dialog__head strong { flex: 1; }
+.ant-live-dialog__body { background: #000; aspect-ratio: 16 / 9; }
+.ant-live-dialog__body video-stream, .ant-live-dialog__body video { display: block; width: 100%; height: 100%; }

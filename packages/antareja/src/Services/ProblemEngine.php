@@ -230,6 +230,19 @@ class ProblemEngine
                 $a->device_id ? ($sites[$a->device_id] ?? null) : null, $a->score !== null ? 'skor ' . $a->score : null, $a->label, $a->detected_at);
         });
 
+        // 9. Kesehatan gambar CCTV (kamera online tetapi gambarnya tidak berguna)
+        \Antareja\Models\CctvStream::with('device')->where('enabled', true)->where('health_check', true)
+            ->whereNotNull('health')->where('health', '!=', 'ok')->get()
+            ->each(function ($s) use (&$obs, $skip, $sites): void {
+                if (! $s->device || $skip($s->device_id) || ! $s->device->status) {
+                    return; // kamera down sudah ditangani sumber "perangkat down"
+                }
+                $meta = $s->healthMeta();
+                $obs[] = $this->o('cctv', $s->id, "cctv:{$s->device_id}", 'cctv_image', in_array($s->health, ['blank', 'frozen', 'error'], true) ? 'average' : 'warning',
+                    "{$s->device->displayName()}: {$meta['label']}", $s->device_id, null, $sites[$s->device_id] ?? null,
+                    $s->health_detail, $meta['label'], $s->health_changed_at);
+            });
+
         return $obs;
     }
 

@@ -14,6 +14,10 @@ return [
         // Samarkan alamat IP & MAC sebelum dikirim ke model
         'redact' => (bool) env('ANTAREJA_AI_REDACT', true),
     ],
+    // Gateway video internal (go2rtc) untuk live view & snapshot CCTV — hanya bisa dijangkau dari jaringan Docker internal
+    'cctv' => [
+        'gateway' => env('ANTAREJA_VIDEO_GATEWAY', 'http://go2rtc:1984'),
+    ],
     'based_on' => [
         'name' => 'LibreNMS',
         'url' => 'https://www.librenms.org',

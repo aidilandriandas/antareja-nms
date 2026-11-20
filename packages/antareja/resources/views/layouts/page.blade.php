@@ -19,6 +19,9 @@
     @if(session('antareja_success'))
         <x-antareja::alert tone="ok">{{ session('antareja_success') }}</x-antareja::alert>
     @endif
+    @if(session('antareja_warning'))
+        <x-antareja::alert tone="warn">{{ session('antareja_warning') }}</x-antareja::alert>
+    @endif
     @if(session('antareja_error'))
         <x-antareja::alert tone="crit">{{ session('antareja_error') }}</x-antareja::alert>
     @endif

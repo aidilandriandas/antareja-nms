@@ -1,0 +1,12 @@
+# ANTAREJA — gateway video internal (go2rtc). Hanya bisa dijangkau dari jaringan Docker internal.
+# Stream didaftarkan ANTAREJA saat dibutuhkan; tidak ada stream statis di sini (kredensial NVR tidak disimpan di file).
+api:
+  listen: ":1984"
+  # WebSocket video hanya datang lewat Nginx ANTAREJA (sudah diotorisasi)
+  origin: "*"
+rtsp:
+  listen: ""    # tidak menyediakan server RTSP
+webrtc:
+  listen: ""    # video ke browser lewat MSE/WebSocket (port 443), tanpa port UDP tambahan
+log:
+  level: warn

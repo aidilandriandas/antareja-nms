@@ -260,6 +260,7 @@ groups:
     ant-cctv:
         - ant-cctv.view
         - ant-cctv.update
+        - ant-cctv.live
 
     ant-quality:
         - ant-quality.view

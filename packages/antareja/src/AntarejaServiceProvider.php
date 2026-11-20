@@ -4,6 +4,7 @@ namespace Antareja;
 
 use Antareja\Console\AnomaliesCommand;
 use Antareja\Console\CapacityCommand;
+use Antareja\Console\CctvHealthCommand;
 use Antareja\Console\ConfigBackupCommand;
 use Antareja\Console\IpamSyncCommand;
 use Antareja\Console\ProblemsCommand;
@@ -34,7 +35,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.6.0';
+    public const VERSION = '0.6.1';
 
     public function register(): void
     {
@@ -61,7 +62,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $this->commands([
                 SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
                 IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class, ProblemsCommand::class,
-                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class,
+                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class,
             ]);
         }
 
@@ -99,6 +100,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $schedule->command('antareja:config-backup')->hourlyAt(41)->withoutOverlapping(120)->runInBackground();
             $schedule->command('antareja:capacity')->cron('23 */6 * * *')->withoutOverlapping(120)->runInBackground();
             $schedule->command('antareja:anomalies')->cron('*/15 * * * *')->withoutOverlapping(14)->runInBackground();
+            $schedule->command('antareja:cctv-health')->cron('7,22,37,52 * * * *')->withoutOverlapping(14)->runInBackground();
         });
     }
 
@@ -147,7 +149,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $actions = [
                 'technical' => 'Technical dashboard', 'management' => 'Management dashboard',
                 'view' => 'View', 'update' => 'Create / edit', 'delete' => 'Delete', 'create' => 'Create',
-                'approve' => 'Approve', 'use' => 'Use', 'verify' => 'Verify', 'close' => 'Close', 'export' => 'Export', 'acknowledge' => 'Acknowledge',
+                'approve' => 'Approve', 'use' => 'Use', 'live' => 'Live view', 'verify' => 'Verify', 'close' => 'Close', 'export' => 'Export', 'acknowledge' => 'Acknowledge',
             ];
 
             // Pastikan file terjemahan asli sudah dimuat dulu agar tidak tertimpa.

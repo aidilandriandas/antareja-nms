@@ -29,6 +29,7 @@ class Problem extends Model
         'trigger' => 'Trigger expression',
         'config_change' => 'Perubahan konfigurasi',
         'anomaly' => 'Anomali statistik',
+        'cctv_image' => 'Gambar CCTV bermasalah',
     ];
 
     public const SUPPRESSION = [

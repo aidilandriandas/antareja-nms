@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  Versi 0.6.0 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
+  Versi 0.6.1 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
 </p>
 
 ---
@@ -67,6 +67,7 @@ manajemen fiber optic, laporan bulanan, dan dashboard manajemen.
 | **Interface Monitoring** | Status port, traffic, bandwidth, error, utilisasi |
 | **Wireless Monitoring** | AP, controller, PTP/PTMP: client, RSSI, SNR, frekuensi, CCQ, pasangan link |
 | **CCTV Infrastructure** | Kamera & NVR: status, IP, MAC, port switch, NVR perekam, lokasi, riwayat gangguan |
+| **Live view CCTV** | Grid snapshot & video langsung dari NVR Hikvision di browser (tanpa iVMS); cek otomatis gambar gelap, polos, beku, buram, bergeser |
 | **Network Quality** | Quality Probe (20 ping tiap 5 menit): latency, loss, jitter, grafik smoke 3 jam – 30 hari |
 
 ### Inventaris & jaringan
@@ -115,6 +116,8 @@ manajemen fiber optic, laporan bulanan, dan dashboard manajemen.
 | ![SLA](docs/screenshots/sla.png) | ![Capacity](docs/screenshots/capacity.png) |
 | **Jalur fiber & lokasi gangguan OTDR** | **Backup konfigurasi & diff** |
 | ![Jalur fiber](docs/screenshots/fiber-jalur.png) | ![Backup konfigurasi](docs/screenshots/backup-konfigurasi.png) |
+| **Live view CCTV** | **Cek kesehatan gambar CCTV** |
+| ![Live view CCTV](docs/screenshots/cctv-live.png) | ![Kesehatan gambar CCTV](docs/screenshots/cctv-kesehatan.png) |
 
 ---
 
@@ -127,7 +130,8 @@ ANTAREJA berjalan sebagai beberapa container Docker di **satu VM**:
                                               │        ├─ scheduler (problem, SLA, kapasitas, anomali, backup konfigurasi)
                                               │        └─ Quality Probe (fping)
                                               ├─▶ db (MariaDB)        ├─▶ redis (cache & sesi)
-                                              └─▶ rrdcached (grafik)  └─▶ dispatcher (poller SNMP/ICMP)
+                                              ├─▶ rrdcached (grafik)  └─▶ dispatcher (poller SNMP/ICMP)
+                                              └─▶ go2rtc (gateway video CCTV, internal) ──RTSP 554──▶ NVR Hikvision
                                                          │
                          Perangkat jaringan ◀── SNMP UDP 161 / ICMP / SSH 22 (opsional, backup konfigurasi)
 ```
@@ -149,7 +153,7 @@ ANTAREJA berjalan sebagai beberapa container Docker di **satu VM**:
 - **Jaringan:** IP statis di **VLAN manajemen** yang punya rute ke semua subnet perangkat.
 - **Firewall:**
   - Pengguna → VM: TCP 443 (dan 80, otomatis dialihkan ke 443).
-  - VM → perangkat: ICMP dan UDP 161 (SNMP). TCP 22 bila memakai backup konfigurasi. Opsional: UDP 162 masuk (SNMP trap).
+  - VM → perangkat: ICMP dan UDP 161 (SNMP). TCP 22 bila memakai backup konfigurasi. TCP 554 (RTSP) ke NVR untuk live view CCTV. Opsional: UDP 162 masuk (SNMP trap).
 - **Internet:** dibutuhkan **saat instalasi/update** (mengunduh image Docker dan paket). Setelah berjalan, internet tidak wajib.
 
 ---
@@ -254,7 +258,9 @@ Hasil yang diharapkan diakhiri tulisan **SEHAT**.
 6. **Quality Probe:** menu *Network Quality* — tambahkan target link penting (PTP, uplink antar site, gateway internet).
 7. **Notifikasi:** buat transport di *Alerts → Alert Transports* (mis. Telegram), lalu kebijakan di *Eskalasi & Notifikasi*.
 8. **SLA:** menu *SLA Management* — buat layanan seperti "Jaringan Pit A" dan pilih perangkatnya.
-9. **User:** buat akun tim dan beri role yang sesuai (lihat bagian berikut).
+9. **Live view CCTV:** di NVR Hikvision buat user dengan hak *Live View* saja, lalu di *CCTV → Sumber stream* simpan
+   kredensialnya dan tambahkan kamera (pilih NVR + nomor channel). Tekan *Cek sekarang*, lalu *Jadikan acuan* saat gambar normal.
+10. **User:** buat akun tim dan beri role yang sesuai (lihat bagian berikut).
 
 ---
 
@@ -353,6 +359,7 @@ Berjalan sendiri di dalam container `app` — tidak perlu cron tambahan.
 | Deteksi anomali | tiap 15 menit |
 | Saran mapping (LLDP/CDP) | tiap jam |
 | Backup konfigurasi (perangkat yang sudah waktunya) | tiap jam |
+| Cek kesehatan gambar CCTV | tiap 15 menit |
 | Capacity planning | tiap 6 jam |
 | Rollup kualitas harian | 00:20 |
 | Pembekuan SLA bulan lalu | 00:35 |
@@ -384,6 +391,8 @@ Berjalan sendiri di dalam container `app` — tidak perlu cron tambahan.
 | Setelah login kembali lagi ke halaman login | Akses selalu lewat `https://` dengan alamat yang sama (IP atau nama), lalu hapus cookie browser untuk alamat itu. Bila `DOCKER_SUBNET` diubah, jalankan `./antareja.sh restart` |
 | Subnet `172.30.250.0/24` bentrok dengan jaringan tambang | Ubah `DOCKER_SUBNET` di `docker/.env` **sebelum** instalasi |
 | Backup konfigurasi gagal "Host key berubah" | Perangkat diganti/di-reset: buka halaman konfigurasi perangkat → centang *Reset host key* |
+| Live view CCTV "Tidak ada gambar" | Buka detail stream → *Cek sekarang*: pesan menyebut penyebab. Periksa user/password NVR (hak Live View), nomor channel, TCP 554 dari VM ke NVR, dan `./antareja.sh logs go2rtc` |
+| Video live tidak tampil tetapi snapshot ada | Kamera memakai H.265: player otomatis beralih ke MJPEG (lebih berat). Untuk hemat, set sub-stream NVR ke H.264 |
 | Asisten AI nonaktif | Isi `ANTAREJA_AI_KEY` di `docker/.env` lalu `./antareja.sh restart`; VM harus bisa ke `api.anthropic.com` |
 
 Kirim keluaran `./antareja.sh health` dan `./antareja.sh logs app` saat meminta bantuan.
@@ -435,3 +444,4 @@ ANTAREJA NMS adalah **fork dari [LibreNMS](https://www.librenms.org)** dan didis
   "LibreNMS", "Zabbix", dan "SmokePing" adalah nama/merek milik pemiliknya masing-masing dan tidak dipakai sebagai merek ANTAREJA.
 - Font IBM Plex dan Barlow memakai lisensi SIL Open Font License.
 - Asisten AI memakai SDK resmi `anthropic-ai/sdk` (Apache-2.0).
+- Gateway video memakai [go2rtc](https://github.com/AlexxIT/go2rtc) (MIT) sebagai container terpisah; pemutar video `video-rtc.js` milik go2rtc.

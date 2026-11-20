@@ -172,6 +172,9 @@ cmd_update() {
     "${COMPOSE[@]}" build app
     "${COMPOSE[@]}" up -d
     wait_healthy 600
+    # Konfigurasi Nginx & go2rtc dipasang sebagai file; container yang sudah jalan tidak membacanya ulang sendiri
+    "${COMPOSE[@]}" exec -T nginx nginx -t >/dev/null 2>&1 && "${COMPOSE[@]}" exec -T nginx nginx -s reload >/dev/null 2>&1 || c_warn "Reload Nginx gagal; cek: ./antareja.sh logs nginx"
+    "${COMPOSE[@]}" restart go2rtc >/dev/null 2>&1 || true
     cmd_health
 }
 
