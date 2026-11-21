@@ -452,7 +452,7 @@ dibaca hanya selama halaman itu terbuka (SNMP GET tiap 5 detik, maks. 40 port).
 | Tugas | Jadwal |
 |---|---|
 | Problem engine, trigger, maintenance, eskalasi | tiap menit |
-| Quality Probe | tiap 5 menit |
+| Quality Probe | tiap 5 menit (hasil > 15 menit ditandai *Tidak diperbarui*) |
 | Sinkron inventaris & IPAM | tiap 15 menit |
 | Deteksi anomali | tiap 15 menit |
 | Saran mapping (LLDP/CDP) | tiap jam |
@@ -500,6 +500,7 @@ dibaca hanya selama halaman itu terbuka (SNMP GET tiap 5 detik, maks. 40 port).
 | Peta topologi tanpa garis | Aktifkan LLDP/CDP di switch/router, atau buat sambungan dengan **Hubungkan perangkat** di peta |
 | Garis topologi abu-abu / trafik tidak muncul | Sambungan belum punya port: hapus lalu hubungkan ulang dengan memilih port. Perangkat "ping saja" tidak punya data port — ukur dari port switch/router lawannya |
 | Banyak "Konflik IP" padahal di router IP-nya tidak bentrok | Versi lama menghitung MAC berbeda dari tabel ARP router yang berbeda (cache ARP lama / DHCP) sebagai konflik. Update ke versi terbaru: konflik palsu selesai otomatis pada sinkron berikutnya. Di *IPAM → Konflik IP* klik **Perbarui data ARP & cek ulang** untuk mempercepat |
+| Kualitas Jaringan "Putus 100%" padahal ping dari server bisa, kolom *Terakhir* berjam-jam lalu | Probe tidak berjalan karena penjadwal macet (versi lama). Update ke versi terbaru: tiap putaran penjadwal dibatasi 4 menit, status usang tampil *Tidak diperbarui*, dan muncul peringatan merah bila penjadwal berhenti. Cek dengan `./antareja.sh health` (baris *Penjadwal*); bila masih bermasalah: `./antareja.sh restart` |
 | Layar NOC menampilkan "Sesi berakhir" | Login ulang dengan centang *Ingat saya* |
 | Backup gagal "Ruang disk tersisa kurang dari 512 MB" | Kurangi jumlah backup yang disimpan, hapus backup lama, atau perbesar disk VM |
 | Uji SFTP gagal "Host key server tujuan berubah" | Server tujuan memang diganti: centang *lupakan host key* di pengaturan backup, simpan, uji lagi |

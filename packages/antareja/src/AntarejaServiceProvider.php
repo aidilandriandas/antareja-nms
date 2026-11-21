@@ -3,6 +3,7 @@
 namespace Antareja;
 
 use Antareja\Console\AnomaliesCommand;
+use Antareja\Console\SchedulerStatusCommand;
 use Antareja\Console\ArpRefreshCommand;
 use Antareja\Console\BackupCommand;
 use Antareja\Console\GroupsCommand;
@@ -77,7 +78,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $this->commands([
                 SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
                 IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class, ProblemsCommand::class,
-                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class, SetupTokenCommand::class, BackupCommand::class, GroupsCommand::class, ArpRefreshCommand::class,
+                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class, SetupTokenCommand::class, BackupCommand::class, GroupsCommand::class, ArpRefreshCommand::class, SchedulerStatusCommand::class,
             ]);
         }
 

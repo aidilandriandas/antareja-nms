@@ -119,6 +119,7 @@ class HomeController extends Controller
 
         $qualityProblems = $user->can('ant-quality.view')
             ? QualityTarget::with('site')->where('enabled', true)->whereIn('last_status', ['warning', 'critical', 'down'])
+                ->where('last_checked_at', '>=', now()->subMinutes(QualityTarget::STALE_MINUTES))
                 ->orderByRaw("FIELD(last_status, 'down', 'critical', 'warning')")->limit(5)->get()
             : null;
 

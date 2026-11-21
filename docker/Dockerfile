@@ -16,6 +16,8 @@ COPY --chown=librenms:librenms docker/config/antareja.yaml /opt/librenms/databas
 
 # Init container: siapkan /data/antareja (evidence) setiap start
 COPY --chmod=755 docker/init/03a-antareja.sh /etc/cont-init.d/03a-antareja.sh
+# Batasi durasi tiap putaran penjadwal (dijalankan setelah 07-svc-cron.sh membuat crontab)
+COPY --chmod=755 docker/init/08-antareja-cron.sh /etc/cont-init.d/08-antareja-cron.sh
 
 # Pasang dependensi tambahan ANTAREJA (anthropic-ai/sdk untuk asisten AI opsional) di atas vendor bawaan image —
 # hanya paket yang belum ada yang diunduh (butuh internet saat build) — lalu daftarkan namespace Antareja\ ke

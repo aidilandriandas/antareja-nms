@@ -310,3 +310,8 @@ html body.ant-has-shell .badge { background: var(--ant-surface-sunken); color: v
 html body.ant-has-shell #device-header, html body.ant-has-shell .device-header-table { background: var(--ant-surface-raised); border: 1px solid var(--ant-border); border-radius: 10px; }
 html body.ant-has-shell .pagemenu-selected { color: var(--ant-ink); }
 html body.ant-has-shell #pace .pace-progress, html body.ant-has-shell .pace .pace-progress { background: var(--ant-brand); }
+
+/* Peringatan penjadwal berhenti (di atas isi halaman) */
+.ant-sched-warn { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 16px; padding: 10px 14px; border-radius: 8px;
+  background: var(--ant-crit-tint); color: var(--ant-crit); border-left: 4px solid var(--ant-crit-strong); font-size: 13.5px; }
+html body .ant-sched-warn code { background: rgba(0,0,0,.06); color: inherit; }

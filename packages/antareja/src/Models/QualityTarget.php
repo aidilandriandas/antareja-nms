@@ -19,7 +19,11 @@ class QualityTarget extends Model
         'critical' => ['label' => 'Buruk', 'class' => 'label-danger', 'tone' => 'crit'],
         'down' => ['label' => 'Putus', 'class' => 'label-danger', 'tone' => 'down'],
         'unknown' => ['label' => 'Belum ada data', 'class' => 'label-default', 'tone' => 'unknown'],
+        'stale' => ['label' => 'Tidak diperbarui', 'class' => 'label-default', 'tone' => 'unknown'],
     ];
+
+    /** Hasil dianggap usang bila tidak diukur > 15 menit (probe berjalan tiap 5 menit). */
+    public const STALE_MINUTES = 15;
 
     protected $table = 'ant_quality_targets';
 
@@ -76,7 +80,17 @@ class QualityTarget extends Model
 
     public function statusMeta(?string $status = null): array
     {
+        if ($status === null && $this->isStale()) {
+            return self::STATUS['stale'];
+        }
+
         return self::STATUS[$status ?? $this->last_status ?? 'unknown'] ?? self::STATUS['unknown'];
+    }
+
+    /** Sudah pernah diukur, tetapi hasil terakhir lebih tua dari STALE_MINUTES (probe/penjadwal berhenti). */
+    public function isStale(): bool
+    {
+        return $this->enabled && $this->last_checked_at !== null && $this->last_checked_at->lt(now()->subMinutes(self::STALE_MINUTES));
     }
 
     public function auditType(): string

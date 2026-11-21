@@ -47,7 +47,11 @@ class QualityController extends Controller
             'targets' => $targets,
             'spark' => $spark,
             'day' => $day,
-            'counts' => QualityTarget::where('enabled', true)->selectRaw("COALESCE(last_status, 'unknown') AS s, COUNT(*) AS c")->groupBy('s')->pluck('c', 's'),
+            // Hasil yang lebih tua dari STALE_MINUTES dihitung "Tidak diperbarui", bukan status terakhirnya
+            'counts' => QualityTarget::where('enabled', true)
+                ->selectRaw("CASE WHEN last_checked_at IS NOT NULL AND last_checked_at < ? THEN 'stale' ELSE COALESCE(last_status, 'unknown') END AS s, COUNT(*) AS c",
+                    [now()->subMinutes(QualityTarget::STALE_MINUTES)])
+                ->groupBy('s')->pluck('c', 's'),
             'sites' => Site::orderBy('code')->get(['id', 'code', 'name']),
             'groups' => QualityTarget::whereNotNull('group_name')->distinct()->orderBy('group_name')->pluck('group_name'),
         ]);

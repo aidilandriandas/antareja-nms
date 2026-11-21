@@ -130,6 +130,14 @@
     </div>
 </header>
 
+@if($ant_scheduler_down)
+    <div class="ant-sched-warn" role="alert">
+        <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+        <span><b>Penjadwal tugas tidak berjalan.</b> Probe kualitas, problem, dan notifikasi tidak diperbarui — status yang tampil bisa usang.
+        Di server jalankan <code>./antareja.sh restart</code>, lalu <code>./antareja.sh health</code>.</span>
+    </div>
+@endif
+
 @include('antareja::shell.search-script')
 <script>
     var hideDashboardEditor = {{ (int) $hide_dashboard_editor }};

@@ -16,6 +16,8 @@ class ProblemsCommand extends Command
 
     public function handle(ProblemEngine $engine, MaintenanceService $maintenance, EscalationService $escalation, TriggerEngine $triggers): int
     {
+        // Detak penjadwal (tugas ini dijadwalkan tiap menit) — dipakai peringatan "penjadwal berhenti"
+        \Illuminate\Support\Facades\Cache::put('antareja:scheduler-tick', now()->timestamp, 300);
         $started = $maintenance->tick();
         $t = $triggers->evaluate();
         $p = $engine->sync();

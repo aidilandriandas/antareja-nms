@@ -152,7 +152,8 @@ class ProblemEngine
         }
 
         // 3. Quality Probe. Link putus pada target perangkat = perangkat tak terjangkau → digabung dengan device down.
-        QualityTarget::with('device')->where('enabled', true)->whereIn('last_status', ['warning', 'critical', 'down'])->get()
+        QualityTarget::with('device')->where('enabled', true)->whereIn('last_status', ['warning', 'critical', 'down'])
+            ->where('last_checked_at', '>=', now()->subMinutes(QualityTarget::STALE_MINUTES))->get()
             ->each(function (QualityTarget $t) use (&$obs, $sites): void {
                 $sample = $t->latestSample;
                 $metric = $sample && $sample->received > 0

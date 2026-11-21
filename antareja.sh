@@ -242,6 +242,9 @@ cmd_health() {
     if [[ "$code" == "200" ]]; then c_ok "  HTTPS /login: 200"; else c_err "  HTTPS /login: $code"; fail=1; fi
     echo "== Poller"
     if lnms config:get rrdcached >/dev/null 2>&1; then c_ok "  lnms OK"; else c_err "  lnms gagal"; fail=1; fi
+    local sched; sched="$(lnms antareja:scheduler-status 2>/dev/null | tail -n1 | tr -d '\r')"
+    if [[ "$sched" == OK* ]]; then c_ok "  Penjadwal: ${sched#OK }"; else
+        c_err "  Penjadwal: ${sched#STALE }"; c_warn "    Jalankan: ./antareja.sh restart  (lalu cek lagi dalam 5 menit)"; fail=1; fi
     echo "== Disk"
     df -h "$DOCKER_DIR" | tail -1
     (( fail == 0 )) && c_ok "SEHAT" || { c_err "ADA MASALAH"; return 1; }

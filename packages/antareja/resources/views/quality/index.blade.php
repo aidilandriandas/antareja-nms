@@ -9,14 +9,18 @@
 
 @section('actions')
     @can('ant-quality.update')
-        <a href="{{ route('antareja.quality.bulk') }}" class="btn btn-default"><i class="fa fa-tasks"></i> Tambah dari inventaris</a>
+        <a href="{{ route('antareja.quality.bulk') }}" class="btn btn-default"><i class="fa fa-tasks"></i> Tambah dari daftar perangkat</a>
         <a href="{{ route('antareja.quality.create') }}" class="btn btn-primary"><i class="fa fa-plus"></i> Tambah target</a>
     @endcan
 @endsection
 
 @section('page')
-    <div class="tw:grid tw:grid-cols-2 tw:md:grid-cols-5 tw:gap-3 tw:mb-4">
-        @foreach(['ok' => 'ant-text-ok', 'warning' => 'ant-text-warn', 'critical' => 'ant-text-crit', 'down' => 'ant-text-crit', 'unknown' => 'ant-muted'] as $key => $color)
+    @if(($counts['stale'] ?? 0) > 0)
+        <x-antareja::alert tone="warn">{{ $counts['stale'] }} target belum diukur lebih dari {{ \Antareja\Models\QualityTarget::STALE_MINUTES }} menit (seharusnya tiap 5 menit) —
+            statusnya ditampilkan <b>Tidak diperbarui</b>. Cek penjadwal di server: <code>./antareja.sh health</code>.</x-antareja::alert>
+    @endif
+    <div class="tw:grid tw:grid-cols-2 tw:md:grid-cols-3 tw:xl:grid-cols-6 tw:gap-3 tw:mb-4">
+        @foreach(['ok' => 'ant-text-ok', 'warning' => 'ant-text-warn', 'critical' => 'ant-text-crit', 'down' => 'ant-text-crit', 'stale' => 'ant-muted', 'unknown' => 'ant-muted'] as $key => $color)
             @include('antareja::partials.stat', ['label' => \Antareja\Models\QualityTarget::STATUS[$key]['label'], 'value' => $counts[$key] ?? 0, 'color' => $color, 'href' => route('antareja.quality.index', ['status' => $key])])
         @endforeach
     </div>

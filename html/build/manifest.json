@@ -40,7 +40,7 @@
     "src": "packages/antareja/resources/fonts/IBMPlexSans-Variable.woff2"
   },
   "resources/js/app.js": {
-    "file": "assets/app-DesoRB2O.js",
+    "file": "assets/app--kOHvA_J.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -48,7 +48,7 @@
       "resources/js/configHighlight.js"
     ],
     "css": [
-      "assets/app-KwqJjGkR.css"
+      "assets/app-BdjT5iK-.css"
     ],
     "assets": [
       "assets/glyphicons-halflings-regular-BUJKDMgK.eot",

@@ -30,7 +30,21 @@ class ShellComposer
             }
         }
 
+        // Penjadwal: detak 'antareja:scheduler-tick' ditulis tiap menit oleh antareja:problems (berlaku 5 menit);
+        // 'scheduler_working' milik LibreNMS tiap 5 menit. Peringatan hanya muncul bila
+        // penjadwal pernah terlihat jalan lalu berhenti — tidak pada menit-menit pertama setelah instalasi.
+        $schedulerDown = false;
+        try {
+            if (\Illuminate\Support\Facades\Cache::get('antareja:scheduler-tick') || \Illuminate\Support\Facades\Cache::get('scheduler_working')) {
+                \Illuminate\Support\Facades\Cache::forever('antareja:scheduler-seen', true);
+            } elseif (\Illuminate\Support\Facades\Cache::get('antareja:scheduler-seen')) {
+                $schedulerDown = true;
+            }
+        } catch (\Throwable) {
+        }
+
         $view->with([
+            'ant_scheduler_down' => $schedulerDown,
             'ant_nav' => $this->navigation->for($user, $this->request),
             'ant_problems' => $problems,
             'ant_role' => $user ? ($user->roles->pluck('title')->filter()->first() ?? $user->roles->pluck('name')->first()) : null,

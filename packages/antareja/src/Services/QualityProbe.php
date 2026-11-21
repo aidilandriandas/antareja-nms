@@ -78,9 +78,17 @@ class QualityProbe
             $hosts,
         ));
         $process->setTimeout($count * 2 + 60);
-        $process->run(); // exit code ≠ 0 bila ada host yang loss; itu normal
+        $process->run(); // exit 1 = ada host yang loss (normal); 2 = sebagian nama tidak bisa di-resolve
+        $parsed = $this->parse($process->getErrorOutput() . "\n" . $process->getOutput());
 
-        return $this->parse($process->getErrorOutput() . "\n" . $process->getOutput());
+        // exit ≥ 3 (argumen salah / gagal membuka socket ICMP) atau tidak ada satu pun baris hasil: probe yang gagal,
+        // bukan link putus — jangan dicatat sebagai loss 100% agar tidak memicu problem palsu.
+        if ($process->getExitCode() >= 3 || ($parsed === [] && $process->getExitCode() !== 0)) {
+            throw new \RuntimeException('fping gagal (exit ' . $process->getExitCode() . '): '
+                . mb_substr(trim($process->getErrorOutput() ?: $process->getOutput()), 0, 300));
+        }
+
+        return $parsed;
     }
 
     /**
