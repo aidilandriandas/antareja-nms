@@ -265,6 +265,8 @@ class IpamService
             $subnet = $this->subnetFor($bin);
             $deviceIds = array_keys($obs['devices']);
             $macs = array_keys($obs['macs']);
+            // MAC yang dipakai untuk catatan IP: satu-satunya MAC, atau yang dilaporkan paling banyak perangkat
+            $preferredMac = $obs['mac_votes'] ? array_search(max($obs['mac_votes']), $obs['mac_votes'], true) : null;
 
             // IP dari ARP di luar subnet IPAM diabaikan agar perangkat user di LAN kantor tidak membanjiri IPAM
             if (! $subnet && ! isset($obs['sources']['interface']) && ! isset($obs['sources']['device'])) {
@@ -273,7 +275,7 @@ class IpamService
 
             $ip = $existing[$text] ?? null;
             $source = isset($obs['sources']['device']) ? 'device' : (isset($obs['sources']['interface']) ? 'interface' : 'arp');
-            $mac = count($macs) === 1 ? $macs[0] : null;
+            $mac = count($macs) === 1 ? $macs[0] : ($preferredMac ?: null);
             $deviceId = count($deviceIds) === 1 ? $deviceIds[0] : null;
 
             if (! $ip) {
@@ -307,32 +309,37 @@ class IpamService
                 $stats['updated']++;
             }
 
-            $stats['conflicts'] += $this->evaluateConflict($ip, $macs, $deviceIds) ? 1 : 0;
+            $stats['conflicts'] += $this->evaluateConflict($ip, $macs, $deviceIds, $obs['arp']) ? 1 : 0;
         }
 
         // IP berstatus konflik yang tidak lagi teramati: konflik dianggap selesai
         IpAddress::where('conflict', true)->whereNotIn('address_text', array_keys($observations))->get()
-            ->each(fn (IpAddress $ip) => $this->evaluateConflict($ip, [], []));
+            ->each(fn (IpAddress $ip) => $this->evaluateConflict($ip, [], [], []));
 
         return $stats;
     }
 
     /**
-     * @return array<string, array{bin:string, sources:array, macs:array, devices:array, port_id:?int}>
+     * @return array<string, array{bin:string, sources:array, macs:array, mac_votes:array, arp:array, devices:array, port_id:?int}>
      */
     private function collectObservations(): array
     {
         $obs = [];
-        $add = function (?string $ipText, string $source, ?string $mac, ?int $deviceId, ?int $portId) use (&$obs): void {
+        $add = function (?string $ipText, string $source, ?string $mac, ?int $deviceId, ?int $portId, ?string $reporter = null) use (&$obs): void {
             $bin = $ipText !== null ? IpMath::toBinary($ipText) : null;
             if (! $bin || IpMath::isIgnored($bin)) {
                 return;
             }
             $text = inet_ntop($bin);
-            $obs[$text] ??= ['bin' => $bin, 'sources' => [], 'macs' => [], 'devices' => [], 'port_id' => null];
+            $obs[$text] ??= ['bin' => $bin, 'sources' => [], 'macs' => [], 'mac_votes' => [], 'arp' => [], 'devices' => [], 'port_id' => null];
             $obs[$text]['sources'][$source] = true;
             if ($mac = IpMath::normalizeMac($mac)) {
                 $obs[$text]['macs'][$mac] = true;
+                $obs[$text]['mac_votes'][$mac] = ($obs[$text]['mac_votes'][$mac] ?? 0) + 1;
+                // ARP per perangkat pelapor (+ VRF/context): konflik nyata = satu perangkat melihat >1 MAC untuk IP yang sama
+                if ($reporter !== null) {
+                    $obs[$text]['arp'][$reporter][$mac] = true;
+                }
             }
             if ($deviceId) {
                 $obs[$text]['devices'][$deviceId] = true;
@@ -352,21 +359,35 @@ class IpamService
             $add($device->overwrite_ip ?: $device->ip, 'device', null, $device->device_id, null);
         }
 
-        DB::table('ipv4_mac')->select('ipv4_address', 'mac_address')->orderBy('id')
-            ->each(fn ($r) => $add($r->ipv4_address, 'arp', $r->mac_address, null, null));
+        DB::table('ipv4_mac')->leftJoin('ports', 'ports.port_id', '=', 'ipv4_mac.port_id')
+            ->selectRaw('ipv4_mac.ipv4_address, ipv4_mac.mac_address, COALESCE(ipv4_mac.device_id, ports.device_id) AS reporter, ipv4_mac.context_name')
+            ->orderBy('ipv4_mac.id')
+            ->each(fn ($r) => $add($r->ipv4_address, 'arp', $r->mac_address, null, null, $r->reporter ? $r->reporter . '|' . ($r->context_name ?? '') : null));
 
         return $obs;
     }
 
     /**
+     * Aturan konflik:
+     *  - satu perangkat (router/L3, per VRF) melihat IP yang sama dengan >1 MAC di tabel ARP-nya sendiri;
+     *  - IP yang sama terpasang di interface beberapa perangkat;
+     *  - IP reserved aktif, atau IP static dipakai MAC lain.
+     * MAC berbeda di tabel ARP perangkat yang *berbeda* BUKAN konflik: biasanya cache ARP lama (IP DHCP berpindah
+     * ke klien lain) atau MAC interface VLAN/bridge yang berbeda dari port fisik.
+     *
      * @param  string[]  $macs
      * @param  int[]  $deviceIds
+     * @param  array<string, array<string, bool>>  $arpByReporter
      */
-    private function evaluateConflict(IpAddress $ip, array $macs, array $deviceIds): bool
+    private function evaluateConflict(IpAddress $ip, array $macs, array $deviceIds, array $arpByReporter = []): bool
     {
         $reasons = [];
-        if (count($macs) > 1) {
-            $reasons[] = 'terlihat dengan ' . count($macs) . ' MAC berbeda (' . implode(', ', array_slice($macs, 0, 3)) . ')';
+        foreach ($arpByReporter as $reporter => $seen) {
+            if (count($seen) > 1) {
+                $name = Device::find((int) $reporter)?->displayName() ?? 'perangkat #' . (int) $reporter;
+                $reasons[] = "terlihat dengan " . count($seen) . " MAC berbeda di tabel ARP {$name} (" . implode(', ', array_slice(array_keys($seen), 0, 3)) . ')';
+                break;
+            }
         }
         if (count($deviceIds) > 1) {
             $names = Device::whereIn('device_id', $deviceIds)->get()->map->displayName()->implode(', ');

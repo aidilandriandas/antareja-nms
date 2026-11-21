@@ -3,6 +3,7 @@
 namespace Antareja;
 
 use Antareja\Console\AnomaliesCommand;
+use Antareja\Console\ArpRefreshCommand;
 use Antareja\Console\BackupCommand;
 use Antareja\Console\GroupsCommand;
 use Antareja\Console\CapacityCommand;
@@ -75,7 +76,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $this->commands([
                 SyncRolesCommand::class, SyncInventoryCommand::class, SuggestMappingsCommand::class,
                 IpamSyncCommand::class, QualityProbeCommand::class, QualityMaintenanceCommand::class, ProblemsCommand::class,
-                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class, SetupTokenCommand::class, BackupCommand::class, GroupsCommand::class,
+                SlaCommand::class, TriggersCommand::class, ConfigBackupCommand::class, CapacityCommand::class, AnomaliesCommand::class, CctvHealthCommand::class, SetupTokenCommand::class, BackupCommand::class, GroupsCommand::class, ArpRefreshCommand::class,
             ]);
         }
 
@@ -129,6 +130,8 @@ class AntarejaServiceProvider extends ServiceProvider
             $schedule->command('antareja:capacity')->cron('23 */6 * * *')->withoutOverlapping(120)->runInBackground();
             $schedule->command('antareja:anomalies')->cron('*/15 * * * *')->withoutOverlapping(14)->runInBackground();
             $schedule->command('antareja:cctv-health')->cron('7,22,37,52 * * * *')->withoutOverlapping(14)->runInBackground();
+            // Tabel ARP router/L3 dibaca ulang tiap 30 menit (discovery penuh LibreNMS hanya tiap 6 jam)
+            $schedule->command('antareja:arp-refresh')->cron('11,41 * * * *')->withoutOverlapping(25)->runInBackground();
             $schedule->command('antareja:groups')->cron('*/10 * * * *')->withoutOverlapping(9)->runInBackground();
             // Backup NMS harian; jam diambil dari pengaturan backup (bawaan 01:30)
             $schedule->command('antareja:backup --scheduled')->dailyAt($this->backupTime())->withoutOverlapping(360)->runInBackground();

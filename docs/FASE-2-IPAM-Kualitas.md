@@ -39,9 +39,16 @@ Tidak ada pemindaian (scan) tambahan ke jaringan; semua dari data yang sudah dik
 - IPv6: disimpan & dicatat, tetapi perhitungan IP kosong / peta alamat saat ini hanya IPv4.
 
 ### Deteksi konflik / duplikat IP
-IP ditandai **konflik** bila: (1) terlihat dengan lebih dari satu MAC di tabel ARP, (2) terpasang di interface lebih
-dari satu perangkat, (3) berstatus Reserved tetapi aktif, atau (4) berstatus Static dengan MAC tercatat tetapi MAC yang
-teramati berbeda. Konflik otomatis dinyatakan selesai bila tidak lagi teramati. Setiap kejadian tercatat di histori IP.
+IP ditandai **konflik** bila: (1) **satu** router/L3 melihat IP itu dengan lebih dari satu MAC di tabel ARP-nya sendiri
+(per VRF/context), (2) terpasang di interface lebih dari satu perangkat, (3) berstatus reserved tetapi aktif, atau
+(4) berstatus static dan MAC yang teramati berbeda. Konflik otomatis dinyatakan selesai bila tidak lagi teramati.
+Setiap kejadian tercatat di histori IP.
+
+MAC berbeda di tabel ARP perangkat yang **berbeda** tidak dihitung konflik: biasanya cache ARP lama (IP DHCP sudah
+berpindah ke klien lain tetapi router kedua belum memperbarui ARP-nya) atau MAC interface VLAN/bridge yang berbeda dari
+port fisik. Tabel ARP router/L3 dibaca ulang tiap 30 menit (`antareja:arp-refresh`, SNMP read-only) — tidak menunggu
+discovery penuh LibreNMS yang hanya tiap 6 jam — dan bisa dipicu manual dengan tombol *Perbarui data ARP & cek ulang*
+di halaman Konflik IP.
 
 > Catatan: IP virtual VRRP/HSRP yang muncul di interface beberapa router dapat terdeteksi sebagai konflik (2).
 > Tandai dengan keterangan pada record IP tersebut.

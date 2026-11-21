@@ -453,6 +453,7 @@ dibaca hanya selama halaman itu terbuka (SNMP GET tiap 5 detik, maks. 40 port).
 | Backup konfigurasi (perangkat yang sudah waktunya) | tiap jam |
 | Cek kesehatan gambar CCTV | tiap 15 menit |
 | Sinkron grup perangkat (per kategori) | tiap 10 menit |
+| Baca ulang tabel ARP router/L3 + cek konflik IP | tiap 30 menit |
 | Backup NMS (+ salinan SFTP bila aktif) | harian, bawaan 01:30 (diatur di menu Backup & Pemulihan) |
 | Capacity planning | tiap 6 jam |
 | Rollup kualitas harian | 00:20 |
@@ -491,6 +492,7 @@ dibaca hanya selama halaman itu terbuka (SNMP GET tiap 5 detik, maks. 40 port).
 | Perangkat tampil sebagai IP saja | *Inventaris Perangkat → Edit → Nama perangkat*, atau ⚙ perangkat → *Device* → *Display Name* |
 | Peta topologi tanpa garis | Aktifkan LLDP/CDP di switch/router, atau buat sambungan dengan **Hubungkan perangkat** di peta |
 | Garis topologi abu-abu / trafik tidak muncul | Sambungan belum punya port: hapus lalu hubungkan ulang dengan memilih port. Perangkat "ping saja" tidak punya data port — ukur dari port switch/router lawannya |
+| Banyak "Konflik IP" padahal di router IP-nya tidak bentrok | Versi lama menghitung MAC berbeda dari tabel ARP router yang berbeda (cache ARP lama / DHCP) sebagai konflik. Update ke versi terbaru: konflik palsu selesai otomatis pada sinkron berikutnya. Di *IPAM → Konflik IP* klik **Perbarui data ARP & cek ulang** untuk mempercepat |
 | Layar NOC menampilkan "Sesi berakhir" | Login ulang dengan centang *Ingat saya* |
 | Backup gagal "Ruang disk tersisa kurang dari 512 MB" | Kurangi jumlah backup yang disimpan, hapus backup lama, atau perbesar disk VM |
 | Uji SFTP gagal "Host key server tujuan berubah" | Server tujuan memang diganti: centang *lupakan host key* di pengaturan backup, simpan, uji lagi |

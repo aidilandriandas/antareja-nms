@@ -150,6 +150,7 @@ Route::middleware(['web', 'auth'])
         });
         Route::middleware('can:ant-ipam.update')->group(function (): void {
             Route::get('ipam/subnets/create', [IpamController::class, 'create'])->name('ipam.subnets.create');
+            Route::post('ipam/conflicts/refresh', [IpamController::class, 'refreshArp'])->middleware('throttle:4,1')->name('ipam.conflicts.refresh');
             Route::post('ipam/subnets', [IpamController::class, 'store'])->name('ipam.subnets.store');
             Route::get('ipam/subnets/{subnet}/edit', [IpamController::class, 'edit'])->name('ipam.subnets.edit');
             Route::put('ipam/subnets/{subnet}', [IpamController::class, 'update'])->name('ipam.subnets.update');

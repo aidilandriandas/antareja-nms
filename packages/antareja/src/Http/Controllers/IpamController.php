@@ -174,9 +174,22 @@ class IpamController extends Controller
             ->with('antareja_success', "IP {$text} dilepas. Bila masih aktif di jaringan, IP akan tercatat kembali saat sinkronisasi.");
     }
 
+    public function refreshArp(): RedirectResponse
+    {
+        if (! \Illuminate\Support\Facades\Cache::has('antareja:arp-refresh:running')) {
+            \Illuminate\Support\Facades\Cache::put('antareja:arp-refresh:running', now()->toIso8601String(), 900);
+            exec(sprintf('nohup %s %s antareja:arp-refresh > /dev/null 2>&1 &',
+                escapeshellarg(PHP_BINARY && ! str_contains(PHP_BINARY, 'fpm') ? PHP_BINARY : 'php'), escapeshellarg(base_path('artisan'))));
+        }
+
+        return back()->with('antareja_success', 'Tabel ARP sedang dibaca ulang dari router/L3. Muat ulang halaman ini dalam 1–2 menit; konflik yang sudah tidak ada akan hilang sendiri.');
+    }
+
     public function conflicts(): View
     {
         return view('antareja::ipam.conflicts', [
+            'arpLast' => \Illuminate\Support\Facades\Cache::get('antareja:arp-refresh:last'),
+            'arpRunning' => \Illuminate\Support\Facades\Cache::has('antareja:arp-refresh:running'),
             'conflicts' => IpAddress::with(['subnet', 'device'])->where('conflict', true)->orderBy('address')->get(),
             'orphans' => IpAddress::with('device')->whereNull('subnet_id')->orderBy('address')->limit(500)->get(),
         ]);
