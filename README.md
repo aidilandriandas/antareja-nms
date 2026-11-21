@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  Versi 0.9.0 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
+  Versi 0.10.0 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
 </p>
 
 ---
@@ -73,7 +73,8 @@ halaman awal **Pusat Operasi**, tema terang/gelap, dan nyaman dipakai di HP.
 | Modul | Isi |
 |---|---|
 | **Pusat Operasi** | Halaman awal setelah login: status keseluruhan dalam satu kalimat, ketersediaan, perangkat down, problem aktif per severity, status per site, pekerjaan tim, CCTV, kualitas link, kelengkapan data — diperbarui otomatis tiap 60 detik |
-| **Layar NOC** | Tampilan layar penuh untuk TV/monitor ruang kontrol: peta topologi live (trafik mengalir, perangkat down berdenyut), ketersediaan, feed problem, perangkat down, status per site & grup — diperbarui tiap 15 detik tanpa reload |
+| **Layar NOC** | Layar penuh untuk TV/monitor ruang kontrol. **Alarm bertingkat** (hijau normal · kuning perlu dicek · merah berdenyut hanya bila ada perangkat down atau problem High/Disaster baru yang belum di-ACK) dengan **bunyi alarm** opsional. **Dinding status** semua perangkat per site (down/tidak menjawab ping/lambat langsung terlihat) bergantian dengan **peta topologi live**. Panel **Kejadian 1 jam** (down, pulih, reboot, naik-turun/flapping, latensi tinggi), **latensi & loss tertinggi** dengan grafik mini, **uplink tersibuk** (>70% kuning, >90% merah), live problem (belum ACK di atas, problem lama diredupkan), status per site & grup — diperbarui tiap 15 detik tanpa reload |
+| **Ping cepat 1 menit** | Semua perangkat aktif di-ping (fping, hanya baca) tiap menit, di luar polling LibreNMS 5 menit. Perangkat yang 2× berturut-turut tidak menjawab langsung tampil di Layar NOC; latensi > 150 ms dan naik-turun ≥ 3× dalam 15 menit dicatat sebagai kejadian |
 | **Peta Topologi** | Siapa terhubung ke siapa (mapping terverifikasi + LLDP/CDP), **trafik live di tiap garis** (▼ ke bawah / ▲ ke atas, dibaca langsung dari perangkat tiap 5 detik), warna garis = pemakaian bandwidth port, filter site/grup, cari perangkat, simpan tata letak; **hubungkan perangkat manual** langsung di peta (klik 2 perangkat → pilih port & jenis sambungan) |
 
 ### Monitoring
@@ -323,7 +324,9 @@ Urutan yang disarankan (semua lewat menu di sidebar):
     kredensialnya dan tambahkan kamera (pilih NVR + nomor channel). Tekan *Cek sekarang*, lalu *Jadikan acuan* saat gambar normal.
 11. **Backup NMS:** *Administrasi → Backup & Pemulihan* — atur jam backup dan aktifkan **salinan SFTP** ke NAS/server lain.
 12. **Layar NOC:** buka *Layar NOC* di PC/TV ruang kontrol, tekan `F` untuk layar penuh. Login dengan centang
-    *Ingat saya* agar tampilan tidak keluar sendiri.
+    *Ingat saya* agar tampilan tidak keluar sendiri. Klik tombol **SUARA** sekali agar alarm berbunyi (browser
+    hanya mengizinkan suara setelah ada klik; pilihan diingat). Pilih tampilan **Dinding**, **Topologi**, atau
+    **Otomatis** (bergantian tiap 30 detik).
 13. **User:** buat akun tim dan beri role yang sesuai (lihat bagian berikut).
 
 ---
@@ -434,10 +437,10 @@ Bila proxy memeriksa TLS, simpan sertifikat CA proxy di `docker/build-ca.crt`.
 ### VM tanpa internet
 Bangun image di mesin yang punya internet, lalu pindahkan:
 ```bash
-docker save antareja-nms:0.9.0 | gzip > antareja-nms-0.9.0.tar.gz
+docker save antareja-nms:0.10.0 | gzip > antareja-nms-0.10.0.tar.gz
 ```
 ```bash
-gunzip -c antareja-nms-0.9.0.tar.gz | docker load
+gunzip -c antareja-nms-0.10.0.tar.gz | docker load
 ```
 Tag image mengikuti `ANTAREJA_TAG` di `docker/.env`. Image pihak ketiga (`mariadb`, `redis`, `crazymax/rrdcached`, `nginx`,
 `librenms/librenms`, `alexxit/go2rtc`) dipindahkan dengan cara yang sama.
@@ -452,6 +455,7 @@ dibaca hanya selama halaman itu terbuka (SNMP GET tiap 5 detik, maks. 40 port).
 | Tugas | Jadwal |
 |---|---|
 | Problem engine, trigger, maintenance, eskalasi | tiap menit |
+| Ping cepat semua perangkat (Layar NOC, kejadian down/pulih/reboot) | tiap menit (sampel disimpan 24 jam, kejadian 30 hari) |
 | Quality Probe | tiap 5 menit (hasil > 15 menit ditandai *Tidak diperbarui*) |
 | Sinkron inventaris & IPAM | tiap 15 menit |
 | Deteksi anomali | tiap 15 menit |
@@ -502,6 +506,8 @@ dibaca hanya selama halaman itu terbuka (SNMP GET tiap 5 detik, maks. 40 port).
 | Banyak "Konflik IP" padahal di router IP-nya tidak bentrok | Versi lama menghitung MAC berbeda dari tabel ARP router yang berbeda (cache ARP lama / DHCP) sebagai konflik. Update ke versi terbaru: konflik palsu selesai otomatis pada sinkron berikutnya. Di *IPAM → Konflik IP* klik **Perbarui data ARP & cek ulang** untuk mempercepat |
 | Kualitas Jaringan "Putus 100%" padahal ping dari server bisa, kolom *Terakhir* berjam-jam lalu | Probe tidak berjalan karena penjadwal macet (versi lama). Update ke versi terbaru: tiap putaran penjadwal dibatasi 4 menit, status usang tampil *Tidak diperbarui*, dan muncul peringatan merah bila penjadwal berhenti. Cek dengan `./antareja.sh health` (baris *Penjadwal*); bila masih bermasalah: `./antareja.sh restart` |
 | Layar NOC menampilkan "Sesi berakhir" | Login ulang dengan centang *Ingat saya* |
+| Layar NOC tidak berbunyi saat ada perangkat down | Klik tombol **SUARA MATI · KLIK** di kanan atas sampai bertuliskan **SUARA** (harus diklik sekali tiap browser/PC), dan pastikan volume PC/TV tidak di-mute |
+| Panel latensi "Menunggu data ping cepat" / perangkat down terlambat terdeteksi | Ping cepat berjalan dari penjadwal tiap menit. Cek `./antareja.sh health` (baris *Penjadwal*). Perangkat yang memblokir ICMP selalu tampil "tidak menjawab ping" — izinkan ICMP dari IP VM |
 | Backup gagal "Ruang disk tersisa kurang dari 512 MB" | Kurangi jumlah backup yang disimpan, hapus backup lama, atau perbesar disk VM |
 | Uji SFTP gagal "Host key server tujuan berubah" | Server tujuan memang diganti: centang *lupakan host key* di pengaturan backup, simpan, uji lagi |
 | Grafik kosong | Perangkat baru butuh 2× polling (±10 menit) sebelum traffic port muncul |

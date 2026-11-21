@@ -54,6 +54,7 @@ panduan saat menggabungkan update dari upstream.
 | `ValidateDeviceAndCreate` (form Tambah Perangkat ANTAREJA) | Perangkat ditambahkan lewat jalur resmi LibreNMS (cek ping/SNMP, cegah duplikat); nama disimpan di `display_template` |
 | Tabel `device_groups` + `device_group_device` (tulis) | Grup otomatis per kategori dibuat sebagai Device Group *static* bertanda `desc = ANTAREJA:auto:<kategori>`; grup lain tidak disentuh |
 | Tabel `links` (baca) | Tetangga LLDP/CDP untuk peta topologi & layar NOC |
+| Tabel `eventlog` (baca) | Kejadian reboot/up/down disalin ke panel "Kejadian 1 jam" Layar NOC (tabel `ant_noc_events`) |
 | `AlertSchedule` + `Device::isUnderMaintenance()` | Jendela maintenance ANTAREJA dibuat sebagai Alert Schedule (mute alerts) dan dipakai untuk menekan problem |
 
 ## Dependensi tidak langsung yang dipakai
