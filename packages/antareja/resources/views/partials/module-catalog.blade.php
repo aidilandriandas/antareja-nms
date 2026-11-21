@@ -41,7 +41,7 @@
 
     <h2 class="tw:text-xl tw:font-semibold tw:mb-3">Roadmap</h2>
     <ol class="tw:list-decimal tw:pl-6 tw:text-sm tw:space-y-1 tw:mb-8">
-        <li><strong>Fase 0 — Fondasi:</strong> fork LibreNMS, paket ANTAREJA, branding, role, Docker Compose. <em>(selesai)</em></li>
+        <li><strong>Fase 0 — Fondasi:</strong> engine monitoring, paket ANTAREJA, branding, role, Docker Compose. <em>(selesai)</em></li>
         <li><strong>Fase 1 — Inventaris tambang:</strong> Site/Area, detail device, verifikasi discovery, device mapping, audit log, data quality. <em>(selesai)</em></li>
         <li><strong>Fase 2 — IPAM &amp; Kualitas:</strong> IPAM, Quality Probe + grafik smoke, Wireless &amp; CCTV. <em>(selesai)</em></li>
         <li><strong>Fase 3 — Problem &amp; Incident:</strong> korelasi event, incident, eskalasi, kalender maintenance. <em>(selesai)</em></li>

@@ -26,7 +26,7 @@
                 <tr><th class="tw:w-36">Tipe</th><td>{{ $site->typeLabel() }}</td></tr>
                 <tr><th>Status</th><td>{!! $site->is_active ? '<span class="label label-success">Aktif</span>' : '<span class="label label-default">Nonaktif</span>' !!}</td></tr>
                 <tr><th>PIC</th><td>{{ $site->picLabel() ?? '—' }} @if($site->pic_phone)<br><span class="tw:text-xs">{{ $site->pic_phone }}</span>@endif</td></tr>
-                <tr><th>Lokasi LibreNMS</th><td>{{ $site->location?->location ?? '—' }}</td></tr>
+                <tr><th>Lokasi SNMP</th><td>{{ $site->location?->location ?? '—' }}</td></tr>
                 <tr><th>Koordinat</th><td>
                     @if($site->latitude !== null && $site->longitude !== null)
                         {{ $site->latitude }}, {{ $site->longitude }}

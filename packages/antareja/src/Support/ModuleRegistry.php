@@ -78,7 +78,7 @@ class ModuleRegistry
     {
         return collect([
             $this->module('dashboard', 'Dashboard Teknis', 'tachometer-alt', self::NATIVE, 'overview', 0,
-                'Dashboard teknis dengan widget yang bisa diatur, dari LibreNMS.'),
+                'Dashboard teknis dengan widget yang bisa diatur.'),
             $this->module('management', 'Dashboard Manajemen', 'chart-bar', self::NATIVE, 'antareja/management', 4,
                 'Availability jaringan, SLA layanan, incident, MTTA/MTTR, tren 6 bulan, per site — tanpa detail teknis.', 'ant-dashboard.management'),
             $this->module('network-monitoring', 'Network Monitoring', 'server', self::NATIVE, 'devices', 0,

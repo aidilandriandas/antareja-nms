@@ -21,7 +21,7 @@ class ConfigureArtisanConsole
     public function handle(ArtisanStarting $event): void
     {
         $console = $event->artisan;
-        $console->setName('LibreNMS');
+        $console->setName('ANTAREJA NMS');
         $console->setVersion(Version::VERSION);
     }
 }

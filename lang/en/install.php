@@ -23,7 +23,7 @@ return [
         'username' => 'User',
     ],
     'finish' => [
-        'app_key_description' => 'This key is required to decrypt encrypted data stored in LibreNMS. If this key is lost, encrypted data cannot be recovered. Please save and back up this key in a secure location.',
+        'app_key_description' => 'This key is required to decrypt encrypted data stored in ANTAREJA NMS. If this key is lost, encrypted data cannot be recovered. Please save and back up this key in a secure location.',
         'app_key_title' => 'Application Key (APP_KEY)',
         'app_key_warning' => 'Important: Save and back up your APP_KEY!',
         'config_exists' => 'config.php file exists',
@@ -40,7 +40,7 @@ return [
         'retry' => 'Retry',
         'settings' => 'Additional Settings',
         'success' => 'Install Complete',
-        'thanks' => 'Thank you for setting up LibreNMS.',
+        'thanks' => 'Thank you for setting up ANTAREJA NMS.',
         'title' => 'Finish Install',
         'validate_button' => 'Validate Install',
     ],
@@ -60,7 +60,7 @@ return [
         'migrate' => 'Build Database',
         'user' => 'Create User',
     ],
-    'title' => 'LibreNMS Install',
+    'title' => 'ANTAREJA NMS Install',
     'user' => [
         'button' => 'Add User',
         'created' => 'User Created',

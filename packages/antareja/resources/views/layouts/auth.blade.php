@@ -100,8 +100,8 @@
             <li>Work order, change request &amp; backup konfigurasi</li>
         </ul>
         <footer>
-            ANTAREJA NMS v{{ \Antareja\AntarejaServiceProvider::VERSION }} · dibangun di atas
-            <a href="{{ config('antareja.based_on.url') }}" rel="noopener">{{ config('antareja.based_on.name') }}</a> ({{ config('antareja.based_on.license') }})
+            ANTAREJA NMS v{{ \Antareja\AntarejaServiceProvider::VERSION }} ·
+            <a href="https://www.gnu.org/licenses/gpl-3.0.html" rel="noopener">Lisensi GPL-3.0</a>
         </footer>
     </aside>
     <main class="main">

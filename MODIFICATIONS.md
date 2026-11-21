@@ -15,6 +15,11 @@ panduan saat menggabungkan update dari upstream.
 | `composer.json` | Tambah autoload PSR-4 `"Antareja\\": "packages/antareja/src/"` | Memuat kode paket ANTAREJA |
 | `composer.json`, `composer.lock` | Tambah `anthropic-ai/sdk` (^1.11; ikut terkunci: `open-telemetry/api`, `open-telemetry/context`, `standard-webhooks/standard-webhooks`). Tidak ada paket upstream yang berubah versi | Asisten AI opsional (Claude API). Saat sinkron upstream: ambil `composer.lock` upstream lalu jalankan ulang `composer require anthropic-ai/sdk:^1.11 --no-install` |
 | `README.md` → `README-LibreNMS.md` | README asli LibreNMS dipindah utuh (termasuk ketentuan lisensi); `README.md` baru berisi panduan ANTAREJA berbahasa Indonesia | Halaman depan repo menjelaskan ANTAREJA. Saat sinkron upstream: salin README upstream ke `README-LibreNMS.md` |
+| `resources/definitions/config_definitions.json` | Default `project_name` & `email_user` = "ANTAREJA NMS", `irc_ctcp_version` tanpa URL, `notifications.LibreNMS` kosong, `update` = 0 | Rebranding: nama di email/notifikasi = ANTAREJA; tidak menarik feed berita & update otomatis upstream (update lewat `git pull` repo ANTAREJA) |
+| `LibreNMS/Util/Notifications.php` | Lewati feed dengan URL kosong | Agar feed berita upstream bisa dimatikan |
+| `lang/en/{settings,permissions,install,poller}.php`, `LibreNMS/Validations/Programs.php`, `resources/views/poller/details.blade.php`, `resources/views/alerts/templates/default.blade.php`, `resources/views/layouts/install.blade.php`, `app/Http/ViewComposers/MenuComposer.php`, `app/Listeners/ConfigureArtisanConsole.php` | Teks tampilan "LibreNMS" → "ANTAREJA NMS" / "Engine" (kecuali teks pelaporan statistik upstream yang memang merujuk LibreNMS) | Rebranding antarmuka |
+| `LibreNMS/Alert/Transport/{Slack,Hipchat,Osticket,Sensu,Kayako,Browserpush,Alerta}.php` | Nama pengirim bawaan "ANTAREJA NMS" | Rebranding notifikasi |
+| `includes/html/modal/{new_alert_rule,edit_alert_transport,edit_transport_group,alert_template,new_customoid}.inc.php` | Tautan "Docs" ke situs upstream dihapus | Rebranding antarmuka |
 | `bootstrap/providers.php` | Tambah `Antareja\AntarejaServiceProvider::class` | Mendaftarkan route, view, migration, perintah ANTAREJA |
 | `resources/views/layouts/menu.blade.php` | Sisipkan `@includeIf('antareja::partials.navbar')` di awal navbar | Menu modul ANTAREJA di navigasi utama (hanya dipakai bila kerangka ANTAREJA tidak tersedia) |
 | `resources/views/layouts/librenmsv1.blade.php` | `<body class="ant-has-shell">` dan `@includeFirst(['antareja::shell.chrome', 'layouts.menu'])` menggantikan `@include('layouts.menu')` | Kerangka aplikasi ANTAREJA (sidebar berkelompok + topbar) menggantikan navbar LibreNMS di semua halaman. Elemen yang dipakai skrip LibreNMS tetap ada (`#gsearch`, `#countdown_timer*`, `toggleDashboardEditor`). Saat sinkron upstream: bandingkan skrip pencarian global di `menu.blade.php` dengan `antareja::shell.search-script` |
@@ -55,6 +60,7 @@ panduan saat menggabungkan update dari upstream.
 | Tabel `device_groups` + `device_group_device` (tulis) | Grup otomatis per kategori dibuat sebagai Device Group *static* bertanda `desc = ANTAREJA:auto:<kategori>`; grup lain tidak disentuh |
 | Tabel `links` (baca) | Tetangga LLDP/CDP untuk peta topologi & layar NOC |
 | Tabel `eventlog` (baca) | Kejadian reboot/up/down disalin ke panel "Kejadian 1 jam" Layar NOC (tabel `ant_noc_events`) |
+| Halaman `/about` | Dialihkan (ModuleGate) ke *Tentang & Lisensi* ANTAREJA, yang memuat info sistem, lisensi GPLv3, pernyataan tanpa garansi, dan atribusi hak cipta LibreNMS | Satu halaman Tentang bermerek ANTAREJA; kewajiban pemberitahuan lisensi GPLv3 tetap terpenuhi |
 | `AlertSchedule` + `Device::isUnderMaintenance()` | Jendela maintenance ANTAREJA dibuat sebagai Alert Schedule (mute alerts) dan dipakai untuk menekan problem |
 
 ## Dependensi tidak langsung yang dipakai

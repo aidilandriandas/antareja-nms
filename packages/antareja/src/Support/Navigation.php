@@ -83,7 +83,7 @@ class Navigation
                 $m('reports', 'Laporan Bulanan', 'file-lines'),
             ]],
             ['title' => 'Fitur Lainnya', 'key' => 'more', 'collapsed' => true, 'items' => [
-                $core($can('device.create'), 'Tambah (form LibreNMS)', 'plus', 'addhost'),
+                $core($can('device.create'), 'Tambah (form lanjutan)', 'plus', 'addhost'),
                 $core($can('viewAny', Models\DeviceGroup::class), 'Aturan Device Group', 'layer-group', 'device-groups'),
                 $core($can('viewAny', Models\Location::class), 'Lokasi Geografis', 'location-dot', 'locations'),
                 $core($can('viewAny', Models\Device::class), 'Peta Jaringan', 'sitemap', 'map'),

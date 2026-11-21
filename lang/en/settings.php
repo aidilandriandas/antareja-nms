@@ -1629,8 +1629,8 @@ return [
             'help' => 'Show the sysDescr on the device overview page',
         ],
         'own_hostname' => [
-            'description' => 'LibreNMS hostname',
-            'help' => 'Set this to the hostname or IP that the LibreNMS server is added as',
+            'description' => 'ANTAREJA NMS hostname',
+            'help' => 'Set this to the hostname or IP that the ANTAREJA NMS server is added as',
         ],
         'oxidized' => [
             'default_group' => [
@@ -1654,7 +1654,7 @@ return [
             ],
             'ignore_os' => [
                 'description' => 'Do not backup these OS',
-                'help' => 'Do not backup the listed OS with Oxidized. The OS must match the LibreNMS OS name, which is lowercase with no spaces. Only existing OS names are allowed.',
+                'help' => 'Do not backup the listed OS with Oxidized. The OS must match the ANTAREJA NMS OS name, which is lowercase with no spaces. Only existing OS names are allowed.',
             ],
             'ignore_types' => [
                 'description' => 'Do not backup these device types',
@@ -1986,7 +1986,7 @@ return [
             ],
             'xdp' => [
                 'description' => 'Enable xDP discovery protocols',
-                'help' => 'Use LLDP, CDP, and other protocols to discover the network topology and neighbors, then add them to LibreNMS',
+                'help' => 'Use LLDP, CDP, and other protocols to discover the network topology and neighbors, then add them to ANTAREJA NMS',
             ],
             'xdp_exclude' => [
                 'sysname_regexp' => [
@@ -2062,7 +2062,7 @@ return [
         ],
         'rrd_dir' => [
             'description' => 'RRD Location',
-            'help' => 'Location of rrd files. The default is rrd inside the LibreNMS directory. A change to this setting does not move the rrd files.',
+            'help' => 'Location of rrd files. The default is rrd inside the ANTAREJA NMS directory. A change to this setting does not move the rrd files.',
         ],
         'rrd_purge' => [
             'description' => 'RRD Files entries older than',
@@ -2218,7 +2218,7 @@ return [
         ],
         'service_watchdog_log' => [
             'description' => 'Log File to Watch',
-            'help' => 'The default is the LibreNMS log file. Sets the default value for all nodes.',
+            'help' => 'The default is the ANTAREJA NMS log file. Sets the default value for all nodes.',
         ],
         'service_health_file' => [
             'description' => 'Service Health File',

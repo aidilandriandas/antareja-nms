@@ -94,6 +94,9 @@ class Notifications
     {
         $notifications = [];
         foreach (LibrenmsConfig::get('notifications') as $name => $url) {
+            if (empty($url)) {
+                continue; // ANTAREJA NMS: feed berita LibreNMS dimatikan (default kosong)
+            }
             echo '[ ' . date('r') . " ] $name $url ";
 
             // fix relative path urls

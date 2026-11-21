@@ -117,7 +117,7 @@ class Sensu extends Transport
     private function generateAnnotations(array $alert_data): array
     {
         return array_filter([
-            'generated-by' => 'LibreNMS',
+            'generated-by' => 'ANTAREJA NMS',
             'acknowledged' => $alert_data['state'] === AlertState::ACKNOWLEDGED ? 'true' : 'false',
             'contact' => $alert_data['sysContact'],
             'description' => $alert_data['sysDescr'],

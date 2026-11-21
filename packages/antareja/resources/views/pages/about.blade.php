@@ -11,23 +11,13 @@
         </p>
 
         <div class="panel panel-default">
-            <div class="panel-heading"><strong>Dasar platform &amp; lisensi</strong></div>
-            <div class="panel-body tw:text-sm tw:space-y-3">
-                <p class="tw:m-0">
-                    ANTAREJA NMS dibangun di atas <a href="https://www.librenms.org" target="_blank" rel="noopener">LibreNMS</a>
-                    versi {{ $librenms_version }}, yang dilisensikan di bawah
-                    <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GNU General Public License v3</a>.
-                    Sebagai karya turunan, ANTAREJA NMS juga didistribusikan di bawah <strong>GPLv3</strong>.
-                    Seluruh catatan hak cipta LibreNMS dan kontributornya dipertahankan.
-                </p>
-                <p class="tw:m-0">
-                    Fitur problem/trigger/SLA dan pengukuran kualitas jaringan di ANTAREJA terinspirasi dari konsep Zabbix dan SmokePing,
-                    namun diimplementasikan ulang tanpa menyalin kode sumber keduanya.
-                    Zabbix dan SmokePing adalah merek milik pemiliknya masing-masing.
-                </p>
-                <p class="tw:m-0">
-                    Daftar perubahan terhadap kode inti LibreNMS dicatat di <code>MODIFICATIONS.md</code> pada repositori.
-                </p>
+            <div class="panel-heading"><strong>Informasi sistem</strong></div>
+            <div class="panel-body tw:p-0">
+                <table class="table table-condensed tw:m-0">
+                    @foreach($system as $label => $value)
+                        <tr><th class="tw:w-56">{{ $label }}</th><td><code>{{ $value }}</code></td></tr>
+                    @endforeach
+                </table>
             </div>
         </div>
 
@@ -43,7 +33,22 @@
             </div>
         </div>
 
-        <p class="tw:text-sm"><a href="{{ url('about') }}">Informasi sistem LibreNMS &rarr;</a></p>
+        <div class="panel panel-default">
+            <div class="panel-heading"><strong>Lisensi &amp; hak cipta</strong></div>
+            <div class="panel-body tw:text-sm tw:space-y-2">
+                <p class="tw:m-0">
+                    ANTAREJA NMS adalah perangkat lunak bebas di bawah
+                    <a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener">GNU General Public License v3</a>,
+                    disediakan <em>tanpa garansi apa pun</em>. Engine monitoring-nya berasal dari proyek open-source
+                    LibreNMS {{ $librenms_version }} (&copy; para kontributor LibreNMS, GPLv3); catatan hak cipta aslinya dipertahankan
+                    di kode sumber, dan perubahan pada kode inti dicatat di <code>MODIFICATIONS.md</code>.
+                </p>
+                <p class="tw:m-0 tw:text-gray-500">
+                    Konsep problem/trigger/SLA dan pengukuran kualitas terinspirasi Zabbix dan SmokePing, diimplementasikan ulang
+                    tanpa menyalin kode sumbernya. Nama-nama tersebut adalah merek milik pemiliknya masing-masing.
+                </p>
+            </div>
+        </div>
         <div class="tw:mt-8">@include('antareja::partials.module-catalog')</div>
     </div>
 </div>

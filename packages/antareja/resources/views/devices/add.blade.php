@@ -8,7 +8,7 @@
 @section('heading', 'Tambah Perangkat')
 @section('subheading', 'Beri nama dan grup sejak awal supaya perangkat mudah dicari — tidak hanya muncul sebagai alamat IP.')
 @section('actions')
-    <a href="{{ url('addhost') }}" class="btn btn-default btn-sm" title="Form LibreNMS dengan semua opsi lanjutan (port SNMP, transport, poller group, dll.)">
+    <a href="{{ url('addhost') }}" class="btn btn-default btn-sm" title="Form lanjutan dengan semua opsi lanjutan (port SNMP, transport, poller group, dll.)">
         <i class="fa-solid fa-sliders"></i> Opsi lanjutan
     </a>
 @endsection

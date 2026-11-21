@@ -78,7 +78,7 @@ class Alerta extends Transport
                 [
                     'title' => 'Origin',
                     'name' => 'origin',
-                    'descr' => 'Name of this monitoring source e.g. LibreNMS.',
+                    'descr' => 'Name of this monitoring source e.g. ANTAREJA.',
                     'type' => 'text',
                 ],
                 [

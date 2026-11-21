@@ -93,7 +93,7 @@ return [
             ],
             'watchdog_log' => [
                 'description' => 'Log File to Watch',
-                'help' => 'The default is the LibreNMS log file.',
+                'help' => 'The default is the ANTAREJA NMS log file.',
             ],
         ],
         'units' => [

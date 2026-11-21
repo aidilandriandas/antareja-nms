@@ -21,6 +21,9 @@ class ModuleGate
     public function handle(Request $request, Closure $next): Response
     {
         $path = trim($request->path(), '/');
+        if ($path === 'about') {
+            return redirect()->route('antareja.about'); // halaman "Tentang" tunggal milik ANTAREJA (memuat lisensi & atribusi)
+        }
         if (! str_starts_with($path, 'antareja/') || ModuleRegistry::disabled() === []) {
             return $next($request);
         }

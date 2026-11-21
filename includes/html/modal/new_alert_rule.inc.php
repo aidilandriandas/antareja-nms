@@ -31,7 +31,7 @@ $default_max_entities = max(1, (int) LibrenmsConfig::get('alert_rule.default_max
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h5 class="modal-title" id="Create">Alert Rule :: <a target="_blank" href="https://docs.librenms.org/Alerting/"><i class="fa fa-book fa-1x"></i> Docs</a> </h5>
+                    <h5 class="modal-title" id="Create">Alert Rule</h5>
                 </div>
                 <div class="modal-body">
                     <ul class="nav nav-tabs" role="tablist">

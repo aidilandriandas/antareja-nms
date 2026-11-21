@@ -19,7 +19,7 @@
 @section('page')
     <div class="tw:grid tw:grid-cols-2 tw:md:grid-cols-4 tw:gap-3 tw:mb-4 tw:text-sm">
         @foreach([
-            ['1', 'Device ditemukan otomatis', 'LibreNMS discovery / SNMP scan'],
+            ['1', 'Device ditemukan otomatis', 'Discovery otomatis / SNMP scan'],
             ['2', 'Masuk antrean', 'Status Discovered → Pending Verification'],
             ['3', 'Engineer melengkapi', 'Kategori, site, area, PIC, lokasi'],
             ['4', 'Approve / Reject', 'Approve → inventaris resmi'],

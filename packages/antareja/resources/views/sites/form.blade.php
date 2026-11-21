@@ -35,7 +35,7 @@
                         </select>
                     </div>
                     <div class="form-group col-sm-6">
-                        <label for="location_id">Lokasi LibreNMS (sysLocation)</label>
+                        <label for="location_id">Lokasi SNMP (sysLocation)</label>
                         <select id="location_id" name="location_id" class="form-control">
                             <option value="">— tidak dipetakan —</option>
                             @foreach($locations as $location)

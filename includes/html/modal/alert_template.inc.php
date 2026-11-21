@@ -18,7 +18,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="Create">Alert Template :: <a target="_blank" href="https://docs.librenms.org/Alerting/Templates/"><i class="fa fa-book fa-1x"></i> Docs</a></h4>
+                <h4 class="modal-title" id="Create">Alert Template</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -110,7 +110,7 @@ $('#alert-template').on('show.bs.modal', function (event) {
             }).val(selected_rules).trigger("change");
             //FIXME remove Deprecated template
             if(output['template'].indexOf("{/if}")>=0){
-                toastr.info('The old template syntax is no longer supported. Please see https://docs.librenms.org/Alerting/Old_Templates/');
+                toastr.info('The old template syntax is no longer supported. Gunakan sintaks Blade');
                 $('#convert-template').show();
             }
         }

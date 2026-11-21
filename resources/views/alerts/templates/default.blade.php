@@ -1,7 +1,7 @@
 
 <html>
     <head>
-        <title>LibreNMS Alert</title>
+        <title>ANTAREJA NMS Alert</title>
     </head>
     <body>
         <div class="container">
