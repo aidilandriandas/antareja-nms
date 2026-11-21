@@ -266,7 +266,13 @@ class IpamService
             $deviceIds = array_keys($obs['devices']);
             $macs = array_keys($obs['macs']);
             // MAC yang dipakai untuk catatan IP: satu-satunya MAC, atau yang dilaporkan paling banyak perangkat
-            $preferredMac = $obs['mac_votes'] ? array_search(max($obs['mac_votes']), $obs['mac_votes'], true) : null;
+            // (seri → MAC terkecil, agar tidak "berganti" hanya karena urutan baris berubah)
+            $preferredMac = null;
+            if ($obs['mac_votes']) {
+                $top = array_keys($obs['mac_votes'], max($obs['mac_votes']), true);
+                sort($top);
+                $preferredMac = $top[0];
+            }
 
             // IP dari ARP di luar subnet IPAM diabaikan agar perangkat user di LAN kantor tidak membanjiri IPAM
             if (! $subnet && ! isset($obs['sources']['interface']) && ! isset($obs['sources']['device'])) {
@@ -360,16 +366,19 @@ class IpamService
         }
 
         DB::table('ipv4_mac')->leftJoin('ports', 'ports.port_id', '=', 'ipv4_mac.port_id')
-            ->selectRaw('ipv4_mac.ipv4_address, ipv4_mac.mac_address, COALESCE(ipv4_mac.device_id, ports.device_id) AS reporter, ipv4_mac.context_name')
+            ->selectRaw('ipv4_mac.ipv4_address, ipv4_mac.mac_address, ipv4_mac.port_id, COALESCE(ipv4_mac.device_id, ports.device_id) AS reporter, ipv4_mac.context_name')
             ->orderBy('ipv4_mac.id')
-            ->each(fn ($r) => $add($r->ipv4_address, 'arp', $r->mac_address, null, null, $r->reporter ? $r->reporter . '|' . ($r->context_name ?? '') : null));
+            // kunci = router + VRF + interface: MAC berbeda di interface berbeda = subnet tumpang tindih, bukan host bentrok
+            ->each(fn ($r) => $add($r->ipv4_address, 'arp', $r->mac_address, null, null,
+                $r->reporter ? $r->reporter . '|' . ($r->context_name ?? '') . '|' . (int) $r->port_id : null));
 
         return $obs;
     }
 
     /**
      * Aturan konflik:
-     *  - satu perangkat (router/L3, per VRF) melihat IP yang sama dengan >1 MAC di tabel ARP-nya sendiri;
+     *  - satu router/L3 melihat IP yang sama dengan >1 MAC di interface yang sama (per VRF);
+     *  - MAC untuk IP ini berganti-ganti antara dua MAC berulang kali (≥ 3 kali dalam 6 jam) = dua host berebut IP;
      *  - IP yang sama terpasang di interface beberapa perangkat;
      *  - IP reserved aktif, atau IP static dipakai MAC lain.
      * MAC berbeda di tabel ARP perangkat yang *berbeda* BUKAN konflik: biasanya cache ARP lama (IP DHCP berpindah
@@ -387,6 +396,16 @@ class IpamService
                 $name = Device::find((int) $reporter)?->displayName() ?? 'perangkat #' . (int) $reporter;
                 $reasons[] = "terlihat dengan " . count($seen) . " MAC berbeda di tabel ARP {$name} (" . implode(', ', array_slice(array_keys($seen), 0, 3)) . ')';
                 break;
+            }
+        }
+        if ($ip->exists) {
+            $changes = IpHistory::where('ip_address_id', $ip->id)->where('event', 'mac_changed')
+                ->where('created_at', '>=', now()->subHours(6))->get(['old_values', 'new_values']);
+            if ($changes->count() >= 3) {
+                $involved = $changes->flatMap(fn ($h) => [$h->old_values['mac_address'] ?? null, $h->new_values['mac_address'] ?? null])->filter()->unique();
+                if ($involved->count() === 2) {
+                    $reasons[] = 'MAC berganti-ganti antara ' . $involved->implode(' dan ') . " ({$changes->count()}× dalam 6 jam) — dua perangkat memakai IP yang sama";
+                }
             }
         }
         if (count($deviceIds) > 1) {
@@ -413,6 +432,51 @@ class IpamService
         }
 
         return $conflict;
+    }
+
+    /**
+     * Subnet yang terlihat di tabel ARP lebih dari satu interface pada router yang sama (mis. 10.17.18.x di VL-SECURITY
+     * dan VL-TRAINING). Biasanya salah konfigurasi: alamat dari subnet yang sama terpasang di dua interface/VLAN.
+     *
+     * @return list<array{device: string, device_id: int, subnet: string, guessed: bool, interfaces: list<array{name: string, entries: int}>}>
+     */
+    public function interfaceOverlaps(): array
+    {
+        $this->forgetSubnets();
+        $buckets = [];
+        DB::table('ipv4_mac')->join('ports', 'ports.port_id', '=', 'ipv4_mac.port_id')
+            ->selectRaw('ipv4_mac.ipv4_address, ipv4_mac.port_id, ports.ifName, ports.ifDescr, COALESCE(ipv4_mac.device_id, ports.device_id) AS reporter')
+            ->whereNotNull('ipv4_mac.mac_address')->where('ipv4_mac.mac_address', '!=', '')
+            ->orderBy('ipv4_mac.id')
+            ->each(function ($r) use (&$buckets) {
+                $bin = IpMath::toBinary($r->ipv4_address);
+                if (! $bin || IpMath::isIgnored($bin)) {
+                    return;
+                }
+                $subnet = $this->subnetFor($bin);
+                $key = $subnet?->cidr ?? (preg_replace('/\.\d+$/', '.0/24', $r->ipv4_address) . '*');
+                $buckets[$r->reporter][$key][$r->ifName ?: $r->ifDescr ?: ('port ' . $r->port_id)] =
+                    ($buckets[$r->reporter][$key][$r->ifName ?: $r->ifDescr ?: ('port ' . $r->port_id)] ?? 0) + 1;
+            });
+
+        $out = [];
+        foreach ($buckets as $deviceId => $subnets) {
+            foreach ($subnets as $cidr => $ifaces) {
+                if (count($ifaces) < 2) {
+                    continue;
+                }
+                arsort($ifaces);
+                $out[] = [
+                    'device_id' => (int) $deviceId,
+                    'device' => Device::find((int) $deviceId)?->displayName() ?? 'perangkat #' . (int) $deviceId,
+                    'subnet' => rtrim($cidr, '*'),
+                    'guessed' => str_ends_with($cidr, '*'),
+                    'interfaces' => collect($ifaces)->map(fn ($n, $name) => ['name' => $name, 'entries' => $n])->values()->all(),
+                ];
+            }
+        }
+
+        return $out;
     }
 
     private function history(IpAddress $ip, string $event, ?string $description, ?array $old, ?array $new, int|false|null $userId = false): void

@@ -39,16 +39,20 @@ Tidak ada pemindaian (scan) tambahan ke jaringan; semua dari data yang sudah dik
 - IPv6: disimpan & dicatat, tetapi perhitungan IP kosong / peta alamat saat ini hanya IPv4.
 
 ### Deteksi konflik / duplikat IP
-IP ditandai **konflik** bila: (1) **satu** router/L3 melihat IP itu dengan lebih dari satu MAC di tabel ARP-nya sendiri
-(per VRF/context), (2) terpasang di interface lebih dari satu perangkat, (3) berstatus reserved tetapi aktif, atau
+IP ditandai **konflik** bila: (1) MAC untuk IP itu **berganti-ganti antara dua MAC** berulang kali (≥ 3 kali dalam 6 jam
+— dua perangkat berebut IP), atau satu router/L3 melihat dua MAC untuk IP itu **di interface yang sama** (per VRF/context), (2) terpasang di interface lebih dari satu perangkat, (3) berstatus reserved tetapi aktif, atau
 (4) berstatus static dan MAC yang teramati berbeda. Konflik otomatis dinyatakan selesai bila tidak lagi teramati.
 Setiap kejadian tercatat di histori IP.
 
-MAC berbeda di tabel ARP perangkat yang **berbeda** tidak dihitung konflik: biasanya cache ARP lama (IP DHCP sudah
+MAC berbeda di tabel ARP perangkat yang **berbeda**, atau di **interface berbeda** pada router yang sama, tidak dihitung konflik: biasanya cache ARP lama (IP DHCP sudah
 berpindah ke klien lain tetapi router kedua belum memperbarui ARP-nya) atau MAC interface VLAN/bridge yang berbeda dari
 port fisik. Tabel ARP router/L3 dibaca ulang tiap 30 menit (`antareja:arp-refresh`, SNMP read-only) — tidak menunggu
 discovery penuh LibreNMS yang hanya tiap 6 jam — dan bisa dipicu manual dengan tombol *Perbarui data ARP & cek ulang*
 di halaman Konflik IP.
+
+Subnet yang terlihat di tabel ARP lebih dari satu interface pada router yang sama (mis. 10.17.18.x di VL-SECURITY dan
+VL-TRAINING, banyak entri `failed`/`stale`) ditampilkan terpisah sebagai **"Subnet terlihat di beberapa interface router"** —
+biasanya alamat dari subnet yang sama terpasang di dua interface; perbaiki di router (`/ip address print` di MikroTik).
 
 > Catatan: IP virtual VRRP/HSRP yang muncul di interface beberapa router dapat terdeteksi sebagai konflik (2).
 > Tandai dengan keterangan pada record IP tersebut.

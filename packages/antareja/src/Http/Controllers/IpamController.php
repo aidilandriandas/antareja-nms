@@ -189,6 +189,7 @@ class IpamController extends Controller
     {
         return view('antareja::ipam.conflicts', [
             'arpLast' => \Illuminate\Support\Facades\Cache::get('antareja:arp-refresh:last'),
+            'overlaps' => $this->ipam->interfaceOverlaps(),
             'arpRunning' => \Illuminate\Support\Facades\Cache::has('antareja:arp-refresh:running'),
             'conflicts' => IpAddress::with(['subnet', 'device'])->where('conflict', true)->orderBy('address')->get(),
             'orphans' => IpAddress::with('device')->whereNull('subnet_id')->orderBy('address')->limit(500)->get(),

@@ -6,7 +6,7 @@
     <li class="active">Konflik & IP di luar subnet</li>
 @endsection
 @section('heading', 'Konflik IP')
-@section('subheading', 'Konflik = satu router/L3 melihat IP yang sama dengan beberapa MAC di tabel ARP-nya, IP terpasang di interface beberapa perangkat, IP reserved tetapi aktif, atau MAC berbeda dari alokasi static.')
+@section('subheading', 'Konflik = MAC untuk satu IP berganti-ganti antara dua perangkat, router melihat dua MAC untuk satu IP di interface yang sama, IP terpasang di interface beberapa perangkat, IP reserved tetapi aktif, atau MAC berbeda dari alokasi static.')
 @section('actions')
     @can('ant-ipam.update')
         <form method="post" action="{{ route('antareja.ipam.conflicts.refresh') }}">@csrf
@@ -21,6 +21,29 @@
         @if($arpLast) Terakhir: {{ \Illuminate\Support\Carbon::parse($arpLast['at'])->locale('id')->diffForHumans() }} dari {{ $arpLast['devices'] }} perangkat. @endif
         MAC berbeda di tabel ARP <em>perangkat yang berbeda</em> tidak dihitung konflik (biasanya cache ARP lama / IP DHCP berpindah).
     </p>
+    @if($overlaps)
+        <div class="panel panel-default">
+            <div class="panel-heading"><strong><i class="fa-solid fa-triangle-exclamation ant-text-warn"></i> Subnet terlihat di beberapa interface router ({{ count($overlaps) }})</strong></div>
+            <div class="panel-body tw:text-sm tw:pb-2">
+                Router mencari host dari subnet yang sama di lebih dari satu interface/VLAN — biasanya karena alamat IP dari subnet yang sama
+                terpasang di dua interface. Akibatnya tabel ARP berisi entri <code>failed</code>/<code>stale</code> dan IP yang sama tercatat di dua VLAN.
+                Periksa di router (MikroTik: <code>/ip address print</code>) dan sisakan subnet itu di satu interface saja.
+            </div>
+            <table class="table table-condensed tw:m-0">
+                <thead><tr><th>Router</th><th>Subnet</th><th>Interface (jumlah entri ARP)</th></tr></thead>
+                <tbody>
+                @foreach($overlaps as $o)
+                    <tr>
+                        <td><a href="{{ url('device/' . $o['device_id']) }}">{{ $o['device'] }}</a></td>
+                        <td class="ant-data">{{ $o['subnet'] }}@if($o['guessed']) <small class="ant-muted">(perkiraan /24 — subnet belum ada di IPAM)</small>@endif</td>
+                        <td>@foreach($o['interfaces'] as $if)<span class="ant-badge ant-badge--sm ant-badge--unknown tw:mr-1">{{ $if['name'] }} · {{ $if['entries'] }}</span>@endforeach</td>
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+
     <div class="panel panel-default">
         <div class="panel-heading"><strong>IP konflik ({{ $conflicts->count() }})</strong></div>
         <div class="table-responsive">

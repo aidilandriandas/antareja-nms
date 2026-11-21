@@ -297,12 +297,13 @@ html body.ant-has-shell .alert-success { background: var(--ant-ok-tint); color: 
 html body.ant-has-shell .alert-info { background: var(--ant-info-tint); color: var(--ant-info); border-color: var(--ant-info); }
 html body.ant-has-shell .alert-warning { background: var(--ant-warn-tint); color: var(--ant-warn); border-color: var(--ant-warn); }
 html body.ant-has-shell .alert-danger { background: var(--ant-crit-tint); color: var(--ant-crit); border-color: var(--ant-crit); }
+/* Label Bootstrap → pil berwarna lembut (warna teks & latar selalu berpasangan agar teks terbaca) */
 html body.ant-has-shell .label { border-radius: 999px; padding: 3px 8px; font-weight: 500; }
-html body.ant-has-shell .label-success { background: var(--ant-ok); }
-html body.ant-has-shell .label-warning { background: var(--ant-warn); }
-html body.ant-has-shell .label-danger { background: var(--ant-crit-strong); }
-html body.ant-has-shell .label-info, html body.ant-has-shell .label-primary { background: var(--ant-info); }
-html body.ant-has-shell .label-default { background: var(--ant-ink-muted); }
+html body.ant-has-shell .label-success { background: var(--ant-ok-tint); color: var(--ant-ok); }
+html body.ant-has-shell .label-warning { background: var(--ant-warn-tint); color: var(--ant-warn); }
+html body.ant-has-shell .label-danger { background: var(--ant-crit-tint); color: var(--ant-crit); }
+html body.ant-has-shell .label-info, html body.ant-has-shell .label-primary { background: var(--ant-info-tint); color: var(--ant-info); }
+html body.ant-has-shell .label-default { background: var(--ant-surface-sunken); color: var(--ant-ink-muted); }
 html body.ant-has-shell .badge { background: var(--ant-surface-sunken); color: var(--ant-ink); font-weight: 600; }
 
 /* Halaman perangkat LibreNMS: header perangkat & menu tab */
