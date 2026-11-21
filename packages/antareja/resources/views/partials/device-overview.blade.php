@@ -1,4 +1,32 @@
 {{-- Panel ANTAREJA di halaman overview device LibreNMS (DeviceOverviewHook) --}}
+@if(! \Antareja\Support\ModuleRegistry::enabled('device-inventory'))
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default panel-condensed">
+            <div class="panel-heading tw:flex tw:items-center tw:justify-between">
+                <span><i class="fa fa-th-large fa-fw"></i> <strong>ANTAREJA</strong></span>
+                <a href="{{ route('antareja.devices.edit', $device->device_id) }}" class="btn btn-xs btn-primary"><i class="fa-solid fa-sliders"></i> Pengaturan & uji koneksi</a>
+            </div>
+            <table class="table table-condensed tw:m-0">
+                <tr>
+                    <th class="tw:w-32">Grup</th><td>{{ \Antareja\Support\Catalog::GROUP_NAMES[$detail->category] ?? '—' }}</td>
+                    <th class="tw:w-32">Site / Area</th><td>{{ $detail->site?->code ?? '—' }}{{ $detail->area ? ' / ' . $detail->area->name : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Terhubung ke</th><td colspan="3">
+                        @forelse($links->take(4) as $link)
+                            @php($other = $link->a_device_id === $device->device_id ? $link->bDevice : $link->aDevice)
+                            @php($port = $link->a_device_id === $device->device_id ? $link->bPort : $link->aPort)
+                            <span class="tw:text-xs tw:mr-3">{{ $link->a_device_id === $device->device_id ? '→' : '←' }}
+                                <a href="{{ url('device/' . $other?->device_id) }}">{{ $other?->displayName() }}</a>{{ $port ? ' ' . $port->getShortLabel() : '' }}</span>
+                        @empty — @endforelse
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+@else
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-default panel-condensed">
@@ -43,3 +71,5 @@
         </div>
     </div>
 </div>
+
+@endif

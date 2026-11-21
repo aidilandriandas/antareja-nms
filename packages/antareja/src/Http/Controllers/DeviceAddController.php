@@ -63,7 +63,7 @@ class DeviceAddController extends Controller
                     ->withErrors(['hostname' => $result['message']]);
             }
 
-            return redirect()->route('antareja.inventory.show', $result['device'])
+            return redirect()->route('antareja.devices.edit', $result['device'])
                 ->with('antareja_success', "{$result['device']->displayName()} ({$data['hostname']}) ditambahkan ke monitoring. {$result['message']}. Data pertama muncul setelah polling berikutnya (± 5 menit).");
         }
 
@@ -77,7 +77,7 @@ class DeviceAddController extends Controller
         foreach ($rows as $row) {
             $r = $onboarding->add(['hostname' => $row['hostname'], 'name' => $row['name'], 'category' => $row['category'] ?? $common['category']] + $common);
             $results[] = ['hostname' => $row['hostname'], 'name' => $row['name'], 'ok' => $r['ok'], 'message' => $r['message'],
-                'url' => $r['device'] ? route('antareja.inventory.show', $r['device']) : null];
+                'url' => $r['device'] ? route('antareja.devices.edit', $r['device']) : null];
             if (! $r['ok']) {
                 $failedLines[] = implode(', ', array_filter([$row['hostname'], $row['name'], isset($row['category']) ? (Catalog::GROUP_NAMES[$row['category']] ?? null) : null]));
             }

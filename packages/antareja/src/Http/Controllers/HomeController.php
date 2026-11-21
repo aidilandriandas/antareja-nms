@@ -90,13 +90,15 @@ class HomeController extends Controller
         }
 
         $work = null;
-        if ($user->can('ant-workorder.view') || $user->can('ant-change.view')) {
+        $woOn = $user->can('ant-workorder.view') && \Antareja\Support\ModuleRegistry::enabled('workorders');
+        $crOn = $user->can('ant-change.view') && \Antareja\Support\ModuleRegistry::enabled('changes');
+        if ($woOn || $crOn) {
             $work = ['wo_active' => null, 'wo_overdue' => null, 'cr_pending' => null, 'cr_upcoming' => collect()];
-            if ($user->can('ant-workorder.view')) {
+            if ($woOn) {
                 $work['wo_active'] = WorkOrder::active()->count();
                 $work['wo_overdue'] = WorkOrder::active()->whereNotNull('due_at')->where('due_at', '<', now())->count();
             }
-            if ($user->can('ant-change.view')) {
+            if ($crOn) {
                 $work['cr_pending'] = Change::where('status', 'submitted')->count();
                 $work['cr_upcoming'] = Change::whereIn('status', ['approved', 'in_progress'])
                     ->where('planned_end', '>=', now())->where('planned_start', '<=', now()->addDays(7))
@@ -120,7 +122,7 @@ class HomeController extends Controller
                 ->orderByRaw("FIELD(last_status, 'down', 'critical', 'warning')")->limit(5)->get()
             : null;
 
-        $issues = $user->can('ant-inventory.view') ? $quality->counts($user) : null;
+        $issues = $user->can('ant-inventory.view') && \Antareja\Support\ModuleRegistry::enabled('device-inventory') ? $quality->counts($user) : null;
         if ($issues !== null && $user->can('ant-ipam.view')) {
             $issues['ip_conflicts'] = \Antareja\Models\IpAddress::where('conflict', true)->count();
         }

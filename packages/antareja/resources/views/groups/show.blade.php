@@ -37,7 +37,7 @@
                         <td class="ant-data">{{ $d->hostname }}</td>
                         <td>{{ $details[$d->device_id]->site_code ?? '—' }}</td>
                         <td class="ant-data">{{ $d->status && $d->uptime ? \LibreNMS\Util\Time::formatInterval($d->uptime, true) : '—' }}</td>
-                        <td class="text-right"><a href="{{ route('antareja.inventory.show', $d->device_id) }}" class="btn btn-default btn-xs">Inventaris</a></td>
+                        <td class="text-right"><a href="{{ route('antareja.devices.edit', $d->device_id) }}" class="btn btn-default btn-xs">Pengaturan</a></td>
                     </tr>
                 @endforeach
                 </tbody>

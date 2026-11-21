@@ -16,6 +16,57 @@ use Illuminate\Support\Facades\Gate;
  */
 class ModuleRegistry
 {
+    /** Modul yang boleh dimatikan admin (menu & halamannya hilang; data tetap tersimpan). */
+    public const TOGGLEABLE = [
+        'device-inventory' => 'Inventaris aset (serial, PIC, garansi, lifecycle, evidence, kelengkapan data)',
+        'device-discovery' => 'Discovery — antrean verifikasi perangkat sebagai aset resmi',
+        'fiber' => 'Fiber Optic — kabel, core, ODF, splice, OTDR',
+        'workorders' => 'Work Order — pekerjaan lapangan, checklist, material',
+        'changes' => 'Change Request — rencana perubahan & persetujuan',
+        'config' => 'Backup Konfigurasi — salin konfigurasi perangkat lewat SSH',
+        'capacity' => 'Capacity Planning — tren & perkiraan kapasitas',
+        'assistant' => 'Asisten AI & deteksi anomali',
+        'ipam' => 'IP Address Management',
+        'sla' => 'SLA Management',
+        'reports' => 'Laporan Bulanan',
+        'management' => 'Dashboard Manajemen',
+    ];
+
+    /** Profil NOC (bawaan): fokus monitoring jaringan, tanpa modul manajemen aset & pekerjaan lapangan. */
+    public const NOC_DISABLED = ['device-inventory', 'device-discovery', 'fiber', 'workorders', 'changes'];
+
+    private static ?array $disabledCache = null;
+
+    /** @return list<string> */
+    public static function disabled(): array
+    {
+        if (self::$disabledCache !== null) {
+            return self::$disabledCache;
+        }
+        try {
+            $raw = \Illuminate\Support\Facades\DB::table('ant_settings')->where('key', 'modules_disabled')->value('value');
+            $list = $raw === null ? self::NOC_DISABLED : (json_decode($raw, true) ?: []);
+        } catch (\Throwable) {
+            $list = []; // tabel belum ada (sebelum migrasi): jangan sembunyikan apa pun
+        }
+
+        return self::$disabledCache = array_values(array_intersect($list, array_keys(self::TOGGLEABLE)));
+    }
+
+    public static function enabled(string $key): bool
+    {
+        return ! in_array($key, self::disabled(), true);
+    }
+
+    /** @param  list<string>  $keys */
+    public static function setDisabled(array $keys): void
+    {
+        $keys = array_values(array_intersect($keys, array_keys(self::TOGGLEABLE)));
+        \Illuminate\Support\Facades\DB::table('ant_settings')->updateOrInsert(['key' => 'modules_disabled'],
+            ['value' => json_encode($keys), 'updated_at' => now(), 'created_at' => now()]);
+        self::$disabledCache = null;
+    }
+
     public const NATIVE = 'native';
     public const PARTIAL = 'partial';
     public const PLANNED = 'planned';
@@ -97,7 +148,7 @@ class ModuleRegistry
         }
 
         return $this->all()
-            ->reject(fn (array $m) => $m['status'] === self::PLANNED || $m['path'] === null)
+            ->reject(fn (array $m) => $m['status'] === self::PLANNED || $m['path'] === null || ! self::enabled($m['key']))
             ->filter(fn (array $m) => $m['permission'] === null || Gate::forUser($user)->allows($m['permission']))
             ->values();
     }

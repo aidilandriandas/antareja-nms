@@ -186,7 +186,7 @@
                         <li><b>Grup</b> menentukan perangkat masuk grup mana (CCTV, Access Point, Switch, …) — lihat menu <a href="{{ route('antareja.groups.index') }}">Grup Perangkat</a>.</li>
                         <li>Kamera Hikvision biasanya tanpa SNMP: pilih <b>Ping saja</b>, lalu atur live view di menu CCTV.</li>
                         <li>Bila SNMP tidak menjawab, perangkat tetap ditambahkan dengan pemantauan ping.</li>
-                        <li>Nama bisa diubah kapan saja di Inventaris Perangkat → Edit.</li>
+                        <li>Nama, grup, dan site bisa diubah kapan saja di halaman pengaturan perangkat.</li>
                     </ul>
                 </div>
             </section>

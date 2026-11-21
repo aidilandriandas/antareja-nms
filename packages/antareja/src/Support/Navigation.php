@@ -43,7 +43,7 @@ class Navigation
                 $m('dashboard', 'Dashboard Widget', 'table-cells-large'),
             ]],
             ['title' => 'Monitoring', 'key' => 'monitoring', 'items' => [
-                $m('network-monitoring', 'Perangkat', 'server', ['device']),
+                $m('network-monitoring', 'Perangkat', 'server', ['device', 'antareja/devices']),
                 $m('interface-monitoring', 'Interface & Port', 'ethernet', ['port']),
                 $m('wireless-monitoring', 'Wireless', 'wifi'),
                 $m('cctv', 'CCTV', 'video'),
@@ -61,7 +61,7 @@ class Navigation
                 $m('triggers', 'Trigger', 'crosshairs'),
                 $core($can('viewAny', Models\AlertRule::class), 'Aturan Alert', 'sliders', 'alert-rules'),
             ]],
-            ['title' => 'Inventaris & Aset', 'key' => 'assets', 'items' => [
+            ['title' => 'Perangkat & Jaringan', 'key' => 'assets', 'items' => [
                 $core($can('device.create'), 'Tambah Perangkat', 'circle-plus', 'antareja/devices/add'),
                 $core($can('viewAny', Models\Device::class), 'Grup Perangkat', 'layer-group', 'antareja/groups'),
                 $m('sites', 'Site & Area', 'map-location-dot'),
@@ -100,6 +100,7 @@ class Navigation
                 $m('users', 'User & Role', 'users'),
                 $m('audit', 'Audit Log', 'clock-rotate-left'),
                 $core($can('settings.update'), 'Backup & Pemulihan', 'box-archive', 'antareja/backup'),
+                $core($can('settings.update'), 'Modul Aktif', 'toggle-on', 'antareja/modules'),
                 $m('system', 'Pengaturan Sistem', 'gears'),
                 $core($can('viewAny', Models\PollerCluster::class) || $can('viewAny', Models\PollerGroup::class), 'Poller', 'microchip', 'poller'),
                 $core($can('settings.view'), 'Validasi Sistem', 'circle-check', 'validate'),

@@ -41,7 +41,7 @@ use LibreNMS\Interfaces\Plugins\PluginManagerInterface;
 
 class AntarejaServiceProvider extends ServiceProvider
 {
-    public const VERSION = '0.8.1';
+    public const VERSION = '0.9.0';
 
     public function register(): void
     {
@@ -67,6 +67,7 @@ class AntarejaServiceProvider extends ServiceProvider
             $this->app['request']->server->set('HTTPS', 'on');
         }
         $this->app['router']->pushMiddlewareToGroup('web', FirstRunSetup::class);
+        $this->app['router']->pushMiddlewareToGroup('web', \Antareja\Http\Middleware\ModuleGate::class);
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'antareja');
         // Komponen design system: <x-antareja::status>, <x-antareja::stat>, <x-antareja::progress>, <x-antareja::alert>
         Blade::anonymousComponentPath(__DIR__ . '/../resources/views/components', 'antareja');
@@ -126,8 +127,8 @@ class AntarejaServiceProvider extends ServiceProvider
             $schedule->command('antareja:quality-maintenance')->dailyAt('00:20')->withoutOverlapping()->runInBackground();
             $schedule->command('antareja:problems')->everyMinute()->withoutOverlapping(5)->runInBackground();
             $schedule->command('antareja:sla')->dailyAt('00:35')->withoutOverlapping()->runInBackground();
-            $schedule->command('antareja:config-backup')->hourlyAt(41)->withoutOverlapping(120)->runInBackground();
-            $schedule->command('antareja:capacity')->cron('23 */6 * * *')->withoutOverlapping(120)->runInBackground();
+            $schedule->command('antareja:config-backup')->hourlyAt(41)->withoutOverlapping(120)->runInBackground()->when(fn () => ModuleRegistry::enabled('config'));
+            $schedule->command('antareja:capacity')->cron('23 */6 * * *')->withoutOverlapping(120)->runInBackground()->when(fn () => ModuleRegistry::enabled('capacity'));
             $schedule->command('antareja:anomalies')->cron('*/15 * * * *')->withoutOverlapping(14)->runInBackground();
             $schedule->command('antareja:cctv-health')->cron('7,22,37,52 * * * *')->withoutOverlapping(14)->runInBackground();
             // Tabel ARP router/L3 dibaca ulang tiap 30 menit (discovery penuh LibreNMS hanya tiap 6 jam)

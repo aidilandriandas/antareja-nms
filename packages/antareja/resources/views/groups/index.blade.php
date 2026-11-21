@@ -21,7 +21,7 @@
     @endif
     @if($uncategorized > 0)
         <x-antareja::alert tone="warn">{{ $uncategorized }} perangkat belum punya kategori sehingga belum masuk grup mana pun —
-            <a href="{{ route('antareja.inventory.index', ['issue' => 'missing_category']) }}">lengkapi kategorinya</a>.</x-antareja::alert>
+            atur grupnya di <a href="{{ route('devices') }}">daftar perangkat</a> (buka perangkat → Pengaturan).</x-antareja::alert>
     @endif
 
     <div class="ant-groups">

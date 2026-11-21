@@ -16,6 +16,9 @@
     @if(session('antareja_success'))
         <x-antareja::alert tone="ok">{{ session('antareja_success') }}</x-antareja::alert>
     @endif
+    @if(session('antareja_warning'))
+        <x-antareja::alert tone="warn">{{ session('antareja_warning') }}</x-antareja::alert>
+    @endif
 
     {{-- Kepala halaman --}}
     <header class="ant-ops__head">
@@ -221,7 +224,7 @@
                         @endforeach
                     </ul>
                     @if($sites->unassigned > 0)
-                        <p class="ant-card__note">{{ $sites->unassigned }} perangkat belum punya site — <a href="{{ route('antareja.inventory.index', ['issue' => 'missing_site']) }}">lengkapi di inventaris</a>.</p>
+                        <p class="ant-card__note">{{ $sites->unassigned }} perangkat belum punya site — @if(\Antareja\Support\ModuleRegistry::enabled('device-inventory'))<a href="{{ route('antareja.inventory.index', ['issue' => 'missing_site']) }}">lengkapi di inventaris</a>@else atur site-nya di halaman pengaturan perangkat (<a href="{{ route('devices') }}">daftar perangkat</a>)@endif.</p>
                     @endif
                 @endif
             </section>

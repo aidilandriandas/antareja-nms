@@ -154,7 +154,7 @@
                 + (n.hardware ? '<p class="ant-muted">' + esc(n.hardware) + '</p>' : '')
                 + '<h4>Terhubung ke (' + links.length + ')</h4>' + (rows ? '<ul class="ant-topo__links">' + rows + '</ul>' : '<p class="ant-muted">Tidak ada sambungan yang diketahui.</p>')
                 + '<div class="ant-topo__actions"><a class="btn btn-primary btn-sm" href="' + n.url + '">Buka perangkat</a>'
-                + ' <a class="btn btn-default btn-sm" href="{{ url('antareja/inventory') }}/' + n.id + '">Inventaris</a></div>';
+                + ' <a class="btn btn-default btn-sm" href="{{ url('antareja/devices') }}/' + n.id + '">Pengaturan</a></div>';
             panel.hidden = false;
         }
     });

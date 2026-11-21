@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  Versi 0.8.1 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
+  Versi 0.9.0 · Berbasis LibreNMS 26.10.2 · Lisensi GPL-3.0 · Bahasa antarmuka: Indonesia
 </p>
 
 ---
@@ -51,6 +51,10 @@ device mapping terverifikasi, IPAM, CCTV & live view, incident & work order, cha
 capacity planning, manajemen fiber optic, laporan bulanan, dashboard manajemen, **layar NOC** dengan peta topologi
 dan trafik live, serta **backup & pemulihan NMS** dari web.
 
+**Profil NOC (bawaan):** ANTAREJA dipasang sebagai NMS/NOC murni. Modul manajemen aset dan pekerjaan lapangan —
+Inventaris aset, Discovery (verifikasi aset), Fiber Optic, Work Order, Change Request — **dimatikan** dan tidak tampil di
+menu. Admin bisa menyalakannya kapan saja di *Administrasi → Modul Aktif* tanpa kehilangan data.
+
 Tampilannya dibuat sendiri (bukan tampilan LibreNMS): menu samping berbahasa Indonesia yang dikelompokkan per pekerjaan,
 halaman awal **Pusat Operasi**, tema terang/gelap, dan nyaman dipakai di HP.
 
@@ -89,8 +93,9 @@ halaman awal **Pusat Operasi**, tema terang/gelap, dan nyaman dipakai di HP.
 | **Uji koneksi** | Tes ping + SNMP dari server ANTAREJA (form tambah perangkat & halaman inventaris), lengkap dengan diagnosis penyebab; perangkat "ping saja" bisa dialihkan ke SNMP dengan satu klik |
 | **Grup perangkat** | Grup otomatis per kategori (CCTV, Access Point, Switch, NVR, …) beserta status online/down; juga grup buatan sendiri |
 | **Site & Area** | Office, workshop, plant, pit, ROM, jetty, mess, remote, beserta area di dalamnya |
-| **Device Inventory** | Kategori, site/area, rak, serial, PIC, garansi, lifecycle, evidence foto/PDF, kelengkapan data, export CSV |
-| **Device Discovery** | Perangkat baru masuk antrean verifikasi: Pending → Verified / Incomplete / Rejected / Retired |
+| **Pengaturan perangkat** | Nama, grup, site/area, sambungan, uji koneksi & aktifkan SNMP — satu halaman ringkas per perangkat |
+| **Device Inventory** *(opsional)* | Kategori, site/area, rak, serial, PIC, garansi, lifecycle, evidence foto/PDF, kelengkapan data, export CSV |
+| **Device Discovery** *(opsional)* | Perangkat baru masuk antrean verifikasi: Pending → Verified / Incomplete / Rejected / Retired |
 | **Device Mapping** | Relasi port ↔ perangkat yang diverifikasi; saran dari LLDP/CDP & tabel MAC; dipakai untuk korelasi induk/anak |
 | **IP Address Management** | Subnet, VLAN, alokasi IP, IP kosong, peta alamat, deteksi konflik/duplikat, histori per IP, utilisasi |
 
@@ -102,8 +107,8 @@ halaman awal **Pusat Operasi**, tema terang/gelap, dan nyaman dipakai di HP.
 | **Incident Management** | Nomor INC, severity, PIC, status, root cause & corrective action wajib saat ditutup, work note, evidence, MTTA/MTTR |
 | **Eskalasi & Notifikasi** | Incident otomatis & notifikasi bertahap lewat Telegram/email/dll. sampai di-acknowledge |
 | **Maintenance** | Kalender preventive/corrective/change; alert perangkat ditekan selama jendela; bisa dikecualikan dari SLA |
-| **Work Order** | Pekerjaan lapangan dengan checklist, material, evidence, tenggat per prioritas, verifikasi supervisor |
-| **Change Request** | Rencana, dampak, rollback; disetujui orang lain; otomatis jadi jendela maintenance |
+| **Work Order** *(opsional)* | Pekerjaan lapangan dengan checklist, material, evidence, tenggat per prioritas, verifikasi supervisor |
+| **Change Request** *(opsional)* | Rencana, dampak, rollback; disetujui orang lain; otomatis jadi jendela maintenance |
 | **Backup Konfigurasi** | SSH (perintah baca saja) ke 10 profil vendor; versi & diff; deteksi perubahan tanpa change request |
 
 ### Analisis & laporan
@@ -111,7 +116,7 @@ halaman awal **Pusat Operasi**, tema terang/gelap, dan nyaman dipakai di HP.
 |---|---|
 | **SLA Management** | Service tree (seri / redundan / minimal N up), target SLA, availability bulanan, MTTR/MTBF |
 | **Capacity Planning** | Utilisasi uplink (p95 harian), storage NVR/server, pool IP, perkiraan tanggal menyentuh ambang |
-| **Fiber Optic** | Kabel & core (warna TIA-598), ODF, joint & splice, uji OTDR, jalur end-to-end, lokasi gangguan dari jarak OTDR |
+| **Fiber Optic** *(opsional)* | Kabel & core (warna TIA-598), ODF, joint & splice, uji OTDR, jalur end-to-end, lokasi gangguan dari jarak OTDR |
 | **Deteksi Anomali** | Latency/loss/traffic tidak wajar & perangkat flapping, dibanding jam yang sama hari sebelumnya — offline, tanpa AI |
 | **Asisten AI** (opsional) | Draf laporan serah terima shift & analisis incident — hanya teks, tanpa akses ke perangkat |
 | **Dashboard Manajemen** | KPI availability, SLA, incident, MTTA/MTTR, tren 6 bulan, per site |
@@ -122,6 +127,7 @@ halaman awal **Pusat Operasi**, tema terang/gelap, dan nyaman dipakai di HP.
 |---|---|
 | **Setup Awal** | Admin pertama dibuat di halaman `/setup` yang dijaga kode setup dari server (bukan wizard LibreNMS) |
 | **Backup & Pemulihan** | Backup NMS lengkap (database, kredensial, grup, site, inventaris, user, grafik) harian & manual, unduh dari browser, salinan otomatis ke NAS/server lain lewat SFTP, pulihkan dengan satu perintah |
+| **Modul Aktif** | Nyalakan/matikan modul opsional; tombol *Profil NOC* dan *Nyalakan semua* |
 | **User & Role** | Akun dan hak akses per modul (grup permission `ant-*`) |
 | **Audit Log** | Jejak login & perubahan data (sebelum/sesudah) |
 
@@ -131,7 +137,7 @@ halaman awal **Pusat Operasi**, tema terang/gelap, dan nyaman dipakai di HP.
 
 > Gambar memakai data uji.
 
-Semua halaman memakai kerangka ANTAREJA: menu samping dikelompokkan per pekerjaan (Monitoring, Alert & Insiden, Inventaris & Aset, Operasional, Laporan, Administrasi), pencarian global (tekan `/`), penanda jumlah problem aktif, tema terang/gelap, dan tampilan HP. Halaman awal setelah login adalah **Pusat Operasi**; dashboard widget LibreNMS tetap ada di menu *Dashboard Widget*.
+Semua halaman memakai kerangka ANTAREJA: menu samping dikelompokkan per pekerjaan (Monitoring, Alert & Insiden, Perangkat & Jaringan, Operasional, Laporan, Administrasi), pencarian global (tekan `/`), penanda jumlah problem aktif, tema terang/gelap, dan tampilan HP. Halaman awal setelah login adalah **Pusat Operasi**; dashboard widget LibreNMS tetap ada di menu *Dashboard Widget*.
 
 | Layar NOC (layar penuh untuk TV ruang kontrol) | Peta topologi |
 |---|---|
@@ -295,20 +301,20 @@ Urutan yang disarankan (semua lewat menu di sidebar):
 
 1. **Community SNMP bersama:** *Administrasi → Pengaturan Sistem → Poller → SNMP*. Isi community v2c read-only (jangan
    `public`) atau kredensial SNMPv3. Di setiap perangkat, aktifkan SNMP dan izinkan IP VM ANTAREJA.
-2. **Site & Area:** *Inventaris & Aset → Site & Area* — buat site (Kantor, Pit A, Workshop, Mess, …) dan area di dalamnya.
-3. **Tambah perangkat:** *Inventaris & Aset → Tambah Perangkat*.
+2. **Site & Area:** *Perangkat & Jaringan → Site & Area* — buat site (Kantor, Pit A, Workshop, Mess, …) dan area di dalamnya.
+3. **Tambah perangkat:** *Perangkat & Jaringan → Tambah Perangkat*.
    - Isi **Nama perangkat**, IP, **Grup** (CCTV, Access Point, Switch, Router, Radio PTP, …), site/area, dan cara pemantauan
      (SNMP v2c/v3, atau *Ping saja* untuk kamera tanpa SNMP).
    - Klik **Uji koneksi** dulu: ping & SNMP dites dari server, lengkap dengan saran bila gagal.
    - Banyak perangkat sekaligus: tab **Banyak sekaligus**, tempel dari Excel dengan format `IP, Nama, Grup` (maks. 50 baris).
-   - Perangkat yang sudah terdaftar tapi masih tampil sebagai IP: beri nama di *Inventaris Perangkat → Edit → Nama perangkat*.
-4. **Grup perangkat:** *Inventaris & Aset → Grup Perangkat* → **Sinkronkan grup** sekali. Setelah itu grup (CCTV berisi
+   - Perangkat yang sudah terdaftar tapi masih tampil sebagai IP: buka perangkatnya → **Pengaturan & uji koneksi** → isi *Nama perangkat*.
+4. **Grup perangkat:** *Perangkat & Jaringan → Grup Perangkat* → **Sinkronkan grup** sekali. Setelah itu grup (CCTV berisi
    semua kamera, Access Point berisi semua AP, dst.) diperbarui otomatis tiap 10 menit.
 5. **Sambungan antar perangkat:** aktifkan **LLDP/CDP** di switch & router (MikroTik: *IP → Neighbors → Discovery Settings*).
    Sambungan yang tidak terdeteksi dibuat manual di *Peta Topologi* → **Hubungkan perangkat** → klik dua perangkat → pilih
    port. Pilih port agar trafik tampil di garis dan alert perangkat di bawahnya diredam saat induknya down.
    Atur posisi perangkat lalu **Simpan tata letak** — tata letak ini juga dipakai Layar NOC.
-6. **Verifikasi perangkat hasil discovery:** *Inventaris & Aset → Discovery* — lengkapi kategori, site, PIC, lalu setujui.
+6. **Modul opsional:** butuh inventaris aset, work order, atau fiber optic? Nyalakan di *Administrasi → Modul Aktif*.
 7. **Kualitas link:** *Monitoring → Kualitas Jaringan* — tambahkan target link penting (PTP, uplink antar site, gateway internet).
 8. **Notifikasi:** buat transport di *Fitur Lainnya → Transport Alert* (mis. Telegram), lalu kebijakan di
    *Alert & Insiden → Eskalasi & Notifikasi*.
@@ -428,10 +434,10 @@ Bila proxy memeriksa TLS, simpan sertifikat CA proxy di `docker/build-ca.crt`.
 ### VM tanpa internet
 Bangun image di mesin yang punya internet, lalu pindahkan:
 ```bash
-docker save antareja-nms:0.8.1 | gzip > antareja-nms-0.8.1.tar.gz
+docker save antareja-nms:0.9.0 | gzip > antareja-nms-0.9.0.tar.gz
 ```
 ```bash
-gunzip -c antareja-nms-0.8.1.tar.gz | docker load
+gunzip -c antareja-nms-0.9.0.tar.gz | docker load
 ```
 Tag image mengikuti `ANTAREJA_TAG` di `docker/.env`. Image pihak ketiga (`mariadb`, `redis`, `crazymax/rrdcached`, `nginx`,
 `librenms/librenms`, `alexxit/go2rtc`) dipindahkan dengan cara yang sama.
@@ -487,9 +493,10 @@ dibaca hanya selama halaman itu terbuka (SNMP GET tiap 5 detik, maks. 40 port).
 | Halaman tidak bisa dibuka | `./antareja.sh status` dan `./antareja.sh logs nginx`; pastikan firewall membuka TCP 443 |
 | Peringatan Chrome "The information you're about to submit is not secure" | Buka lewat `https://`, lalu `git pull && ./antareja.sh update` (versi lama membuat form ber-`http://`) |
 | Container `app` tidak sehat, log: "Failed to connect to database on db" | Password di `docker/.env` tidak cocok dengan volume database lama (install ulang / clone kedua). Salin `docker/.env` lama, atau mulai dari nol dengan `cd docker && docker compose down -v` (**semua data hilang**) |
-| Perangkat selalu down | Buka perangkat di *Inventaris* → **Uji koneksi**. Bila ping gagal: cek rute dan firewall ICMP dari IP VM |
-| SNMP sudah diaktifkan di perangkat tapi tidak terbaca | **Uji koneksi** → lihat saran. Tersering: community salah (huruf besar/kecil), IP VM belum diizinkan di community, UDP 161 diblok. Bila perangkat terdaftar "ping saja", klik **Aktifkan SNMP** setelah uji berhasil |
-| Perangkat tampil sebagai IP saja | *Inventaris Perangkat → Edit → Nama perangkat*, atau ⚙ perangkat → *Device* → *Display Name* |
+| Perangkat selalu down | Buka perangkat → **Pengaturan & uji koneksi**. Bila ping gagal: cek rute dan firewall ICMP dari IP VM |
+| SNMP sudah diaktifkan di perangkat tapi tidak terbaca | Buka perangkat → **Uji koneksi** → lihat saran. Tersering: community salah (huruf besar/kecil), IP VM belum diizinkan di community, UDP 161 diblok. Bila perangkat terdaftar "ping saja", klik **Aktifkan SNMP** setelah uji berhasil |
+| Perangkat tampil sebagai IP saja | Buka perangkat → **Pengaturan & uji koneksi** → *Nama perangkat*, atau ⚙ perangkat → *Device* → *Display Name* |
+| Menu Inventaris / Work Order / Fiber / Change Request tidak ada | Dimatikan oleh profil NOC. Nyalakan di *Administrasi → Modul Aktif* |
 | Peta topologi tanpa garis | Aktifkan LLDP/CDP di switch/router, atau buat sambungan dengan **Hubungkan perangkat** di peta |
 | Garis topologi abu-abu / trafik tidak muncul | Sambungan belum punya port: hapus lalu hubungkan ulang dengan memilih port. Perangkat "ping saja" tidak punya data port — ukur dari port switch/router lawannya |
 | Banyak "Konflik IP" padahal di router IP-nya tidak bentrok | Versi lama menghitung MAC berbeda dari tabel ARP router yang berbeda (cache ARP lama / DHCP) sebagai konflik. Update ke versi terbaru: konflik palsu selesai otomatis pada sinkron berikutnya. Di *IPAM → Konflik IP* klik **Perbarui data ARP & cek ulang** untuk mempercepat |
